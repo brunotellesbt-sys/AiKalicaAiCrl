@@ -59,97 +59,165 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
-      # ✅ NEW: Patch Florian/Juliana icons from Bulbapedia/Bulbagarden Archives (face icons)
-      - name: Patch Gen 9 trainer icons (Florian/Juliana) from Bulbapedia
+      # ✅ STRONG PATCH: force Florian/Juliana trainer sprites from Bulbapedia icons
+      - name: Force Gen 9 trainer icons (Florian/Juliana) from Bulbapedia
         working-directory: ${{ env.PROJECT_ROOT }}
+        env:
+          FLORIAN_URL: https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png
+          JULIANA_URL: https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png
         run: |
           set -e
-
-          FLORIAN_URL="https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png"
-          JULIANA_URL="https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png"
-
-          echo "Using:"
-          echo "  Florian: $FLORIAN_URL"
-          echo "  Juliana: $JULIANA_URL"
-
           python3 - << 'PY'
-          import os, re, sys
+          import os, re
 
-          root = os.getcwd()
+          ROOT = os.getcwd()
+          FLORIAN = os.environ["FLORIAN_URL"]
+          JULIANA = os.environ["JULIANA_URL"]
 
-          florian_url = os.environ.get("FLORIAN_URL")
-          juliana_url = os.environ.get("JULIANA_URL")
+          print("Forcing trainer icons:")
+          print("  Florian:", FLORIAN)
+          print("  Juliana:", JULIANA)
 
-          # Fallback if env not passed (should be passed)
-          if not florian_url:
-            florian_url = "https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png"
-          if not juliana_url:
-            juliana_url = "https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png"
+          # 1) Try to find the most likely mapping file(s)
+          candidates = []
+          for dirpath, _, filenames in os.walk(ROOT):
+            for fn in filenames:
+              low = fn.lower()
+              if not (low.endswith(".ts") or low.endswith(".json") or low.endswith(".yml") or low.endswith(".yaml")):
+                continue
+              full = os.path.join(dirpath, fn)
+              # prioritize common names
+              if "trainer" in low and ("sprite" in low or "data" in low or "service" in low):
+                candidates.append(full)
+              elif low in ("trainer-sprite-data.ts","trainer_sprite_data.ts","trainer-sprites.ts","trainers.ts"):
+                candidates.append(full)
 
-          # Any older URLs / names we want to replace if they appear anywhere
-          # (these have appeared in earlier zips)
-          florian_needles = [
+          # Always include everything as fallback search pool later
+          def iter_text_files():
+            for dirpath, _, filenames in os.walk(ROOT):
+              for fn in filenames:
+                low = fn.lower()
+                if low.endswith((".ts",".json",".yml",".yaml",".html",".css",".scss")):
+                  yield os.path.join(dirpath, fn)
+
+          touched = set()
+          def write_if_changed(path, old, new):
+            if new != old:
+              with open(path,"w",encoding="utf-8") as f:
+                f.write(new)
+              touched.add(os.path.relpath(path, ROOT))
+              return True
+            return False
+
+          # Robust replacers for many possible structures:
+          # A) florian: "..."
+          # B) "florian": "..."
+          # C) male/female within gen9 object
+          # D) mapping arrays or nested objects
+          def force_key_value(text, key, url):
+            # key: florian / juliana
+            # Replace occurrences like: florian: '...'
+            text2 = re.sub(rf"(\b{re.escape(key)}\b\s*:\s*)(['\"]).*?\2",
+                           rf"\1'\g<0>'", text)  # placeholder, we'll override below
+            # The above is tricky; do simpler direct pattern:
+            return re.sub(rf"(\b{re.escape(key)}\b\s*:\s*)(['\"]).*?\2",
+                          rf"\1'{url}'", text)
+
+          def force_string_key_value(text, key, url):
+            # "florian": "..."
+            return re.sub(rf"(['\"])({re.escape(key)})\1\s*:\s*(['\"]).*?\3",
+                          rf"'\2': '{url}'", text)
+
+          # Extra: If there is a Gen 9 block like 9: { male: '...', female: '...' }
+          def force_gen9_male_female(text):
+            # very forgiving: find a "9:" block and replace male/female inside it
+            # Works for objects like: 9: { male: '...', female: '...' }
+            pat = re.compile(r"(9\s*:\s*\{)([\s\S]*?)(\})", re.MULTILINE)
+            m = pat.search(text)
+            if not m:
+              return text
+            head, body, tail = m.group(1), m.group(2), m.group(3)
+            body2 = re.sub(r"(\bmale\b\s*:\s*)(['\"]).*?\2", rf"\1'{FLORIAN}'", body)
+            body2 = re.sub(r"(\bfemale\b\s*:\s*)(['\"]).*?\2", rf"\1'{JULIANA}'", body2)
+            if body2 == body:
+              return text
+            return text[:m.start()] + head + body2 + tail + text[m.end():]
+
+          # 2) First pass: attempt direct fixes in candidate files (more reliable)
+          for path in candidates:
+            try:
+              s = open(path,"r",encoding="utf-8").read()
+            except Exception:
+              continue
+            original = s
+
+            # Force common explicit keys
+            s = force_key_value(s, "florian", FLORIAN)
+            s = force_key_value(s, "juliana", JULIANA)
+            s = force_string_key_value(s, "florian", FLORIAN)
+            s = force_string_key_value(s, "juliana", JULIANA)
+
+            # Force gen9 male/female if present
+            s = force_gen9_male_female(s)
+
+            # Also fix “swapped” lines in a broad way:
+            # if a line mentions juliana and contains florian URL, replace with JULIANA
+            s = re.sub(r"(juliana[^\n\r]{0,200})(https?://[^\s\"']*florian[^\s\"']*)",
+                       rf"\1{JULIANA}", s, flags=re.IGNORECASE)
+            # if a line mentions florian and contains juliana URL, replace with FLORIAN
+            s = re.sub(r"(florian[^\n\r]{0,200})(https?://[^\s\"']*juliana[^\s\"']*)",
+                       rf"\1{FLORIAN}", s, flags=re.IGNORECASE)
+
+            write_if_changed(path, original, s)
+
+          # 3) Fallback pass: scan all text files and replace any wrong URLs/filenames
+          # Replace any Bulbagarden link that ends with a known Florian/Juliana asset
+          florian_files = [
+            "Florian_Icon_SV_Scarlet-3.png",
             "Violet_Florian.png",
             "Scarlet_Violet_Florian_The_Indigo_Disk.png",
-            "Florian_Icon_SV_Scarlet-3.png",
+            "florian-s.png",
+            "florian.png",
           ]
-          juliana_needles = [
+          juliana_files = [
+            "Juliana_Icon_SV_Violet-1.png",
             "Scarlet_Juliana.png",
             "Scarlet_Violet_Juliana_The_Indigo_Disk.png",
-            "Juliana_Icon_SV_Violet-1.png",
+            "juliana-s.png",
+            "juliana.png",
           ]
 
-          # Regexes that catch any Bulbagarden/Bulbapedia links that point to those files
-          def build_regex(names):
-            escaped = [re.escape(n) for n in names]
-            # match URL that ends with one of the filenames
-            return re.compile(r"(https?://[^\s\"']+?(?:%s))" % ("|".join(escaped)), re.IGNORECASE)
+          def replace_any_file_url(text, filenames, url):
+            for name in filenames:
+              # Replace Special:FilePath/<name>
+              text = re.sub(rf"https?://archives\.bulbagarden\.net/wiki/Special:FilePath/{re.escape(name)}",
+                            url, text, flags=re.IGNORECASE)
+              # Replace direct image URLs containing the filename anywhere
+              text = re.sub(rf"https?://[^\s\"']*{re.escape(name)}",
+                            url, text, flags=re.IGNORECASE)
+            return text
 
-          re_florian = build_regex(florian_needles)
-          re_juliana = build_regex(juliana_needles)
+          for path in iter_text_files():
+            try:
+              s = open(path,"r",encoding="utf-8").read()
+            except Exception:
+              continue
+            original = s
+            s = replace_any_file_url(s, florian_files, FLORIAN)
+            s = replace_any_file_url(s, juliana_files, JULIANA)
+            # Fix swapped line contexts again
+            s = re.sub(r"(juliana[^\n\r]{0,200})(https?://[^\s\"']*florian[^\s\"']*)",
+                       rf"\1{JULIANA}", s, flags=re.IGNORECASE)
+            s = re.sub(r"(florian[^\n\r]{0,200})(https?://[^\s\"']*juliana[^\s\"']*)",
+                       rf"\1{FLORIAN}", s, flags=re.IGNORECASE)
 
-          # Also catch common “wrong assignment” patterns:
-          # - if code sets juliana sprite URL equal to something containing "florian"
-          # - or florian equal to something containing "juliana"
-          re_juliana_wrong = re.compile(r"(juliana[^\\n\\r]{0,200})(https?://[^\\s\"']+florian[^\\s\"']+)", re.IGNORECASE)
-          re_florian_wrong = re.compile(r"(florian[^\\n\\r]{0,200})(https?://[^\\s\"']+juliana[^\\s\"']+)", re.IGNORECASE)
+            write_if_changed(path, original, s)
 
-          touched = 0
-          changed_files = []
-
-          for dirpath, _, filenames in os.walk(root):
-            for fn in filenames:
-              if not (fn.endswith(".ts") or fn.endswith(".html") or fn.endswith(".json") or fn.endswith(".yml") or fn.endswith(".yaml")):
-                continue
-              path = os.path.join(dirpath, fn)
-              try:
-                with open(path, "r", encoding="utf-8") as f:
-                  s = f.read()
-              except Exception:
-                continue
-
-              original = s
-
-              # Replace any explicit older URLs that point to Florian/Juliana assets
-              s = re_florian.sub(florian_url, s)
-              s = re_juliana.sub(juliana_url, s)
-
-              # Fix accidental swapped assignment if present in a line-context
-              s = re_juliana_wrong.sub(lambda m: m.group(1) + juliana_url, s)
-              s = re_florian_wrong.sub(lambda m: m.group(1) + florian_url, s)
-
-              if s != original:
-                with open(path, "w", encoding="utf-8") as f:
-                  f.write(s)
-                touched += 1
-                changed_files.append(os.path.relpath(path, root))
-
-          print(f"Patched files: {touched}")
-          for p in changed_files[:50]:
+          print(f"Trainer icon patch complete. Files changed: {len(touched)}")
+          for p in sorted(list(touched))[:80]:
             print(" -", p)
-          if touched == 0:
-            # Not fatal. It might already be correct inside the zip.
-            print("No files needed patching (icons may already be correct).")
+          if len(touched) == 0:
+            print("WARNING: No files changed. This likely means the trainer URLs are not stored in text files (.ts/.json/.yml/.html/.css/.scss) inside the zip, or are generated at runtime.")
           PY
 
       - name: Install dependencies
