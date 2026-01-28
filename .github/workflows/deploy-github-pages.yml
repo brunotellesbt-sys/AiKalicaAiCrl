@@ -59,17 +59,15 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
-      # ✅ FIX (robusto no mobile): baixar as faces e servir localmente como assets
+      # ✅ FIX (robusto no mobile): baixar as faces e servir localmente como assets (Gen 9)
       - name: Fix Gen 9 trainer icons (download Bulbapedia faces into assets)
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
           set -e
 
-          # URLs estáveis do Bulbapedia/Bulbagarden (redirect para o arquivo real)
           FLORIAN_SRC="https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png"
           JULIANA_SRC="https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png"
 
-          # Onde salvar dentro do projeto Angular
           ASSET_DIR="src/assets/trainers/gen9"
           mkdir -p "$ASSET_DIR"
 
@@ -80,7 +78,6 @@ jobs:
           echo "Downloaded:"
           ls -la "$ASSET_DIR"
 
-          # Patch do arquivo real do seu projeto (mapping oficial)
           python3 - << 'PY'
           import re, pathlib, sys
 
@@ -91,15 +88,9 @@ jobs:
 
           s = p.read_text(encoding="utf-8")
 
-          # Caminhos relativos (sem / no começo) pra funcionar com base-href "./"
           florian_local = "assets/trainers/gen9/florian.png"
           juliana_local = "assets/trainers/gen9/juliana.png"
 
-          # Substitui especificamente o bloco da Gen 9
-          # Antes:
-          # 9: { male: '...', female: '...' }
-          # Depois:
-          # 9: { male: 'assets/...', female: 'assets/...' }
           pat = re.compile(r"(\b9\s*:\s*\{\s*)([\s\S]*?)(\s*\})", re.MULTILINE)
           m = pat.search(s)
           if not m:
@@ -107,19 +98,194 @@ jobs:
             sys.exit(1)
 
           head, body, tail = m.group(1), m.group(2), m.group(3)
-
-          # troca male/female dentro do corpo
           body2 = re.sub(r"(\bmale\b\s*:\s*)(['\"]).*?\2", rf"\1'{florian_local}'", body)
           body2 = re.sub(r"(\bfemale\b\s*:\s*)(['\"]).*?\2", rf"\1'{juliana_local}'", body2)
 
-          new_block = head + body2 + tail
-          s2 = s[:m.start()] + new_block + s[m.end():]
+          s2 = s[:m.start()] + head + body2 + tail + s[m.end():]
+          p.write_text(s2, encoding="utf-8")
+          print("OK: Patched generation 9 trainer icons to local assets.")
+          PY
 
-          if s2 == s:
-            print("WARNING: No changes made (already patched?)")
-          else:
-            p.write_text(s2, encoding="utf-8")
-            print("OK: Patched generation 9 trainer icons to local assets.")
+      # ✅ NEW: Baixar Shauna (Kalos rival) como asset local e apontar tudo para ela
+      - name: Fix Kalos rival (Shauna) icon (download Bulbapedia face into assets)
+        working-directory: ${{ env.PROJECT_ROOT }}
+        run: |
+          set -e
+
+          # Face icon estável (Bulbagarden Archives)
+          SHAUNA_SRC="https://archives.bulbagarden.net/wiki/Special:FilePath/XY_Shauna_Icon.png"
+
+          ASSET_DIR="src/assets/trainers/kalos"
+          mkdir -p "$ASSET_DIR"
+
+          echo "Downloading Shauna face icon..."
+          curl -L --fail --retry 5 --retry-delay 2 -o "$ASSET_DIR/shauna.png" "$SHAUNA_SRC"
+
+          echo "Downloaded:"
+          ls -la "$ASSET_DIR"
+
+          python3 - << 'PY'
+          import os, re
+          from pathlib import Path
+
+          root = Path.cwd()
+          shauna_local = "assets/trainers/kalos/shauna.png"
+
+          # 1) Patch translations: force kalos rival name to Shauna
+          # 2) Patch any source occurrences of kalos rival pointing to Calem/Serena assets to shauna_local
+          # 3) If a trainer sprite mapping includes "shauna", point it to shauna_local
+
+          # Patch i18n en.json (if exists)
+          en_files = list(root.glob("**/i18n/en.json")) + list(root.glob("**/i18n/en-US.json")) + list(root.glob("**/i18n/en_us.json"))
+          for p in en_files:
+            try:
+              import json
+              data = json.loads(p.read_text(encoding="utf-8"))
+            except Exception:
+              continue
+            changed = False
+            for k in ["rival.kalos.name","rival.kalos.female.name","rival.kalos.male.name"]:
+              if data.get(k) != "Shauna":
+                data[k] = "Shauna"
+                changed = True
+            if changed:
+              p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+              print("Patched i18n:", p)
+
+          # Patch trainer sprite data if it has shauna / kalos rival entries
+          tsp = root / "src/app/services/trainer-service/trainer-sprite-data.ts"
+          if tsp.exists():
+            s = tsp.read_text(encoding="utf-8")
+            orig = s
+
+            # If there is a key like shauna: '...'
+            s = re.sub(r"(\bshauna\b\s*:\s*)(['\"]).*?\2", rf"\1'{shauna_local}'", s, flags=re.IGNORECASE)
+
+            # If there are kalos rival entries
+            s = re.sub(r"(kalos[^\\n\\r]{0,120}rival[^\\n\\r]{0,120}:\s*)(['\"]).*?\2",
+                       rf"\1'{shauna_local}'", s, flags=re.IGNORECASE)
+
+            if s != orig:
+              tsp.write_text(s, encoding="utf-8")
+              print("Patched trainer-sprite-data.ts for Shauna/kalos-rival (if present).")
+
+          # Broad fallback: patch any hardcoded references that might be used as "kalos rival sprite"
+          exts = (".ts",".json",".yml",".yaml",".html",".css",".scss")
+          changed_files = 0
+
+          # Replace any Bulbagarden Shauna icon hotlink with local asset path
+          shauna_url_pat = re.compile(r"https?://archives\.bulbagarden\.net/wiki/Special:FilePath/XY_Shauna_Icon\.png", re.IGNORECASE)
+
+          # Replace wrong "Calem/Serena" in KALOS RIVAL sprite contexts only
+          # (do not touch other parts)
+          kalos_rival_line_pat = re.compile(r"(.{0,160}kalos.{0,160}rival.{0,160})(Calem\s*/\s*Serena|Calem|Serena)", re.IGNORECASE | re.DOTALL)
+
+          for p in root.rglob("*"):
+            if not p.is_file() or p.suffix.lower() not in exts:
+              continue
+            try:
+              s = p.read_text(encoding="utf-8")
+            except Exception:
+              continue
+            orig = s
+            s = shauna_url_pat.sub(shauna_local, s)
+            s = kalos_rival_line_pat.sub(lambda m: m.group(1) + "Shauna", s)
+            if s != orig:
+              p.write_text(s, encoding="utf-8")
+              changed_files += 1
+
+          print(f"Shauna patch changed {changed_files} text files.")
+          PY
+
+      # ✅ NEW: Eliminar TODAS as chaves cruas de Elite4/Champion automaticamente (sem precisar listar uma por uma)
+      - name: Fix ALL Elite4/Champion raw keys (auto-generate EN translations)
+        working-directory: ${{ env.PROJECT_ROOT }}
+        run: |
+          set -e
+          python3 - << 'PY'
+          import json, re
+          from pathlib import Path
+
+          root = Path.cwd()
+
+          # Find i18n EN file(s)
+          en_files = list(root.glob("**/i18n/en.json")) + list(root.glob("**/i18n/en-US.json")) + list(root.glob("**/i18n/en_us.json"))
+          if not en_files:
+            print("ERROR: Could not find any en.json under **/i18n/. Cannot patch translations.")
+            raise SystemExit(1)
+
+          # Collect every elite4.*.name and champion.*.name key referenced anywhere
+          key_pat = re.compile(r"\b((?:elite4|champion)\.[a-z0-9_-]+\.(?:name))\b", re.IGNORECASE)
+
+          exts = (".ts",".json",".yml",".yaml",".html",".css",".scss")
+          found = set()
+
+          for p in root.rglob("*"):
+            if not p.is_file() or p.suffix.lower() not in exts:
+              continue
+            try:
+              s = p.read_text(encoding="utf-8")
+            except Exception:
+              continue
+            for m in key_pat.finditer(s):
+              found.add(m.group(1))
+
+          # Humanize ID -> "Title Case"
+          # elite4.siebold.name -> "Siebold"
+          def humanize_key(k: str) -> str:
+            # k like elite4.siebold.name
+            parts = k.split(".")
+            if len(parts) < 3:
+              return k
+            ident = parts[1]
+            # replace separators with spaces
+            ident = ident.replace("-", " ").replace("_", " ")
+            # title case each word
+            return " ".join([w[:1].upper() + w[1:] if w else "" for w in ident.split(" ")]).strip()
+
+          # Add explicit exceptions (where title-casing isn't enough)
+          overrides = {
+            # Examples of punctuation/casing exceptions (safe even if not used)
+            "champion.blue.name": "Blue",
+            "champion.professor-kukui.name": "Professor Kukui",
+            "champion.kukui.name": "Professor Kukui",
+            "elite4.mr-mime.name": "Mr. Mime",
+          }
+
+          def patch_en(path: Path):
+            data = json.loads(path.read_text(encoding="utf-8"))
+            changed = False
+
+            for k in sorted(found):
+              k_norm = k  # keep as-is; project likely uses lowercase keys
+              if k_norm in overrides:
+                val = overrides[k_norm]
+              else:
+                val = humanize_key(k_norm)
+
+              # Only set if missing/empty OR currently equal to raw key (some projects accidentally set that)
+              if (k_norm not in data) or (not data.get(k_norm)) or (data.get(k_norm) == k_norm):
+                data[k_norm] = val
+                changed = True
+
+            # Also: if something is literally displaying "elite4.xxx.name" as a value in en.json, overwrite it
+            for k, v in list(data.items()):
+              if isinstance(v, str) and (v.startswith("elite4.") or v.startswith("champion.")) and v.endswith(".name"):
+                # convert value into humanized name too
+                data[k] = humanize_key(v)
+                changed = True
+
+            if changed:
+              path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+              print("Patched EN translations:", path)
+
+          for p in en_files:
+            patch_en(p)
+
+          print(f"Elite4/Champion keys found in project: {len(found)}")
+          # print a few for visibility
+          for k in sorted(list(found))[:40]:
+            print(" -", k)
           PY
 
       - name: Install dependencies
