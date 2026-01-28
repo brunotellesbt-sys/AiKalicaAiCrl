@@ -59,6 +59,99 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
+      # ✅ NEW: Patch Florian/Juliana icons from Bulbapedia/Bulbagarden Archives (face icons)
+      - name: Patch Gen 9 trainer icons (Florian/Juliana) from Bulbapedia
+        working-directory: ${{ env.PROJECT_ROOT }}
+        run: |
+          set -e
+
+          FLORIAN_URL="https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png"
+          JULIANA_URL="https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png"
+
+          echo "Using:"
+          echo "  Florian: $FLORIAN_URL"
+          echo "  Juliana: $JULIANA_URL"
+
+          python3 - << 'PY'
+          import os, re, sys
+
+          root = os.getcwd()
+
+          florian_url = os.environ.get("FLORIAN_URL")
+          juliana_url = os.environ.get("JULIANA_URL")
+
+          # Fallback if env not passed (should be passed)
+          if not florian_url:
+            florian_url = "https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png"
+          if not juliana_url:
+            juliana_url = "https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png"
+
+          # Any older URLs / names we want to replace if they appear anywhere
+          # (these have appeared in earlier zips)
+          florian_needles = [
+            "Violet_Florian.png",
+            "Scarlet_Violet_Florian_The_Indigo_Disk.png",
+            "Florian_Icon_SV_Scarlet-3.png",
+          ]
+          juliana_needles = [
+            "Scarlet_Juliana.png",
+            "Scarlet_Violet_Juliana_The_Indigo_Disk.png",
+            "Juliana_Icon_SV_Violet-1.png",
+          ]
+
+          # Regexes that catch any Bulbagarden/Bulbapedia links that point to those files
+          def build_regex(names):
+            escaped = [re.escape(n) for n in names]
+            # match URL that ends with one of the filenames
+            return re.compile(r"(https?://[^\s\"']+?(?:%s))" % ("|".join(escaped)), re.IGNORECASE)
+
+          re_florian = build_regex(florian_needles)
+          re_juliana = build_regex(juliana_needles)
+
+          # Also catch common “wrong assignment” patterns:
+          # - if code sets juliana sprite URL equal to something containing "florian"
+          # - or florian equal to something containing "juliana"
+          re_juliana_wrong = re.compile(r"(juliana[^\\n\\r]{0,200})(https?://[^\\s\"']+florian[^\\s\"']+)", re.IGNORECASE)
+          re_florian_wrong = re.compile(r"(florian[^\\n\\r]{0,200})(https?://[^\\s\"']+juliana[^\\s\"']+)", re.IGNORECASE)
+
+          touched = 0
+          changed_files = []
+
+          for dirpath, _, filenames in os.walk(root):
+            for fn in filenames:
+              if not (fn.endswith(".ts") or fn.endswith(".html") or fn.endswith(".json") or fn.endswith(".yml") or fn.endswith(".yaml")):
+                continue
+              path = os.path.join(dirpath, fn)
+              try:
+                with open(path, "r", encoding="utf-8") as f:
+                  s = f.read()
+              except Exception:
+                continue
+
+              original = s
+
+              # Replace any explicit older URLs that point to Florian/Juliana assets
+              s = re_florian.sub(florian_url, s)
+              s = re_juliana.sub(juliana_url, s)
+
+              # Fix accidental swapped assignment if present in a line-context
+              s = re_juliana_wrong.sub(lambda m: m.group(1) + juliana_url, s)
+              s = re_florian_wrong.sub(lambda m: m.group(1) + florian_url, s)
+
+              if s != original:
+                with open(path, "w", encoding="utf-8") as f:
+                  f.write(s)
+                touched += 1
+                changed_files.append(os.path.relpath(path, root))
+
+          print(f"Patched files: {touched}")
+          for p in changed_files[:50]:
+            print(" -", p)
+          if touched == 0:
+            # Not fatal. It might already be correct inside the zip.
+            print("No files needed patching (icons may already be correct).")
+          PY
+
       - name: Install dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
         run: npm install --legacy-peer-deps
