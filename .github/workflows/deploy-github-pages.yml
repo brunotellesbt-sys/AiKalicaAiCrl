@@ -59,6 +59,118 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
+      # ✅ FIX ONLY: Elite4 + Champion showing raw translation keys (elite4.xxx.name / champion.xxx.name)
+      - name: Fix Elite4 + Champion templates (translate names/quotes only)
+        working-directory: ${{ env.PROJECT_ROOT }}
+        run: |
+          set -e
+          python3 - << 'PY'
+          from pathlib import Path
+          import re
+
+          def patch(path: Path, pat: str, rep: str):
+            s = path.read_text(encoding="utf-8")
+            s2 = re.sub(pat, rep, s, flags=re.MULTILINE)
+            if s2 != s:
+              path.write_text(s2, encoding="utf-8")
+              print("Patched:", path)
+            else:
+              print("No changes needed:", path)
+
+          elite_html = Path("src/app/main-game/roulette-container/roulettes/elite-four-battle-roulette/elite-four-battle-roulette.component.html")
+          champ_html = Path("src/app/main-game/roulette-container/roulettes/champion-battle-roulette/champion-battle-roulette.component.html")
+
+          if not elite_html.exists():
+            raise SystemExit(f"ERROR: missing {elite_html}")
+          if not champ_html.exists():
+            raise SystemExit(f"ERROR: missing {champ_html}")
+
+          # Elite Four
+          patch(elite_html, r"\{\{\s*currentElite\.name\s*\}\}(?!\s*\|\s*translate)", r"{{ currentElite.name | translate }}")
+          patch(elite_html, r'alt="\{\{\s*currentElite\.name\s*\}\}"', r'alt="{{ currentElite.name | translate }}"')
+          patch(elite_html, r"\{\{\s*quote\s*\}\}(?!\s*\|\s*translate)", r"{{ quote | translate }}")
+
+          # Champion
+          patch(champ_html, r"\{\{\s*champion\.name\s*\}\}(?!\s*\|\s*translate)", r"{{ champion.name | translate }}")
+          patch(champ_html, r'alt="\{\{\s*champion\.name\s*\}\}"', r'alt="{{ champion.name | translate }}"')
+          patch(champ_html, r"\{\{\s*quote\s*\}\}(?!\s*\|\s*translate)", r"{{ quote | translate }}")
+          PY
+
+      - name: Ensure Elite4/Champion name keys exist in EN i18n (only)
+        working-directory: ${{ env.PROJECT_ROOT }}
+        run: |
+          set -e
+          python3 - << 'PY'
+          import json, re
+          from pathlib import Path
+
+          root = Path.cwd()
+
+          # Robust location for EN translations (your project uses public/i18n/en.json)
+          candidates = [root / "public/i18n/en.json"] + list(root.glob("**/i18n/en.json"))
+          en_path = next((p for p in candidates if p.exists()), None)
+          if not en_path:
+            raise SystemExit("ERROR: Could not find EN translation file (public/i18n/en.json or **/i18n/en.json)")
+
+          data = json.loads(en_path.read_text(encoding="utf-8"))
+
+          def set_dotted(obj, dotted, value):
+            parts = dotted.split(".")
+            cur = obj
+            for p in parts[:-1]:
+              if p not in cur or not isinstance(cur[p], dict):
+                cur[p] = {}
+              cur = cur[p]
+            if parts[-1] not in cur or not cur[parts[-1]]:
+              cur[parts[-1]] = value
+              return True
+            return False
+
+          def humanize(ident: str) -> str:
+            ident = ident.replace("-", " ").replace("_", " ")
+            return " ".join(w[:1].upper() + w[1:] for w in ident.split() if w).strip()
+
+          # Find every elite4.*.name and champion.*.name in TS source
+          key_pat = re.compile(r"['\"]((?:elite4|champion)\.[a-z0-9_-]+\.name)['\"]", re.IGNORECASE)
+          found = set()
+
+          for p in root.rglob("*.ts"):
+            s = p.read_text(encoding="utf-8", errors="ignore")
+            for m in key_pat.finditer(s):
+              found.add(m.group(1))
+
+          changed = False
+          for k in sorted(found):
+            ident = k.split(".")[1]
+            changed |= set_dotted(data, k, humanize(ident))
+
+          if changed:
+            en_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            print(f"OK: updated {en_path} with missing elite4/champion keys.")
+          else:
+            print("OK: no missing elite4/champion keys.")
+
+          # Print proof examples (2 elite4 + 2 champion)
+          def get_dotted(obj, dotted):
+            parts = dotted.split(".")
+            cur = obj
+            for p in parts:
+              if not isinstance(cur, dict) or p not in cur:
+                return None
+              cur = cur[p]
+            return cur
+
+          examples = [
+            "elite4.siebold.name",
+            "elite4.malva.name",
+            "champion.cynthia.name",
+            "champion.diantha.name"
+          ]
+          print("Proof samples:")
+          for ex in examples:
+            print(f" - {ex} -> {get_dotted(data, ex)}")
+          PY
+
       - name: Install dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
         run: npm install --legacy-peer-deps
