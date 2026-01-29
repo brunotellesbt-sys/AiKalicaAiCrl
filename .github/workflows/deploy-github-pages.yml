@@ -32,12 +32,12 @@ jobs:
         with:
           node-version: 20
 
-      - name: Extract ZIP (skip node_modules to speed up)
+      - name: Extract ZIP (skip node_modules)
         shell: bash
         run: |
           set -e
           if [ ! -f "$ZIP_FILE" ]; then
-            echo "ERROR: $ZIP_FILE not found in repository root."
+            echo "ERROR: $ZIP_FILE not found in repo root."
             exit 1
           fi
 
@@ -55,7 +55,7 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
-      - name: Install dependencies (works even if lock is out of sync)
+      - name: Install dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
         run: npm install --legacy-peer-deps --no-audit --no-fund
 
@@ -72,7 +72,6 @@ jobs:
           IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -type f -name index.html -print -quit)"
           if [ -z "$IDX" ]; then
             echo "ERROR: index.html not found in dist."
-            find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 4 -type d -print || true
             exit 1
           fi
           PAGES_DIR="$(dirname "$IDX")"
