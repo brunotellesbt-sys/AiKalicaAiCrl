@@ -1,6 +1,6 @@
-name: Deploy to GitHub Pages (from zip)
+name: Deploy Pokémon Roulette
 
-"on":
+on:
   push:
     branches:
       - main
@@ -26,265 +26,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20 # Recomendado para Angular 19
 
-      - name: Extract source ZIP (required)
+      - name: Extract source ZIP
         run: |
           set -e
-          if [ ! -f "$ZIP_FILE" ]; then
-            echo "ERROR: $ZIP_FILE not found in repository root."
-            echo "Put the zip at repo root and name it exactly: $ZIP_FILE"
-            exit 1
-          fi
-
-          rm -rf app
-          mkdir -p app
           unzip -q "$ZIP_FILE" -d app
-
+          # Localiza a pasta que contém o package.json
           PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
-          if [ -z "$PROJECT_ROOT" ]; then
-            echo "ERROR: package.json not found inside zip."
-            exit 1
-          fi
-
           echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
-          echo "Project root: $PROJECT_ROOT"
-          ls -la "$PROJECT_ROOT"
 
-      # ✅ (mantido do seu YML) Gen 9 trainer faces via Bulbapedia (local assets)
-      - name: Fix Gen 9 trainer icons (download Bulbapedia faces into assets)
+      - name: Fix Strict Template Errors (NG5)
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
-          set -e
-
-          FLORIAN_SRC="https://archives.bulbagarden.net/wiki/Special:FilePath/Florian_Icon_SV_Scarlet-3.png"
-          JULIANA_SRC="https://archives.bulbagarden.net/wiki/Special:FilePath/Juliana_Icon_SV_Violet-1.png"
-
-          ASSET_DIR="src/assets/trainers/gen9"
-          mkdir -p "$ASSET_DIR"
-
-          echo "Downloading Gen 9 face icons..."
-          curl -L --fail --retry 5 --retry-delay 2 -o "$ASSET_DIR/florian.png" "$FLORIAN_SRC"
-          curl -L --fail --retry 5 --retry-delay 2 -o "$ASSET_DIR/juliana.png" "$JULIANA_SRC"
-
-          echo "Downloaded:"
-          ls -la "$ASSET_DIR"
-
-          python3 - << 'PY'
-          import re, pathlib, sys
-
-          p = pathlib.Path("src/app/services/trainer-service/trainer-sprite-data.ts")
-          if not p.exists():
-            print("ERROR: trainer-sprite-data.ts not found at expected path:", p)
-            sys.exit(1)
-
-          s = p.read_text(encoding="utf-8")
-
-          florian_local = "assets/trainers/gen9/florian.png"
-          juliana_local = "assets/trainers/gen9/juliana.png"
-
-          pat = re.compile(r"(\b9\s*:\s*\{\s*)([\s\S]*?)(\s*\})", re.MULTILINE)
-          m = pat.search(s)
-          if not m:
-            print("ERROR: Could not find generation 9 block in trainer-sprite-data.ts")
-            sys.exit(1)
-
-          head, body, tail = m.group(1), m.group(2), m.group(3)
-
-          body2 = re.sub(r"(\bmale\b\s*:\s*)(['\"]).*?\2", rf"\1'{florian_local}'", body)
-          body2 = re.sub(r"(\bfemale\b\s*:\s*)(['\"]).*?\2", rf"\1'{juliana_local}'", body2)
-
-          new_block = head + body2 + tail
-          s2 = s[:m.start()] + new_block + s[m.end():]
-
-          if s2 == s:
-            print("INFO: Gen 9 trainer icons already patched.")
-          else:
-            p.write_text(s2, encoding="utf-8")
-            print("OK: Patched generation 9 trainer icons to local assets.")
-          PY
-
-      # ✅ NOVO: corrige texto cru (elite4/champion/items/trade/gameover + missing en.json keys)
-      - name: Fix raw translation keys showing in UI
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: |
-          set -e
-          python3 - << 'PY'
-          import re, json, pathlib
-
-          def patch_file(path, reps):
-            p = pathlib.Path(path)
-            if not p.exists():
-              print("WARN: file not found:", path)
-              return
-            s = p.read_text(encoding="utf-8")
-            orig = s
-            for pat, rep in reps:
-              s = re.sub(pat, rep, s, flags=re.MULTILINE)
-            if s != orig:
-              p.write_text(s, encoding="utf-8")
-              print("OK patched:", path)
-            else:
-              print("INFO no change:", path)
-
-          # Elite Four modal/templates
-          patch_file(
-            "src/app/main-game/roulette-container/roulettes/elite-four-battle-roulette/elite-four-battle-roulette.component.html",
-            [
-              (r"\{\{\s*\(retries\s*>\s*0\)\s*\?\s*currentItem\.text\+\" x\"\+retries\s*:\s*\"\"\s*\}\}",
-               r"{{ (retries > 0) ? (currentItem.text | translate) + ' x' + retries : '' }}"),
-              (r"\{\{\s*currentElite\.name\s*\}\}", r"{{ currentElite.name | translate }}"),
-              (r"\{\{\s*quote\s*\}\}", r"{{ quote | translate }}"),
-              (r"\{\{\s*currentItem\.text\s*\}\}", r"{{ currentItem.text | translate }}"),
-              (r"\{\{\s*currentItem\.description\s*\}\}", r"{{ currentItem.description | translate }}"),
-            ]
-          )
-
-          # Champion modal/templates
-          patch_file(
-            "src/app/main-game/roulette-container/roulettes/champion-battle-roulette/champion-battle-roulette.component.html",
-            [
-              (r"\{\{\s*\(retries\s*>\s*0\)\s*\?\s*currentItem\.text\+\" x\"\+retries\s*:\s*\"\"\s*\}\}",
-               r"{{ (retries > 0) ? (currentItem.text | translate) + ' x' + retries : '' }}"),
-              (r"\{\{\s*champion\.name\s*\}\}", r"{{ champion.name | translate }}"),
-              (r"\{\{\s*quote\s*\}\}", r"{{ quote | translate }}"),
-              (r"\{\{\s*currentItem\.text\s*\}\}", r"{{ currentItem.text | translate }}"),
-              (r"\{\{\s*currentItem\.description\s*\}\}", r"{{ currentItem.description | translate }}"),
-            ]
-          )
-
-          # Find item modal
-          patch_file(
-            "src/app/main-game/roulette-container/roulettes/find-item-roulette/find-item-roulette.component.html",
-            [
-              (r"\{\{\s*selectedItem\?\.(text)\s*\}\}", r"{{ selectedItem?.text | translate }}"),
-              (r"\{\{\s*selectedItem\?\.(description)\s*\}\}", r"{{ selectedItem?.description | translate }}"),
-            ]
-          )
-
-          # Trade modal missing translate on pkmnIn.text
-          patch_file(
-            "src/app/main-game/roulette-container/roulette-container.component.html",
-            [
-              (r"\{\{\s*pkmnIn\.text\s*\}\}", r"{{ pkmnIn.text | translate }}"),
-            ]
-          )
-
-          # Game over leader name
-          patch_file(
-            "src/app/main-game/game-over/game-over.component.html",
-            [
-              (r"\{\{\s*currentLeader\?\.(name)\s*\}\}", r"{{ currentLeader?.name | translate }}"),
-            ]
-          )
-
-          # Team Rocket "Saved pokemon.xxx" title/message fix (translate pokemon name before concatenation)
-          ts_path = pathlib.Path("src/app/main-game/roulette-container/roulette-container.component.ts")
-          if ts_path.exists():
-            ts = ts_path.read_text(encoding="utf-8")
-
-            ts = re.sub(
-              r"import\s*\{\s*TranslatePipe\s*\}\s*from\s*'@ngx-translate/core';",
-              "import { TranslatePipe, TranslateService } from '@ngx-translate/core';",
-              ts
-            )
-
-            ts = re.sub(
-              r"constructor\(\s*private generationService: GenerationService,\s*\n\s*private darkModeService: DarkModeService\s*\)\s*{",
-              "constructor(private generationService: GenerationService,\n              private darkModeService: DarkModeService,\n              private translate: TranslateService) {",
-              ts
-            )
-
-            ts = re.sub(
-              r"this\.infoModalTitle\s*=\s*'Saved '\s*\+\s*this\.stolenPokemon\.text\s*\+\s*'!';\s*\n\s*this\.infoModalMessage\s*=\s*'You recovered your '\s*\+\s*this\.stolenPokemon\.text\s*\+\s*' from Team Rocket\.';",
-              "const recoveredName = this.translate.instant(this.stolenPokemon.text);\n      this.infoModalTitle = 'Saved ' + recoveredName + '!';\n      this.infoModalMessage = 'You recovered your ' + recoveredName + ' from Team Rocket.';",
-              ts
-            )
-
-            ts_path.write_text(ts, encoding="utf-8")
-            print("OK patched:", ts_path)
-
-          # Add missing en.json keys so translate won't show raw key
-          en_path = pathlib.Path("public/i18n/en.json")
-          if en_path.exists():
-            data = json.loads(en_path.read_text(encoding="utf-8"))
-
-            elite4 = data.setdefault("elite4", {})
-            # loreilei typo used by code -> add mapping
-            if "loreilei" not in elite4:
-              elite4["loreilei"] = {}
-            lorelei = elite4.get("lorelei", {"name": "Lorelei", "quote1": "", "quote2": ""})
-            for k in ["name", "quote1", "quote2"]:
-              elite4["loreilei"].setdefault(k, lorelei.get(k, ""))
-
-            # shauntal typo in json (quotes2) -> ensure quote2 exists
-            if "shauntal" in elite4:
-              if "quote2" not in elite4["shauntal"] and "quotes2" in elite4["shauntal"]:
-                elite4["shauntal"]["quote2"] = elite4["shauntal"]["quotes2"]
-
-            gym = data.setdefault("gymLeaders", {})
-            gym.setdefault("crasherWake", {}).setdefault("name", "Crasher Wake")
-
-            poke = data.setdefault("pokemon", {})
-            poke.setdefault("tapu-koko", "Tapu Koko")
-            poke.setdefault("tapu-lele", "Tapu Lele")
-            poke.setdefault("tapu-bulu", "Tapu Bulu")
-            poke.setdefault("tapu-fini", "Tapu Fini")
-
-            en_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            print("OK patched:", en_path)
-
-          PY
+          # Garante que o pipe translate receba uma string, mesmo que o líder seja undefined
+          sed -i "s/currentLeader?.name | translate/(currentLeader?.name || '') | translate/g" src/app/main-game/game-over/game-over.component.html
+          sed -i "s/currentElite.name | translate/(currentElite.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/elite-four-battle-roulette/elite-four-battle-roulette.component.html
+          sed -i "s/champion.name | translate/(champion.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/champion-battle-roulette/champion-battle-roulette.component.html
 
       - name: Install dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
         run: npm install --legacy-peer-deps
 
-      - name: Install @angular/localize (match Angular version)
+      - name: Build Application
         working-directory: ${{ env.PROJECT_ROOT }}
-        run: |
-          set -e
-          CORE_VER=$(node -p "require('./package.json').dependencies?.['@angular/core'] || require('./package.json').devDependencies?.['@angular/core'] || ''")
-          if [ -z "$CORE_VER" ]; then
-            echo "ERROR: Could not detect @angular/core version from package.json"
-            exit 1
-          fi
-          CORE_VER="${CORE_VER#^}"
-          CORE_VER="${CORE_VER#~}"
-          npm install @angular/localize@$CORE_VER --legacy-peer-deps
-
-      - name: Build (relative paths for GitHub Pages)
-        working-directory: ${{ env.PROJECT_ROOT }}
-        env:
-          NODE_OPTIONS: --max_old_space_size=4096
-        run: npm run build -- --configuration production --base-href "./" --deploy-url "./"
-
-      - name: Locate index.html for Pages
-        run: |
-          set -e
-          IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 12 -type f -name index.html -print -quit)"
-          if [ -z "$IDX" ]; then
-            echo "ERROR: index.html not found in dist."
-            exit 1
-          fi
-          PAGES_DIR="$(dirname "$IDX")"
-          echo "PAGES_PATH=$PAGES_DIR" >> $GITHUB_ENV
-          touch "$PAGES_DIR/.nojekyll"
-          echo "Pages path: $PAGES_DIR"
-          ls -la "$PAGES_DIR"
+        run: npm run build -- --configuration production --base-href "./"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.PAGES_PATH }}
+          # O caminho de saída padrão do Angular 19 é dist/[nome-do-projeto]/browser
+          path: ${{ env.PROJECT_ROOT }}/dist/pokemon-roulette/browser
 
   deploy:
     needs: build
@@ -292,7 +67,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
