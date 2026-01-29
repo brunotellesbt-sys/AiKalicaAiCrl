@@ -1,9 +1,8 @@
-name: Deploy to GitHub Pages (from zip)
+name: Deploy GitHub Pages (from zip)
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -21,37 +20,31 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      - name: Extract source ZIP (required)
+      - name: Extract ZIP (skip node_modules to speed up)
+        shell: bash
         run: |
           set -e
           if [ ! -f "$ZIP_FILE" ]; then
-            echo "ERROR: $ZIP_FILE not found in repository root."
-            echo "Put the zip at repo root and name it exactly: $ZIP_FILE"
+            echo "ERROR: $ZIP_FILE not found in repo root."
             exit 1
           fi
 
           rm -rf app
           mkdir -p app
-          unzip -q "$ZIP_FILE" -d app
 
-          PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
+          # NÃO extrai node_modules (otimiza muito), mas o ZIP continua igual no repo
+          unzip -q "$ZIP_FILE" -d app -x "node_modules/*" "*/node_modules/*"
+
+          PROJECT_ROOT="$(find app -name package.json -not -path '*/node_modules/*' -print -quit | xargs dirname)"
           if [ -z "$PROJECT_ROOT" ]; then
-            echo "ERROR: package.json not found inside zip."
+            echo "ERROR: package.json not found inside extracted zip."
             exit 1
           fi
 
@@ -59,35 +52,36 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
-      - name: Install dependencies
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: npm install --legacy-peer-deps
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-      - name: Install @angular/localize (match Angular version)
+      - name: Install deps (prefer npm ci)
         working-directory: ${{ env.PROJECT_ROOT }}
+        shell: bash
         run: |
           set -e
-          CORE_VER=$(node -p "require('./package.json').dependencies?.['@angular/core'] || require('./package.json').devDependencies?.['@angular/core'] || ''")
-          if [ -z "$CORE_VER" ]; then
-            echo "ERROR: Could not detect @angular/core version from package.json"
-            exit 1
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
           fi
-          CORE_VER="${CORE_VER#^}"
-          CORE_VER="${CORE_VER#~}"
-          npm install @angular/localize@$CORE_VER --legacy-peer-deps
 
-      - name: Build (relative paths for GitHub Pages)
+      - name: Build (relative paths for Pages)
         working-directory: ${{ env.PROJECT_ROOT }}
         env:
           NODE_OPTIONS: --max_old_space_size=4096
         run: npm run build -- --configuration production --base-href "./" --deploy-url "./"
 
-      - name: Locate index.html for Pages
+      - name: Locate dist for Pages
+        shell: bash
         run: |
           set -e
-          IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 12 -type f -name index.html -print -quit)"
+          IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -type f -name index.html -print -quit)"
           if [ -z "$IDX" ]; then
             echo "ERROR: index.html not found in dist."
+            find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 4 -type d -print || true
             exit 1
           fi
           PAGES_DIR="$(dirname "$IDX")"
@@ -96,7 +90,7 @@ jobs:
           echo "Pages path: $PAGES_DIR"
           ls -la "$PAGES_DIR"
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.PAGES_PATH }}
@@ -107,8 +101,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
