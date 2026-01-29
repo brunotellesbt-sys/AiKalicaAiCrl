@@ -1,9 +1,8 @@
-name: Deploy Pokémon Roulette
+name: Build & Deploy (GitHub Pages)
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -12,63 +11,44 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: "pages"
   cancel-in-progress: true
-
-env:
-  ZIP_FILE: pokemon-roulette-source.zip
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
 
-      - name: Extract source ZIP
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular (base-href para Pages)
+        run: npm run build -- --configuration production --base-href "/${{ github.event.repository.name }}/"
+
+      - name: Detect Angular output dir
         run: |
-          set -e
-          unzip -q "$ZIP_FILE" -d app
-          PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
-          echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
-
-      - name: Fix Strict Template Errors (NG5)
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: |
-          # Corrige o erro de tipagem estrita nos templates
-          sed -i "s/currentLeader?.name | translate/(currentLeader?.name || '') | translate/g" src/app/main-game/game-over/game-over.component.html
-          sed -i "s/currentElite.name | translate/(currentElite.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/elite-four-battle-roulette/elite-four-battle-roulette.component.html
-          sed -i "s/champion.name | translate/(champion.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/champion-battle-roulette/champion-battle-roulette.component.html
-
-      - name: Install Dependencies
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: npm install --legacy-peer-deps
-
-      - name: Install Missing @angular/localize
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: |
-          # Detecta a versão do Angular Core e instala a versão compatível do Localize
-          ANGULAR_VER=$(node -p "require('./package.json').dependencies['@angular/core']")
-          npm install "@angular/localize@$ANGULAR_VER" --legacy-peer-deps
-
-      - name: Build Application
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: npm run build -- --configuration production --base-href "./"
+          if [ -d "dist/pokemon-roulette/browser" ]; then
+            echo "OUTPUT_DIR=dist/pokemon-roulette/browser" >> $GITHUB_ENV
+          else
+            echo "OUTPUT_DIR=dist/pokemon-roulette" >> $GITHUB_ENV
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ env.PROJECT_ROOT }}/dist/pokemon-roulette/browser
+          path: ${{ env.OUTPUT_DIR }}
 
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
