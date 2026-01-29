@@ -29,27 +29,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Recomendado para Angular 19
+          node-version: 20
 
       - name: Extract source ZIP
         run: |
           set -e
           unzip -q "$ZIP_FILE" -d app
-          # Localiza a pasta que contém o package.json
           PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
           echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
 
       - name: Fix Strict Template Errors (NG5)
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
-          # Garante que o pipe translate receba uma string, mesmo que o líder seja undefined
+          # Corrige o erro de tipagem estrita nos templates
           sed -i "s/currentLeader?.name | translate/(currentLeader?.name || '') | translate/g" src/app/main-game/game-over/game-over.component.html
           sed -i "s/currentElite.name | translate/(currentElite.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/elite-four-battle-roulette/elite-four-battle-roulette.component.html
           sed -i "s/champion.name | translate/(champion.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/champion-battle-roulette/champion-battle-roulette.component.html
 
-      - name: Install dependencies
+      - name: Install Dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
         run: npm install --legacy-peer-deps
+
+      - name: Install Missing @angular/localize
+        working-directory: ${{ env.PROJECT_ROOT }}
+        run: |
+          # Detecta a versão do Angular Core e instala a versão compatível do Localize
+          ANGULAR_VER=$(node -p "require('./package.json').dependencies['@angular/core']")
+          npm install "@angular/localize@$ANGULAR_VER" --legacy-peer-deps
 
       - name: Build Application
         working-directory: ${{ env.PROJECT_ROOT }}
@@ -58,7 +64,6 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # O caminho de saída padrão do Angular 19 é dist/[nome-do-projeto]/browser
           path: ${{ env.PROJECT_ROOT }}/dist/pokemon-roulette/browser
 
   deploy:
