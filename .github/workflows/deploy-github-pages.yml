@@ -1,4 +1,4 @@
-name: Deploy Pokémon Roulette (Layout Fix)
+name: Deploy Pokémon Roulette
 
 on:
   push:
@@ -38,24 +38,10 @@ jobs:
           PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
           echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
 
-      - name: Fix Layout and Responsive Issues
-        working-directory: ${{ env.PROJECT_ROOT }}
-        run: |
-          # 1. Aumentar tamanho da roleta no mobile (de 50% para 85% do espaço)
-          sed -i "s/* 0.50;/* 0.85;/g" src/app/wheel/wheel.component.ts
-          
-          # 2. Tornar a Pokédex mais responsiva e ajustar o grid
-          # Remove a altura fixa que quebra no mobile e ajusta o grid
-          sed -i "s/max-height: 70vh;//g" src/app/main-game/pokedex-panel/pokedex-panel.component.css
-          sed -i "s/minmax(290px, 1fr)/minmax(150px, 1fr)/g" src/app/main-game/pokedex-panel/pokedex-panel.component.css
-          
-          # 3. Ajustar colunas do Main Game para dar mais espaço à Pokédex quando aberta
-          sed -i "s/col-sm-3/col-sm-4/g" src/app/main-game/main-game.component.html
-          sed -i "s/col-sm-5/col-sm-4/g" src/app/main-game/main-game.component.html
-
       - name: Fix Strict Template Errors (NG5)
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
+          # Corrige o erro de tipagem estrita nos templates
           sed -i "s/currentLeader?.name | translate/(currentLeader?.name || '') | translate/g" src/app/main-game/game-over/game-over.component.html
           sed -i "s/currentElite.name | translate/(currentElite.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/elite-four-battle-roulette/elite-four-battle-roulette.component.html
           sed -i "s/champion.name | translate/(champion.name || '') | translate/g" src/app/main-game/roulette-container/roulettes/champion-battle-roulette/champion-battle-roulette.component.html
@@ -67,6 +53,7 @@ jobs:
       - name: Install Missing @angular/localize
         working-directory: ${{ env.PROJECT_ROOT }}
         run: |
+          # Detecta a versão do Angular Core e instala a versão compatível do Localize
           ANGULAR_VER=$(node -p "require('./package.json').dependencies['@angular/core']")
           npm install "@angular/localize@$ANGULAR_VER" --legacy-peer-deps
 
