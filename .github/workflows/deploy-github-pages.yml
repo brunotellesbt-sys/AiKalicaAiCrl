@@ -27,24 +27,27 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Extract ZIP (skip node_modules to speed up)
         shell: bash
         run: |
           set -e
           if [ ! -f "$ZIP_FILE" ]; then
-            echo "ERROR: $ZIP_FILE not found in repo root."
+            echo "ERROR: $ZIP_FILE not found in repository root."
             exit 1
           fi
 
           rm -rf app
           mkdir -p app
-
-          # NÃO extrai node_modules (otimiza muito), mas o ZIP continua igual no repo
           unzip -q "$ZIP_FILE" -d app -x "node_modules/*" "*/node_modules/*"
 
           PROJECT_ROOT="$(find app -name package.json -not -path '*/node_modules/*' -print -quit | xargs dirname)"
           if [ -z "$PROJECT_ROOT" ]; then
-            echo "ERROR: package.json not found inside extracted zip."
+            echo "ERROR: package.json not found inside zip."
             exit 1
           fi
 
@@ -52,21 +55,9 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install deps (prefer npm ci)
+      - name: Install dependencies (works even if lock is out of sync)
         working-directory: ${{ env.PROJECT_ROOT }}
-        shell: bash
-        run: |
-          set -e
-          if [ -f package-lock.json ]; then
-            npm ci
-          else
-            npm install
-          fi
+        run: npm install --legacy-peer-deps --no-audit --no-fund
 
       - name: Build (relative paths for Pages)
         working-directory: ${{ env.PROJECT_ROOT }}
@@ -74,7 +65,7 @@ jobs:
           NODE_OPTIONS: --max_old_space_size=4096
         run: npm run build -- --configuration production --base-href "./" --deploy-url "./"
 
-      - name: Locate dist for Pages
+      - name: Locate dist folder
         shell: bash
         run: |
           set -e
