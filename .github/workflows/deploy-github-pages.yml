@@ -25,10 +25,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Angular (base-href para Pages)
         run: npm run build -- --configuration production --base-href "/${{ github.event.repository.name }}/"
@@ -37,8 +36,12 @@ jobs:
         run: |
           if [ -d "dist/pokemon-roulette/browser" ]; then
             echo "OUTPUT_DIR=dist/pokemon-roulette/browser" >> $GITHUB_ENV
-          else
+          elif [ -d "dist/pokemon-roulette" ]; then
             echo "OUTPUT_DIR=dist/pokemon-roulette" >> $GITHUB_ENV
+          else
+            echo "dist folder not found. Listing dist:"
+            ls -la dist || true
+            exit 1
           fi
 
       - name: Upload Pages artifact
