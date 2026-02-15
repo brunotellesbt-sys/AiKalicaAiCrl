@@ -30,23 +30,12 @@ jobs:
         with:
           enablement: true
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-          cache-dependency-path: |
-            app/**/package-lock.json
-            app/**/npm-shrinkwrap.json
-
       - name: Extract source ZIP (required)
         shell: bash
         run: |
           set -euo pipefail
-
           if [ ! -f "$ZIP_FILE" ]; then
             echo "ERROR: $ZIP_FILE not found in repository root."
-            echo "Put the zip at repo root and name it exactly: $ZIP_FILE"
             exit 1
           fi
 
@@ -64,15 +53,21 @@ jobs:
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
+      - name: Setup Node.js (with npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: |
+            app/**/package-lock.json
+            app/**/npm-shrinkwrap.json
+
       - name: Install dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
         shell: bash
         run: |
           set -euo pipefail
-
-          # (Opcional) Se o zip vier com node_modules, isso evita conflitos/arquivos antigos.
           rm -rf node_modules
-
           if [ -f package-lock.json ]; then
             npm ci --legacy-peer-deps
           else
@@ -84,23 +79,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           CORE_VER=$(node -p "require('./package.json').dependencies?.['@angular/core'] || require('./package.json').devDependencies?.['@angular/core'] || ''")
           if [ -z "$CORE_VER" ]; then
             echo "ERROR: Could not detect @angular/core version from package.json"
             exit 1
           fi
-
           CORE_VER="${CORE_VER#^}"
           CORE_VER="${CORE_VER#~}"
-
           npm install "@angular/localize@$CORE_VER" --legacy-peer-deps
 
       - name: Build (relative paths for GitHub Pages)
         working-directory: ${{ env.PROJECT_ROOT }}
-        shell: bash
         env:
           NODE_OPTIONS: --max_old_space_size=4096
+        shell: bash
         run: |
           set -euo pipefail
           npm run build -- --configuration production --base-href "./" --deploy-url "./"
@@ -109,21 +101,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 12 -type f -name index.html -print -quit || true)"
           if [ -z "$IDX" ]; then
             echo "ERROR: index.html not found in dist."
-            echo "Dist contents:"
-            find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 4 -type d -print || true
             exit 1
           fi
-
           PAGES_DIR="$(dirname "$IDX")"
           echo "PAGES_PATH=$PAGES_DIR" >> "$GITHUB_ENV"
-
-          # Evita Jekyll interferindo com paths
           touch "$PAGES_DIR/.nojekyll"
-
           echo "Pages path: $PAGES_DIR"
           ls -la "$PAGES_DIR"
 
