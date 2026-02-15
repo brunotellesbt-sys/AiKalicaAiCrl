@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages (from zip)
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -31,11 +32,12 @@ jobs:
           enablement: true
 
       - name: Extract source ZIP (required)
-        shell: bash
         run: |
           set -euo pipefail
+
           if [ ! -f "$ZIP_FILE" ]; then
             echo "ERROR: $ZIP_FILE not found in repository root."
+            echo "Put the zip at repo root and name it exactly: $ZIP_FILE"
             exit 1
           fi
 
@@ -43,13 +45,13 @@ jobs:
           mkdir -p app
           unzip -q "$ZIP_FILE" -d app
 
-          PROJECT_ROOT="$(find app -name package.json -print -quit | xargs dirname || true)"
+          PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
           if [ -z "$PROJECT_ROOT" ]; then
             echo "ERROR: package.json not found inside zip."
             exit 1
           fi
 
-          echo "PROJECT_ROOT=$PROJECT_ROOT" >> "$GITHUB_ENV"
+          echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
@@ -58,25 +60,14 @@ jobs:
         with:
           node-version: 18
           cache: npm
-          cache-dependency-path: |
-            app/**/package-lock.json
-            app/**/npm-shrinkwrap.json
+          cache-dependency-path: ${{ env.PROJECT_ROOT }}/package-lock.json
 
       - name: Install dependencies
         working-directory: ${{ env.PROJECT_ROOT }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf node_modules
-          if [ -f package-lock.json ]; then
-            npm ci --legacy-peer-deps
-          else
-            npm install --legacy-peer-deps
-          fi
+        run: npm ci --legacy-peer-deps
 
       - name: Install @angular/localize (match Angular version)
         working-directory: ${{ env.PROJECT_ROOT }}
-        shell: bash
         run: |
           set -euo pipefail
           CORE_VER=$(node -p "require('./package.json').dependencies?.['@angular/core'] || require('./package.json').devDependencies?.['@angular/core'] || ''")
@@ -86,28 +77,24 @@ jobs:
           fi
           CORE_VER="${CORE_VER#^}"
           CORE_VER="${CORE_VER#~}"
-          npm install "@angular/localize@$CORE_VER" --legacy-peer-deps
+          npm install @angular/localize@$CORE_VER --legacy-peer-deps
 
       - name: Build (relative paths for GitHub Pages)
         working-directory: ${{ env.PROJECT_ROOT }}
         env:
           NODE_OPTIONS: --max_old_space_size=4096
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run build -- --configuration production --base-href "./" --deploy-url "./"
+        run: npm run build -- --configuration production --base-href "./" --deploy-url "./"
 
       - name: Locate index.html for Pages
-        shell: bash
         run: |
           set -euo pipefail
-          IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 12 -type f -name index.html -print -quit || true)"
+          IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 12 -type f -name index.html -print -quit)"
           if [ -z "$IDX" ]; then
             echo "ERROR: index.html not found in dist."
             exit 1
           fi
           PAGES_DIR="$(dirname "$IDX")"
-          echo "PAGES_PATH=$PAGES_DIR" >> "$GITHUB_ENV"
+          echo "PAGES_PATH=$PAGES_DIR" >> $GITHUB_ENV
           touch "$PAGES_DIR/.nojekyll"
           echo "Pages path: $PAGES_DIR"
           ls -la "$PAGES_DIR"
