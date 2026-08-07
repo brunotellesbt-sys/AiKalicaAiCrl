@@ -1,0 +1,22 @@
+.offer-panel {
+    margin-top: 0.75rem;
+}
+
+.blurb {
+    margin-bottom: 0.75rem;
+}
+
+.rules {
+    margin: 0 0 0.75rem 0;
+    padding-left: 1.15rem;
+}
+
+.rules li {
+    margin-bottom: 0.25rem;
+}
+
+.warning {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin: 0;
+}

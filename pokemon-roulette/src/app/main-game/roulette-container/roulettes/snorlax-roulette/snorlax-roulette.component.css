@@ -1,0 +1,30 @@
+.title {
+  text-align: center;
+  font-size: clamp(1.35rem, 5vw, 2.1rem);
+  line-height: 1.1;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.roadblock-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 6px 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.roadblock-sprite img {
+  width: 110px;
+  height: 110px;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 576px) {
+  .roadblock-sprite img {
+    width: 132px;
+    height: 132px;
+  }
+}

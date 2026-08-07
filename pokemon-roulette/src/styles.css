@@ -1,0 +1,71 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  font-family: "Pokemon GB", Monospace, sans-serif;
+}
+
+body.dark-mode {
+  background-color: #2d3436;
+  color: #dfe6e9;
+}
+
+body.light-mode {
+  background-color: #dfe6e9;
+  color: #2d3436;
+}
+
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+/* Prevent long translated strings from overflowing roulette headers on mobile */
+.title,
+.subtitle {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/*
+  Mobile behaviour
+  ================
+*/
+
+/*
+  Chrome and Safari on phones "boost" text they judge to be body copy, which is why some
+  labels suddenly rendered much larger than their neighbours mid-game. Opting out keeps
+  every size exactly as authored.
+*/
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/*
+  The PC button is fixed to the bottom-right on phones with a z-index above Bootstrap's
+  modal layer, so it sat on top of dialog footers — the tournament's "Let's Go!" button was
+  underneath it. A dialog is modal by definition: while one is open the PC is unreachable
+  anyway, so hide the button instead of letting it cover the controls.
+*/
+body.modal-open .pc-fab {
+  display: none !important;
+}
+
+@media (max-width: 576px) {
+  /* Footer actions go full width and stack, so nothing shares a corner with anything. */
+  .modal-footer {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .modal-footer > .btn {
+    width: 100%;
+    margin: 0;
+  }
+
+  /* Long opponent names and bracket rows should wrap rather than push the dialog wide. */
+  .modal-body {
+    overflow-wrap: anywhere;
+  }
+}

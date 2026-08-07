@@ -1,0 +1,45 @@
+@if (enemyTeam.length) {
+  <div class="enemy-team">
+    <div class="enemy-team-header">
+      <span class="enemy-team-label">{{ 'game.main.roulette.gym.enemyTeam' | translate }}</span>
+      @if (typeAdvantage) {
+        <span class="advantage-chip"
+          [class.positive]="typeAdvantage.slices > 0"
+          [class.negative]="typeAdvantage.slices < 0">
+          {{ 'game.main.roulette.gym.advantage' | translate }}:
+          {{ typeAdvantage.slices > 0 ? '+' : '' }}{{ typeAdvantage.slices }}
+        </span>
+      }
+    </div>
+    <div class="enemy-team-list">
+      @for (mon of enemyTeam; track mon) {
+        <div class="enemy-slot" [class.is-mega]="mon.isMega">
+          <img appImgFallback [src]="mon.spriteUrl" [alt]="mon.megaName || (mon.text | translate)" loading="lazy">
+          @if (mon.isMega) {
+            <span class="mega-tag">{{ 'pokedex.mega' | translate }}</span>
+          }
+          <span class="enemy-name">{{ mon.megaName || (mon.text | translate) }}</span>
+          <span class="enemy-types">
+            @for (t of mon.types; track t) {
+              <span class="type-tag" [ngClass]="'type-' + t">
+                {{ 'types.' + t | translate }}
+              </span>
+            }
+          </span>
+        </div>
+      }
+    </div>
+    @if (typeAdvantage) {
+      <p class="advantage-detail">
+        {{ 'game.main.roulette.gym.coverage' | translate }}: {{ typeAdvantage.covered }}/{{ enemyTeam.length }}
+        ·
+        {{ 'game.main.roulette.gym.vulnerable' | translate }}: {{ typeAdvantage.vulnerable }}/{{ playerTeamSize }}
+        @if (typeAdvantage.outnumberedBy > 0) {
+          <span>
+            · {{ 'game.main.roulette.gym.outnumbered' | translate }}: −{{ typeAdvantage.outnumberedBy }}
+          </span>
+        }
+      </p>
+    }
+  </div>
+}

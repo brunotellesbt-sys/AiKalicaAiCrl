@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node check.mjs urls.txt)",
+      "Bash(node sd.mjs)",
+      "Bash(node scripts/download-badges.mjs)"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+<h1 class="title">{{ 'game.main.roulette.item.title' | translate }}</h1>
+<app-wheel #wheel [items]="items" (selectedItemEvent)="onItemSelected($event)">
+</app-wheel>
+
+<ng-template #itemExplainerModal let-modal>
+    <div class="modal-body">
+        <h1>{{ 'game.main.roulette.item.found' | translate }} {{ (selectedItem?.text ?? '') | translate }}</h1>
+        <div class="explain-panel">
+            <img appImgFallback [src]="$safeNavigationMigration(selectedItem?.sprite)" height="64">
+            <div class="message">
+                <p>{{ (selectedItem?.description ?? '') | translate }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" (click)="closeItemExplainerModal()">Ok</button>
+    </div>
+</ng-template>

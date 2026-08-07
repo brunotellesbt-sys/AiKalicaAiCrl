@@ -1,0 +1,273 @@
+/* Full-screen Pokédex screen (does NOT overlay roulette; it replaces it) */
+
+/* Default: Pokédex takes full height when used as a main view (desktop). */
+.pokedex-screen{
+  min-height: 100vh;
+  background: rgba(0,0,0,0.92);
+  color: #dfe6e9;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+/* Embedded mode (mobile): Pokédex expands below the team without "taking over" the whole screen. */
+:host-context(.pokedex-embedded) .pokedex-screen{
+  min-height: auto;
+  max-height: 72vh;
+  overflow: auto;
+}
+
+/* Desktop side-panel mode: narrow column with its own scroll (roulette stays visible). */
+:host-context(.pokedex-sidepanel) .pokedex-screen{
+  min-height: auto;
+  max-height: none;
+  height: auto;
+  padding: 10px 8px;
+}
+
+:host-context(.pokedex-sidepanel) .pokedex-grid{
+  grid-template-columns: 1fr;
+}
+
+:host-context(.pokedex-sidepanel) .pokedex-img{
+  width: 76px;
+  height: 76px;
+}
+
+:host-context(.pokedex-sidepanel) .pokedex-card{
+  padding: 10px;
+  gap: 10px;
+}
+
+:host-context(.pokedex-sidepanel) .pokedex-controls{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(0,0,0,0.92);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.pokedex-topbar{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 4px 12px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  margin-bottom: 12px;
+}
+
+.pokedex-title{
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.pokedex-body{
+  padding-top: 8px;
+}
+
+/* Popup over the open Pokédex (details + mega picker).
+   Fixed positioning so it behaves the same in full-screen, embedded and side-panel modes. */
+/* left/width come from the component, which measures the Pokédex box. */
+.pokedex-popup-backdrop{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  z-index: 1080;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.pokedex-popup{
+  width: 100%;
+  max-width: 560px;
+  max-height: 85vh;
+  overflow: auto;
+  background: #12151a;
+  color: #dfe6e9;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.6);
+
+  /* The Pokédex column is narrow: long form names and flavour text must wrap, never spill. */
+  overflow-wrap: anywhere;
+}
+
+.popup-header{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #12151a;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+
+.popup-title{
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.popup-close{
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  line-height: 1;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.08);
+  color: inherit;
+  cursor: pointer;
+}
+
+.popup-close:hover{ background: rgba(255,255,255,0.18); }
+
+.popup-body{ padding: 14px; }
+
+/* The details use the exact dex-card layout; drop the card's own frame inside the popup. */
+.popup-card{
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  /* Below ~300px of usable width the art + text side by side squeezes the text badly,
+     so let the artwork sit on its own row instead of shrinking the copy. */
+  flex-wrap: wrap;
+}
+
+.popup-card .pokedex-meta{
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+/* Picker buttons hold a name plus a Power chip; keep them readable when the column is narrow. */
+.popup-body .btn{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  text-align: left;
+}
+
+.pokedex-controls .form-control,
+.pokedex-controls .form-select{
+  background: rgba(255,255,255,0.08);
+  color: #dfe6e9;
+  border: 1px solid rgba(255,255,255,0.16);
+}
+
+.pokedex-controls .form-control::placeholder{
+  color: rgba(223,230,233,0.7);
+}
+
+.pokedex-type-select{ min-width: 220px; }
+
+.pokedex-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+
+.pokedex-card{
+  display: flex;
+  gap: 12px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
+.pokedex-card:hover{ filter: brightness(1.03); }
+
+.pokedex-img{
+  width: 112px;
+  height: 112px;
+  object-fit: contain;
+  background: rgba(0,0,0,0.18);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.pokedex-title-row{
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.dex-no{ opacity: 0.75; font-size: 0.95rem; }
+.name{ font-size: 1.05rem; }
+
+.pokedex-badges, .pokedex-types{ display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+
+.pokedex-sub{ margin-top:6px; font-size: 0.9rem; opacity: 0.9; }
+
+/* Flavour text is short (1-2 sentences), so show it whole.
+   It used to be clamped to 2-3 lines, which cut every single card off mid-sentence. */
+.pokedex-desc{
+  margin-top: 8px;
+  font-size: 0.9rem;
+  opacity: 0.95;
+  line-height: 1.25rem;
+  overflow-wrap: anywhere;
+}
+
+.pokedex-extra{ margin-top: 6px; font-size: 0.85rem; }
+.extra-line button{ text-decoration: underline; }
+
+.chip{
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.08);
+}
+
+.chip-regional{ background: rgba(0,180,255,0.12); }
+.chip-mega{ background: rgba(255,0,180,0.12); }
+
+@media (max-width: 576px){
+  .pokedex-type-select{ min-width: 100%; }
+  .pokedex-grid{ grid-template-columns: 1fr; }
+  .pokedex-img{ width: 96px; height: 96px; }
+  .pokedex-screen{ border-radius: 0; border-left: none; border-right: none; min-height: 100vh; }
+}
+
+/* Type accents */
+.chip-type{ background: rgba(255,255,255,0.08); }
+.type-fire{ border-color: rgba(255,120,60,0.55); }
+.type-water{ border-color: rgba(80,160,255,0.55); }
+.type-electric{ border-color: rgba(255,220,60,0.55); }
+.type-grass{ border-color: rgba(120,220,120,0.55); }
+.type-ice{ border-color: rgba(170,240,255,0.55); }
+.type-fighting{ border-color: rgba(255,120,120,0.55); }
+.type-poison{ border-color: rgba(200,120,255,0.55); }
+.type-ground{ border-color: rgba(220,180,120,0.55); }
+.type-flying{ border-color: rgba(170,190,255,0.55); }
+.type-psychic{ border-color: rgba(255,140,200,0.55); }
+.type-bug{ border-color: rgba(190,220,90,0.55); }
+.type-rock{ border-color: rgba(210,200,140,0.55); }
+.type-ghost{ border-color: rgba(170,140,255,0.55); }
+.type-dragon{ border-color: rgba(140,140,255,0.55); }
+.type-dark{ border-color: rgba(130,130,130,0.55); }
+.type-steel{ border-color: rgba(200,200,220,0.55); }
+.type-fairy{ border-color: rgba(255,180,230,0.55); }
+.type-normal{ border-color: rgba(200,200,200,0.55); }
+
+.chip-click{cursor:pointer;border:none;background:rgba(0,0,0,0.05);} .chip-click:hover{filter:brightness(0.95);} 

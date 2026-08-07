@@ -1,0 +1,47 @@
+.wheel-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.wheel-container p {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-align: center;
+    margin: 0.25rem 0 0.5rem;
+    max-width: 100%;
+    padding: 0 0.75rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.2;
+}
+
+.canvas-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-left: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+canvas {
+    touch-action: manipulation;
+}
+
+/* Make the wheel easier to see and tap on mobile */
+@media (max-width: 576px) {
+    .wheel-container p {
+        font-size: 1.15em;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .canvas-container {
+        gap: 8px;
+    }
+}

@@ -1,0 +1,550 @@
+{
+  "version": 6,
+  "generatedAt": "2026-07-29T04:21:14Z",
+  "notes": "Mega/Primal/Ultra forms. Forms that exist on PokeAPI carry no sprite URL: the game pulls their official artwork (same as the Pokedex). Fan/Legends Z-A forms use Pokemon Showdown sprites - static /dex PNG when available, animated /ani GIF otherwise. Forms with no sprite anywhere carry no URL and fall back to the base species artwork instead of showing a broken image.",
+  "forms": [
+    {
+      "basePokemonId": 3,
+      "apiName": "venusaur-mega",
+      "displayName": "Mega Venusaur"
+    },
+    {
+      "basePokemonId": 6,
+      "apiName": "charizard-mega-x",
+      "displayName": "Mega Charizard X"
+    },
+    {
+      "basePokemonId": 6,
+      "apiName": "charizard-mega-y",
+      "displayName": "Mega Charizard Y"
+    },
+    {
+      "basePokemonId": 9,
+      "apiName": "blastoise-mega",
+      "displayName": "Mega Blastoise"
+    },
+    {
+      "basePokemonId": 15,
+      "apiName": "beedrill-mega",
+      "displayName": "Mega Beedrill"
+    },
+    {
+      "basePokemonId": 18,
+      "apiName": "pidgeot-mega",
+      "displayName": "Mega Pidgeot"
+    },
+    {
+      "basePokemonId": 26,
+      "apiName": "raichu-mega-x",
+      "displayName": "Mega Raichu X",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/raichu-megax.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/raichu-megax.gif"
+    },
+    {
+      "basePokemonId": 26,
+      "apiName": "raichu-mega-y",
+      "displayName": "Mega Raichu Y",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/raichu-megay.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/raichu-megay.gif"
+    },
+    {
+      "basePokemonId": 36,
+      "apiName": "clefable-mega",
+      "displayName": "Mega Clefable",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/clefable-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/clefable-mega.png"
+    },
+    {
+      "basePokemonId": 65,
+      "apiName": "alakazam-mega",
+      "displayName": "Mega Alakazam"
+    },
+    {
+      "basePokemonId": 71,
+      "apiName": "victreebel-mega",
+      "displayName": "Mega Victreebel",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/victreebel-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/victreebel-mega.png"
+    },
+    {
+      "basePokemonId": 80,
+      "apiName": "slowbro-mega",
+      "displayName": "Mega Slowbro"
+    },
+    {
+      "basePokemonId": 94,
+      "apiName": "gengar-mega",
+      "displayName": "Mega Gengar"
+    },
+    {
+      "basePokemonId": 115,
+      "apiName": "kangaskhan-mega",
+      "displayName": "Mega Kangaskhan"
+    },
+    {
+      "basePokemonId": 121,
+      "apiName": "starmie-mega",
+      "displayName": "Mega Starmie",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/starmie-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/starmie-mega.png"
+    },
+    {
+      "basePokemonId": 127,
+      "apiName": "pinsir-mega",
+      "displayName": "Mega Pinsir"
+    },
+    {
+      "basePokemonId": 130,
+      "apiName": "gyarados-mega",
+      "displayName": "Mega Gyarados"
+    },
+    {
+      "basePokemonId": 142,
+      "apiName": "aerodactyl-mega",
+      "displayName": "Mega Aerodactyl"
+    },
+    {
+      "basePokemonId": 149,
+      "apiName": "dragonite-mega",
+      "displayName": "Mega Dragonite",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/dragonite-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/dragonite-mega.png"
+    },
+    {
+      "basePokemonId": 150,
+      "apiName": "mewtwo-mega-x",
+      "displayName": "Mega Mewtwo X"
+    },
+    {
+      "basePokemonId": 150,
+      "apiName": "mewtwo-mega-y",
+      "displayName": "Mega Mewtwo Y"
+    },
+    {
+      "basePokemonId": 154,
+      "apiName": "meganium-mega",
+      "displayName": "Mega Meganium",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/meganium-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/meganium-mega.png"
+    },
+    {
+      "basePokemonId": 160,
+      "apiName": "feraligatr-mega",
+      "displayName": "Mega Feraligatr",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/feraligatr-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/feraligatr-mega.png"
+    },
+    {
+      "basePokemonId": 181,
+      "apiName": "ampharos-mega",
+      "displayName": "Mega Ampharos"
+    },
+    {
+      "basePokemonId": 208,
+      "apiName": "steelix-mega",
+      "displayName": "Mega Steelix"
+    },
+    {
+      "basePokemonId": 212,
+      "apiName": "scizor-mega",
+      "displayName": "Mega Scizor"
+    },
+    {
+      "basePokemonId": 214,
+      "apiName": "heracross-mega",
+      "displayName": "Mega Heracross"
+    },
+    {
+      "basePokemonId": 227,
+      "apiName": "skarmory-mega",
+      "displayName": "Mega Skarmory",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/skarmory-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/skarmory-mega.png"
+    },
+    {
+      "basePokemonId": 229,
+      "apiName": "houndoom-mega",
+      "displayName": "Mega Houndoom"
+    },
+    {
+      "basePokemonId": 248,
+      "apiName": "tyranitar-mega",
+      "displayName": "Mega Tyranitar"
+    },
+    {
+      "basePokemonId": 254,
+      "apiName": "sceptile-mega",
+      "displayName": "Mega Sceptile"
+    },
+    {
+      "basePokemonId": 257,
+      "apiName": "blaziken-mega",
+      "displayName": "Mega Blaziken"
+    },
+    {
+      "basePokemonId": 260,
+      "apiName": "swampert-mega",
+      "displayName": "Mega Swampert"
+    },
+    {
+      "basePokemonId": 282,
+      "apiName": "gardevoir-mega",
+      "displayName": "Mega Gardevoir"
+    },
+    {
+      "basePokemonId": 302,
+      "apiName": "sableye-mega",
+      "displayName": "Mega Sableye"
+    },
+    {
+      "basePokemonId": 303,
+      "apiName": "mawile-mega",
+      "displayName": "Mega Mawile"
+    },
+    {
+      "basePokemonId": 306,
+      "apiName": "aggron-mega",
+      "displayName": "Mega Aggron"
+    },
+    {
+      "basePokemonId": 308,
+      "apiName": "medicham-mega",
+      "displayName": "Mega Medicham"
+    },
+    {
+      "basePokemonId": 310,
+      "apiName": "manectric-mega",
+      "displayName": "Mega Manectric"
+    },
+    {
+      "basePokemonId": 319,
+      "apiName": "sharpedo-mega",
+      "displayName": "Mega Sharpedo"
+    },
+    {
+      "basePokemonId": 323,
+      "apiName": "camerupt-mega",
+      "displayName": "Mega Camerupt"
+    },
+    {
+      "basePokemonId": 334,
+      "apiName": "altaria-mega",
+      "displayName": "Mega Altaria"
+    },
+    {
+      "basePokemonId": 354,
+      "apiName": "banette-mega",
+      "displayName": "Mega Banette"
+    },
+    {
+      "basePokemonId": 358,
+      "apiName": "chimecho-mega",
+      "displayName": "Mega Chimecho",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/chimecho-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/chimecho-mega.png"
+    },
+    {
+      "basePokemonId": 359,
+      "apiName": "absol-mega",
+      "displayName": "Mega Absol"
+    },
+    {
+      "basePokemonId": 359,
+      "apiName": "absol-mega-z",
+      "displayName": "Mega Absol Z"
+    },
+    {
+      "basePokemonId": 362,
+      "apiName": "glalie-mega",
+      "displayName": "Mega Glalie"
+    },
+    {
+      "basePokemonId": 373,
+      "apiName": "salamence-mega",
+      "displayName": "Mega Salamence"
+    },
+    {
+      "basePokemonId": 376,
+      "apiName": "metagross-mega",
+      "displayName": "Mega Metagross"
+    },
+    {
+      "basePokemonId": 380,
+      "apiName": "latias-mega",
+      "displayName": "Mega Latias"
+    },
+    {
+      "basePokemonId": 381,
+      "apiName": "latios-mega",
+      "displayName": "Mega Latios"
+    },
+    {
+      "basePokemonId": 382,
+      "apiName": "kyogre-primal",
+      "displayName": "Primal Kyogre"
+    },
+    {
+      "basePokemonId": 383,
+      "apiName": "groudon-primal",
+      "displayName": "Primal Groudon"
+    },
+    {
+      "basePokemonId": 384,
+      "apiName": "rayquaza-mega",
+      "displayName": "Mega Rayquaza"
+    },
+    {
+      "basePokemonId": 398,
+      "apiName": "staraptor-mega",
+      "displayName": "Mega Staraptor",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/staraptor-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/staraptor-mega.gif"
+    },
+    {
+      "basePokemonId": 428,
+      "apiName": "lopunny-mega",
+      "displayName": "Mega Lopunny"
+    },
+    {
+      "basePokemonId": 445,
+      "apiName": "garchomp-mega",
+      "displayName": "Mega Garchomp"
+    },
+    {
+      "basePokemonId": 445,
+      "apiName": "garchomp-mega-z",
+      "displayName": "Mega Garchomp Z"
+    },
+    {
+      "basePokemonId": 448,
+      "apiName": "lucario-mega",
+      "displayName": "Mega Lucario"
+    },
+    {
+      "basePokemonId": 448,
+      "apiName": "lucario-mega-z",
+      "displayName": "Mega Lucario Z"
+    },
+    {
+      "basePokemonId": 460,
+      "apiName": "abomasnow-mega",
+      "displayName": "Mega Abomasnow"
+    },
+    {
+      "basePokemonId": 475,
+      "apiName": "gallade-mega",
+      "displayName": "Mega Gallade"
+    },
+    {
+      "basePokemonId": 478,
+      "apiName": "froslass-mega",
+      "displayName": "Mega Froslass",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/froslass-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/froslass-mega.png"
+    },
+    {
+      "basePokemonId": 485,
+      "apiName": "heatran-mega",
+      "displayName": "Mega Heatran"
+    },
+    {
+      "basePokemonId": 491,
+      "apiName": "darkrai-mega",
+      "displayName": "Mega Darkrai"
+    },
+    {
+      "basePokemonId": 500,
+      "apiName": "emboar-mega",
+      "displayName": "Mega Emboar",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/emboar-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/emboar-mega.png"
+    },
+    {
+      "basePokemonId": 530,
+      "apiName": "excadrill-mega",
+      "displayName": "Mega Excadrill",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/excadrill-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/excadrill-mega.png"
+    },
+    {
+      "basePokemonId": 531,
+      "apiName": "audino-mega",
+      "displayName": "Mega Audino"
+    },
+    {
+      "basePokemonId": 545,
+      "apiName": "scolipede-mega",
+      "displayName": "Mega Scolipede",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/scolipede-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/scolipede-mega.gif"
+    },
+    {
+      "basePokemonId": 560,
+      "apiName": "scrafty-mega",
+      "displayName": "Mega Scrafty",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/scrafty-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/scrafty-mega.gif"
+    },
+    {
+      "basePokemonId": 604,
+      "apiName": "eelektross-mega",
+      "displayName": "Mega Eelektross",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/eelektross-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/eelektross-mega.gif"
+    },
+    {
+      "basePokemonId": 609,
+      "apiName": "chandelure-mega",
+      "displayName": "Mega Chandelure",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/chandelure-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/chandelure-mega.png"
+    },
+    {
+      "basePokemonId": 623,
+      "apiName": "golurk-mega",
+      "displayName": "Mega Golurk",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/golurk-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/golurk-mega.png"
+    },
+    {
+      "basePokemonId": 652,
+      "apiName": "chesnaught-mega",
+      "displayName": "Mega Chesnaught",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/chesnaught-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/chesnaught-mega.png"
+    },
+    {
+      "basePokemonId": 655,
+      "apiName": "delphox-mega",
+      "displayName": "Mega Delphox",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/delphox-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/delphox-mega.png"
+    },
+    {
+      "basePokemonId": 658,
+      "apiName": "greninja-mega",
+      "displayName": "Mega Greninja",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/greninja-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/greninja-mega.png"
+    },
+    {
+      "basePokemonId": 668,
+      "apiName": "pyroar-mega",
+      "displayName": "Mega Pyroar",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/pyroar-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/pyroar-mega.gif"
+    },
+    {
+      "basePokemonId": 670,
+      "apiName": "floette-mega",
+      "displayName": "Mega Floette",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/floette-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/floette-mega.png"
+    },
+    {
+      "basePokemonId": 687,
+      "apiName": "malamar-mega",
+      "displayName": "Mega Malamar",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/malamar-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/malamar-mega.gif"
+    },
+    {
+      "basePokemonId": 689,
+      "apiName": "barbaracle-mega",
+      "displayName": "Mega Barbaracle",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/barbaracle-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/barbaracle-mega.gif"
+    },
+    {
+      "basePokemonId": 691,
+      "apiName": "dragalge-mega",
+      "displayName": "Mega Dragalge",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/dragalge-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/dragalge-mega.gif"
+    },
+    {
+      "basePokemonId": 701,
+      "apiName": "hawlucha-mega",
+      "displayName": "Mega Hawlucha",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/hawlucha-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/hawlucha-mega.png"
+    },
+    {
+      "basePokemonId": 718,
+      "apiName": "zygarde-mega",
+      "displayName": "Mega Zygarde"
+    },
+    {
+      "basePokemonId": 719,
+      "apiName": "diancie-mega",
+      "displayName": "Mega Diancie"
+    },
+    {
+      "basePokemonId": 720,
+      "apiName": "hoopa-mega",
+      "displayName": "Mega Hoopa",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/hoopa-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani-shiny/hoopa-mega.gif"
+    },
+    {
+      "basePokemonId": 740,
+      "apiName": "crabominable-mega",
+      "displayName": "Mega Crabominable",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/crabominable-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/crabominable-mega.png"
+    },
+    {
+      "basePokemonId": 768,
+      "apiName": "golisopod-mega",
+      "displayName": "Mega Golisopod"
+    },
+    {
+      "basePokemonId": 780,
+      "apiName": "drampa-mega",
+      "displayName": "Mega Drampa",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/drampa-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/drampa-mega.png"
+    },
+    {
+      "basePokemonId": 800,
+      "apiName": "necrozma-ultra",
+      "displayName": "Ultra Necrozma"
+    },
+    {
+      "basePokemonId": 801,
+      "apiName": "magearna-mega",
+      "displayName": "Mega Magearna"
+    },
+    {
+      "basePokemonId": 807,
+      "apiName": "zeraora-mega",
+      "displayName": "Mega Zeraora"
+    },
+    {
+      "basePokemonId": 870,
+      "apiName": "falinks-mega",
+      "displayName": "Mega Falinks",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/ani/falinks-mega.gif",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/ani/falinks-mega.gif"
+    },
+    {
+      "basePokemonId": 952,
+      "apiName": "scovillain-mega",
+      "displayName": "Mega Scovillain",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/scovillain-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/scovillain-mega.png"
+    },
+    {
+      "basePokemonId": 970,
+      "apiName": "glimmora-mega",
+      "displayName": "Mega Glimmora",
+      "spriteUrl": "https://play.pokemonshowdown.com/sprites/dex/glimmora-mega.png",
+      "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/glimmora-mega.png"
+    },
+    {
+      "basePokemonId": 998,
+      "apiName": "baxcalibur-mega",
+      "displayName": "Mega Baxcalibur"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+<!-- Regions with more than one notable trainer spin for who turns up first. -->
+@if (choosingOpponent) {
+  <h1 class="title">{{ 'game.main.roulette.trainer.which' | translate }}</h1>
+  <p class="respin-reason"></p>
+  <app-wheel #chooser [items]="trainerChoices" (selectedItemEvent)="onTrainerChosen($event)"></app-wheel>
+} @else {
+  <h1 class="title">{{ 'game.main.roulette.trainer.victory' | translate }}</h1>
+  <p class="respin-reason">{{ retries > 0 ? itemName(currentItem) + ' x' + retries : '' }}</p>
+  <app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+}
+
+<ng-template #battleWheel>
+  <h1 class="title">{{ 'game.main.roulette.trainer.victory' | translate }}</h1>
+  <p class="respin-reason">{{ retries > 0 ? itemName(currentItem) + ' x' + retries : '' }}</p>
+
+  <app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+</ng-template>
+
+<ng-template #trainerPresentationModal let-modal>
+  <div class="modal-body">
+    <h1>
+      {{ 'game.main.roulette.trainer.against' | translate }} {{ opponent?.name }}!
+    </h1>
+
+    @if (opponent) {
+      <div class="trainer-panel">
+        <img appImgFallback [src]="opponent.spriteUrl" [alt]="opponent.name" height="128">
+        <div class="quotes">
+          <p>{{ opponent.blurb | translate }}</p>
+        </div>
+      </div>
+    }
+
+    @if (isTypeAdvantageMode) {
+      <app-enemy-team-panel
+        [enemyTeam]="enemyTeam"
+        [typeAdvantage]="typeAdvantage"
+        [playerTeamSize]="trainerTeam.length">
+      </app-enemy-team-panel>
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">
+      {{ 'game.main.roulette.trainer.go' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #itemUsedModal let-modal>
+  <div class="modal-body">
+    <h1>{{ 'game.main.roulette.gym.used' | translate }} {{ itemName(currentItem) }}!</h1>
+    <div class="trainer-panel">
+      <img appImgFallback [src]="$safeNavigationMigration(currentItem?.sprite)" height="128">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>

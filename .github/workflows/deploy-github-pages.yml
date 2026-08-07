@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages (from zip)
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -16,7 +16,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  ZIP_FILE: pokemon-roulette-source.zip
+  # The Angular app lives here as ordinary versioned files. It used to be shipped as a
+  # zip that this workflow unpacked, which meant no diff of the game was ever reviewable.
+  PROJECT_ROOT: pokemon-roulette
 
 jobs:
   build:
@@ -31,27 +33,16 @@ jobs:
         with:
           enablement: true
 
-      - name: Extract source ZIP (required)
+      - name: Verify project root
         run: |
           set -euo pipefail
 
-          if [ ! -f "$ZIP_FILE" ]; then
-            echo "ERROR: $ZIP_FILE not found in repository root."
-            echo "Put the zip at repo root and name it exactly: $ZIP_FILE"
+          if [ ! -f "$PROJECT_ROOT/package.json" ]; then
+            echo "ERROR: $PROJECT_ROOT/package.json not found."
+            echo "The Angular app is expected at: $PROJECT_ROOT/"
             exit 1
           fi
 
-          rm -rf app
-          mkdir -p app
-          unzip -q "$ZIP_FILE" -d app
-
-          PROJECT_ROOT=$(find app -name package.json -print -quit | xargs dirname)
-          if [ -z "$PROJECT_ROOT" ]; then
-            echo "ERROR: package.json not found inside zip."
-            exit 1
-          fi
-
-          echo "PROJECT_ROOT=$PROJECT_ROOT" >> $GITHUB_ENV
           echo "Project root: $PROJECT_ROOT"
           ls -la "$PROJECT_ROOT"
 
@@ -75,7 +66,7 @@ jobs:
       - name: Locate index.html for Pages
         run: |
           set -euo pipefail
-          IDX="$(find "${{ env.PROJECT_ROOT }}/dist" -maxdepth 12 -type f -name index.html -print -quit)"
+          IDX="$(find "$PROJECT_ROOT/dist" -maxdepth 12 -type f -name index.html -print -quit)"
           if [ -z "$IDX" ]; then
             echo "ERROR: index.html not found in dist."
             exit 1

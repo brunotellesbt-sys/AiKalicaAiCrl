@@ -1,0 +1,13 @@
+<h1 class="title">Defeat {{ roadblockName }}</h1>
+
+@if (roadblockName) {
+  <div class="roadblock-panel">
+    @if (roadblockSpriteUrl) {
+      <div class="roadblock-sprite">
+        <img [src]="roadblockSpriteUrl" [alt]="roadblockName" />
+      </div>
+    }
+  </div>
+}
+
+<app-wheel [items]="roadblockOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>

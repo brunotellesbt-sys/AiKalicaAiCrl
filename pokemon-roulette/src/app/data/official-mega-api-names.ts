@@ -1,0 +1,63 @@
+/**
+ * A baseline list of classic Mega Evolution form API names.
+ *
+ * Notes:
+ * - This is only used for prefetching/caching (AssetPreloadService).
+ * - The game also dynamically discovers Mega forms from PokeAPI (species varieties)
+ *   and from local custom definitions (public/data/custom-mega-forms.json).
+ * - Primal Reversion (Kyogre/Groudon) and Ultra Burst (Necrozma) are treated as Megas,
+ *   so they belong here too.
+ */
+export const OFFICIAL_MEGA_API_NAMES: string[] = [
+  'venusaur-mega',
+  'charizard-mega-x',
+  'charizard-mega-y',
+  'blastoise-mega',
+  'beedrill-mega',
+  'pidgeot-mega',
+  'alakazam-mega',
+  'slowbro-mega',
+  'gengar-mega',
+  'kangaskhan-mega',
+  'pinsir-mega',
+  'gyarados-mega',
+  'aerodactyl-mega',
+  'mewtwo-mega-x',
+  'mewtwo-mega-y',
+  'ampharos-mega',
+  'steelix-mega',
+  'scizor-mega',
+  'heracross-mega',
+  'houndoom-mega',
+  'tyranitar-mega',
+  'sceptile-mega',
+  'blaziken-mega',
+  'swampert-mega',
+  'gardevoir-mega',
+  'sableye-mega',
+  'mawile-mega',
+  'aggron-mega',
+  'medicham-mega',
+  'manectric-mega',
+  'sharpedo-mega',
+  'camerupt-mega',
+  'altaria-mega',
+  'banette-mega',
+  'absol-mega',
+  'glalie-mega',
+  'salamence-mega',
+  'metagross-mega',
+  'latias-mega',
+  'latios-mega',
+  'kyogre-primal',
+  'groudon-primal',
+  'rayquaza-mega',
+  'lopunny-mega',
+  'garchomp-mega',
+  'lucario-mega',
+  'abomasnow-mega',
+  'gallade-mega',
+  'audino-mega',
+  'diancie-mega',
+  'necrozma-ultra',
+];

@@ -1,0 +1,52 @@
+.mode-select {
+	text-align: center;
+	padding: 8px;
+}
+
+.mode-title {
+	margin-bottom: 16px;
+}
+
+.mode-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	justify-content: center;
+}
+
+.mode-card {
+	flex: 1 1 220px;
+	max-width: 300px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	padding: 18px 14px;
+	border-radius: 14px;
+	border: 2px solid rgba(128, 128, 128, 0.45);
+	background: rgba(128, 128, 128, 0.08);
+	color: inherit;
+	cursor: pointer;
+	transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.mode-card:hover {
+	transform: translateY(-2px);
+	border-color: rgba(13, 110, 253, 0.8);
+}
+
+.mode-icon {
+	font-size: 2rem;
+	line-height: 1;
+}
+
+.mode-name {
+	font-weight: 800;
+	font-size: 1.05rem;
+}
+
+.mode-blurb {
+	font-size: 0.82rem;
+	opacity: 0.85;
+	line-height: 1.25;
+}

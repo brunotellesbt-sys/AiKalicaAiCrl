@@ -1,0 +1,87 @@
+.tournament-table {
+    margin-top: 1rem;
+}
+
+.stage {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-bottom: 0.75rem;
+}
+
+.groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.75rem;
+}
+
+.group h3,
+.round h3 {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.group table {
+    width: 100%;
+    font-size: 0.8rem;
+    border-collapse: collapse;
+}
+
+.group th,
+.group td {
+    padding: 0.15rem 0.3rem;
+    text-align: center;
+}
+
+.group th.name,
+.group td.name {
+    text-align: left;
+}
+
+.group tr.you {
+    font-weight: 700;
+}
+
+/* Wide brackets scroll inside their own box rather than stretching the PC modal. */
+.bracket {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    margin-top: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+.round {
+    min-width: 190px;
+}
+
+.match {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    padding: 0.2rem 0.35rem;
+    border: 1px solid rgba(128, 128, 128, 0.35);
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+}
+
+.match.you {
+    border-color: currentColor;
+    font-weight: 700;
+}
+
+.side {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.side.won {
+    text-decoration: underline;
+}
+
+.vs {
+    opacity: 0.6;
+    font-size: 0.7rem;
+}
