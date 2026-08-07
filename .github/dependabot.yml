@@ -1,0 +1,22 @@
+version: 2
+
+updates:
+  # Keeps the actions used by the Pages deploy on supported versions.
+  #
+  # The runner already warns that actions/checkout, configure-pages, setup-node and
+  # upload-artifact still declare Node 20, which GitHub is retiring. Pinning newer tags by
+  # hand means guessing which tags exist and breaking the deploy when a guess is wrong, so
+  # let Dependabot do it: it reads the real releases and opens a PR you review and merge.
+  #
+  # Grouped into a single PR because these actions move together and reviewing one bump at
+  # a time is noise for a workflow this small.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: ci
