@@ -1,0 +1,941 @@
+{
+  "settings": {
+    "label": "Configurações",
+    "darkmode": "Modo Escuro",
+    "explanations": "Menos Explicações",
+    "muteAudio": "Silenciar Áudio",
+    "skipShinyRolls": "Ocultar Sorteios de Shiny",
+    "language": "Idioma"
+  },
+  "pokedex": {
+    "title": "Pokédex",
+    "back": "← Voltar",
+    "searchPlaceholder": "Busque por nome ou número (ex.: 25, Pikachu)",
+    "allTypes": "Todos os tipos",
+    "loading": "(carregando…)",
+    "close": "Fechar",
+    "power": "Poder",
+    "megaPower": "Poder Mega",
+    "mega": "Mega",
+    "regional": "Regional",
+    "height": "Altura",
+    "weight": "Peso",
+    "megas": "Megas:",
+    "regionalForms": "Formas regionais (API):",
+    "chooseMegaForm": "Escolha a forma Mega",
+    "multipleMegasHint": "Este Pokémon tem várias Megas. Escolha uma para ver os detalhes.",
+    "openBulbapedia": "Abrir no Bulbapedia",
+    "openPokeapi": "Ver no PokéAPI"
+  },
+  "types": {
+    "normal": "Normal",
+    "fire": "Fogo",
+    "water": "Água",
+    "electric": "Elétrico",
+    "grass": "Planta",
+    "ice": "Gelo",
+    "fighting": "Lutador",
+    "poison": "Venenoso",
+    "ground": "Terrestre",
+    "flying": "Voador",
+    "psychic": "Psíquico",
+    "bug": "Inseto",
+    "rock": "Pedra",
+    "ghost": "Fantasma",
+    "dragon": "Dragão",
+    "dark": "Sombrio",
+    "steel": "Aço",
+    "fairy": "Fada"
+  },
+  "wheel": {
+    "spin": "Clique para Girar !"
+  },
+  "altPrize": {
+    "runningShoesRoadblock": "Sem nenhuma evolução restante, você encontra os Tênis de Corrida depois de liberar o caminho!"
+  },
+  "villainBoss": {
+    "outcome": {
+      "defeat": "Você derrota eles",
+      "steal": "Eles roubam um Pokémon"
+    }
+  },
+  "items": {
+    "title": "Itens",
+    "potion": {
+      "name": "Poção",
+      "description": "A Poção deixa você girar de novo sempre que fosse perder uma batalha de Ginásio !"
+    },
+    "rare-candy": {
+      "name": "Doce Raro",
+      "description": "Use um Doce Raro para evoluir seu Pokémon a qualquer momento !"
+    },
+    "running-shoes": {
+      "name": "Tênis de Corrida",
+      "description": "Os Tênis de Corrida deixam você girar a roleta duas vezes entre os Ginásios !"
+    },
+    "super-potion": {
+      "name": "Super Poção",
+      "description": "A Super Poção deixa você girar de novo até duas vezes sempre que fosse perder uma batalha de Ginásio !"
+    },
+    "x-attack": {
+      "name": "X Ataque",
+      "description": "O X Ataque deixa sua Equipe mais forte !"
+    },
+    "exp-share": {
+      "name": "Compart. de Exp",
+      "description": "Sempre que um Pokémon evolui, o Compart. de Exp faz outro Pokémon evoluir !"
+    },
+    "hyper-potion": {
+      "name": "Hiper Poção",
+      "description": "A Hiper Poção deixa você girar de novo até três vezes sempre que fosse perder uma batalha de Ginásio !"
+    },
+    "escape-rope": {
+      "name": "Corda de Fuga",
+      "description": "A Corda de Fuga te salva de situações ruins !"
+    }
+  },
+  "badges": {
+    "boulder": "Insígnia Rocha",
+    "cascade": "Insígnia Cascata",
+    "thunder": "Insígnia Trovão",
+    "rainbow": "Insígnia Arco-Íris",
+    "soul": "Insígnia Alma",
+    "marsh": "Insígnia Pântano",
+    "volcano": "Insígnia Vulcão",
+    "earth": "Insígnia Terra",
+    "zephyr": "Insígnia Zéfiro",
+    "hive": "Insígnia Colmeia",
+    "plain": "Insígnia Planície",
+    "fog": "Insígnia Névoa",
+    "storm": "Insígnia Tempestade",
+    "mineral": "Insígnia Mineral",
+    "glacier": "Insígnia Glaciar",
+    "rising": "Insígnia Ascensão",
+    "stone": "Insígnia Pedra",
+    "knuckle": "Insígnia Punho",
+    "dynamo": "Insígnia Dínamo",
+    "heat": "Insígnia Calor",
+    "balance": "Insígnia Equilíbrio",
+    "feather": "Insígnia Pena",
+    "mind": "Insígnia Mente",
+    "rain": "Insígnia Chuva",
+    "coal": "Insígnia Carvão",
+    "forest": "Insígnia Floresta",
+    "cobble": "Insígnia Paralelepípedo",
+    "fen": "Insígnia Brejo",
+    "relic": "Insígnia Relíquia",
+    "mine": "Insígnia Mina",
+    "icicle": "Insígnia Estalactite",
+    "beacon": "Insígnia Farol",
+    "trio": "Insígnia Trio",
+    "basic": "Insígnia Básica",
+    "insect": "Insígnia Inseto",
+    "bolt": "Insígnia Raio",
+    "quake": "Insígnia Tremor",
+    "jet": "Insígnia Jato",
+    "freeze": "Insígnia Congelamento",
+    "legend": "Insígnia Lenda",
+    "bug": "Insígnia Inseto",
+    "cliff": "Insígnia Penhasco",
+    "rumble": "Insígnia Estrondo",
+    "plant": "Insígnia Planta",
+    "voltage": "Insígnia Voltagem",
+    "fairy": "Insígnia Fada",
+    "psychic": "Insígnia Psíquica",
+    "iceberg": "Insígnia Iceberg",
+    "grass": "Insígnia Planta",
+    "water": "Insígnia Água",
+    "fire": "Insígnia Fogo",
+    "fighting": "Insígnia Lutador",
+    "ghost": "Insígnia Fantasma",
+    "fairy_galar": "Insígnia Fada",
+    "rock": "Insígnia Pedra",
+    "ice": "Insígnia Gelo",
+    "dark": "Insígnia Sombria",
+    "dragon": "Insígnia Dragão",
+    "unknown": "Insígnia Desconhecida"
+  },
+  "game": {
+    "coffeeButton": {
+      "label": "Me paga um café? "
+    },
+    "creditsButton": {
+      "label": "Créditos"
+    },
+    "end": {
+      "champion": "Campeão de",
+      "congrats": "Parabéns!",
+      "share": "Compartilhar"
+    },
+    "main": {
+      "activates": "ativa!",
+      "game": {
+        "button": {
+          "title": "Jogo Principal"
+        }
+      },
+      "rocket": {
+        "entei": {
+          "emerges": "Entei aparece",
+          "fine": "Está tudo bem agora.",
+          "prevents": "Entei impede a Equipe Rocket de roubar seus Pokémon.",
+          "thanks": "Valeu, Entei!"
+        },
+        "fails": "A Equipe Rocket falha"
+      },
+      "roulette": {
+        "generation": {
+          "title": "Geração?",
+          "chooseInstead": "Prefiro escolher",
+          "backToWheel": "Prefiro girar"
+        },
+        "character": {
+          "boy": "Menino",
+          "gender": "Você é menino ou menina?",
+          "girl": "Menina",
+          "welcome": "Bem-vindo a"
+        },
+        "starter": {
+          "title": "Inicial?"
+        },
+        "shiny": {
+          "title": "Shiny?"
+        },
+        "start": {
+          "title": "O que fazer primeiro?",
+          "actions": {
+            "catchPokemon": "Capturar um Pokémon",
+            "battleTrainer": "Batalha de Treinador",
+            "buyPotions": "Comprar Poções",
+            "goStraight": "Seguir em frente"
+          }
+        },
+        "catch": {
+          "which": "Qual",
+          "pkmn": "Pokémon?"
+        },
+        "evolve": {
+          "who": "Quem vai evoluir?",
+          "modal": {
+            "title": "Evolução!",
+            "evolved": "evoluiu para",
+            "your": "Seu"
+          }
+        },
+        "adventure": {
+          "title": "O que você faz entre os Ginásios?"
+        },
+        "cave": {
+          "cave": "Caverna de Pokémon?",
+          "explore": {
+            "title": "Na caverna"
+          },
+          "which": "Qual"
+        },
+        "champion": {
+          "champion": "Campeão",
+          "go": "Vamos lá!",
+          "use": "Usou uma",
+          "victory": "Vitória?"
+        },
+        "egg": {
+          "title": "Qual Pokémon ?"
+        },
+        "elite": {
+          "elite4": "Elite dos 4",
+          "go": "Vamos lá!",
+          "prep": {
+            "congrats": "Parabéns!",
+            "defeated": "Você derrotou os 8 Líderes.",
+            "go": "Vamos lá!",
+            "ready": "Agora se prepare para a Elite dos 4.",
+            "title": "O que você faz antes da Elite dos 4?",
+            "victoryRoad": "Entre na Estrada da Vitória!"
+          },
+          "title": "Vitória?",
+          "use": "Usou uma"
+        },
+        "evolution": {
+          "title": "Seu Pokémon evolui ?"
+        },
+        "fishing": {
+          "title": "pescaria"
+        },
+        "fossil": {
+          "fossil": "Fóssil ?",
+          "which": "Qual"
+        },
+        "gym": {
+          "against": "Batalha contra",
+          "defeated": "Derrotado?",
+          "go": "Vamos lá!",
+          "used": "Usou uma",
+          "enemyTeam": "Time do líder",
+          "advantage": "Vantagem",
+          "coverage": "Sua cobertura",
+          "vulnerable": "Seus vulneráveis",
+          "outnumbered": "Em menor número"
+        },
+        "item": {
+          "found": "Encontrou um",
+          "title": "Qual Item?"
+        },
+        "legendary": {
+          "chance": "Chance de Captura",
+          "legendary": "Lendário ?",
+          "which": "Qual"
+        },
+        "rival": {
+          "against": "Batalha contra",
+          "go": "Vamos lá!",
+          "victory": "Vitória?"
+        },
+        "snorlax": {
+          "outcome": "Resultado"
+        },
+        "teamrocket": {
+          "double": "E que sejam dois!",
+          "meowth": "Meowth, é isso aí!",
+          "teamrocket": "Equipe Rocket!",
+          "title": "Resultado",
+          "trouble": "Preparem-se para encrenca!"
+        },
+        "trade": {
+          "title": "Trocar por ?"
+        },
+        "mode": {
+          "title": "Qual modo?",
+          "classic": {
+            "title": "Clássico",
+            "blurb": "A run original. Roleta pura, sem vidas."
+          },
+          "typeAdvantage": {
+            "title": "Vantagem de Tipo",
+            "blurb": "Os adversários trazem time de verdade. A tipagem inclina a roleta, e você tem 3 vidas."
+          }
+        },
+        "lives": {
+          "label": "Vidas",
+          "gymRetry": "Vida perdida — mais uma aproximação ao Ginásio",
+          "eliteFourRetry": "Vida perdida — de volta pelo 8º Ginásio",
+          "villainRetry": "Vida perdida — o chefe ainda está de pé",
+          "rivalRetry": "Vida perdida — de volta para a roleta"
+        },
+        "trainer": {
+          "against": "Batalha contra",
+          "victory": "Vitória?",
+          "go": "Vamos lá!",
+          "which": "Qual treinador?"
+        },
+        "villain": {
+          "which": "Qual chefe?"
+        }
+      },
+      "trade": {
+        "received": "e recebeu um",
+        "sent": "Você enviou"
+      },
+      "tournament": {
+        "you": "Você",
+        "kind": {
+          "regional": "Torneio Regional",
+          "world": "Torneio Mundial Pokémon"
+        },
+        "phase": {
+          "draw": "Sorteio do chaveamento",
+          "groups": "Fase de grupos",
+          "knockout": "Mata-mata",
+          "won": "Campeão do torneio",
+          "eliminated": "Eliminado"
+        },
+        "round": {
+          "32": "Rodada de 64",
+          "16": "Rodada de 32",
+          "8": "Oitavas de final",
+          "4": "Quartas de final",
+          "2": "Semifinais",
+          "1": "Final",
+          "playIn": "Rodada preliminar"
+        },
+        "offer": {
+          "regional": {
+            "title": "Um convite para o torneio!",
+            "blurb": "Todos os treinadores da região vão entrar num mata-mata de 16 competidores — os líderes de ginásio, seu rival, o treinador que você encontrou na estrada, a Elite dos 4 e o Campeão. Você entra?",
+            "rule1": "Todo adversário traz seis Pokémon totalmente evoluídos.",
+            "rule2": "Você começa com 3 Poções e nenhuma vida.",
+            "rule3": "Primeiro uma roleta de capturas, depois o sorteio."
+          },
+          "world": {
+            "title": "O Torneio Mundial Pokémon!",
+            "blurb": "Treinadores de todas as regiões estão se reunindo — líderes, rivais, membros da Elite dos 4, Campeões e os próprios protagonistas. Oito grupos de quatro e depois um mata-mata de 16.",
+            "rule1": "Todo adversário traz seis Pokémon totalmente evoluídos.",
+            "rule2": "Nenhuma Poção na fase de grupos, 3 no mata-mata.",
+            "rule3": "Uma roleta de capturas antes dos grupos e outra antes do mata-mata."
+          },
+          "warning": "Perdeu uma única batalha, você está eliminado — a run reinicia.",
+          "accept": "Entrar no torneio",
+          "decline": "Agora não"
+        },
+        "prep": {
+          "title": "Monte seu time para o torneio!"
+        },
+        "draw": {
+          "title": "O sorteio!",
+          "progress": "{{drawn}} de {{total}} sorteados",
+          "seeded": "Entrou no chaveamento!",
+          "seedNumber": "Posição #{{seed}}"
+        },
+        "battle": {
+          "title": "Vitória?",
+          "against": "Batalha de torneio contra",
+          "blurb": "Seis Pokémon totalmente evoluídos. Sem vidas. Vencer ou ir para casa.",
+          "go": "Vamos lá!",
+          "potionUsed": "Você usou uma Poção!",
+          "potionsLeft": "Poções: {{count}}"
+        },
+        "table": {
+          "trainer": "Treinador",
+          "played": "J",
+          "wins": "V",
+          "points": "Pts",
+          "vs": "x"
+        },
+        "protagonist": {
+          "gen1": "Red",
+          "gen2": "Ethan",
+          "gen3": "Brendan",
+          "gen4": "Lucas",
+          "gen5": "Hilbert",
+          "gen6": "Calem",
+          "gen7": "Elio",
+          "gen8": "Victor",
+          "gen9": "Florian"
+        }
+      }
+    },
+    "map": {
+      "vermilion": "Você está em Vermilion City"
+    },
+    "over": {
+      "share": "Compartilhar",
+      "stoppedBy": "Jornada interrompida por ",
+      "title": "Fim da Jornada"
+    },
+    "restart": {
+      "action": "Recomeçar",
+      "cancel": "Não, voltar!",
+      "confirm": "Sim, vamos lá!",
+      "title": "Recomeçar o Jogo?",
+      "warning": "Você vai recomeçar do zero."
+    }
+  },
+  "trainer": {
+    "storage": {
+      "access": "Acessar PC",
+      "logout": "Sair",
+      "stored": "Guardados",
+      "team": "Na Equipe"
+    },
+    "blurb": {
+      "yellow": "Uma Treinadora quieta, mas destemida — viaja com o Pikachu e o sonho de completar a Pokédex.",
+      "lyra": "Lyra e a Marill dela querem batalhar agora.",
+      "eugene": "Um caçador obcecado por Suicune — Eugene (Eusine) te desafia para um duelo dramático em Johto!",
+      "wally": "De começo tímido à determinação de verdade — Wally quer testar a sua força!",
+      "looker": "A Polícia Internacional no caso — Looker te desafia a provar suas habilidades.",
+      "bianca": "Curiosa e animada — Bianca batalha para aprender junto com seus Pokémon.",
+      "cheren": "Focado e estratégico — Cheren batalha para afiar seus planos.",
+      "trevor": "Um pesquisador atento — Trevor quer dados de uma partida rápida.",
+      "hau": "Energia pura e um apetite enorme — Hau batalha sorrindo.",
+      "hop": "Cheio de ambição — Hop batalha atrás do sonho de ser Campeão.",
+      "cassiopeia": "Uma estrategista misteriosa vinda das sombras — Cassiopeia te desafia.",
+      "arven": "Arven, o treinador de Paldea que caça Titãs, entra na batalha.",
+      "guzma": "Guzma, o chefe da Equipe Skull, invade o chaveamento.",
+      "plumeria": "Plumeria, a irmã mais velha da Equipe Skull, protege sua turma.",
+      "rose": "O Presidente Rose traz o dinheiro e a força da Macro Cosmos.",
+      "peony": "Peony, o autoproclamado explorador, veio pela aventura.",
+      "mustard": "Mustard, ex-Campeão de Galar, testa seu espírito de Dojo.",
+      "klara": "Klara, a trapaceira do tipo Venenoso, é só sorrisos e toxinas.",
+      "avery": "Avery, o prodígio do tipo Psíquico, jura que já leu seus golpes.",
+      "ash": "Ash Ketchum e o Pikachu bloqueiam o caminho, loucos por uma batalha.",
+      "steven": "Steven Stone, o colecionador de pedras de Hoenn, avalia seu time.",
+      "riley": "Riley e seu Lucario estão treinando na Ilha de Ferro.",
+      "n": "N quer ouvir a voz dos seus Pokémon.",
+      "tierno": "Tierno te desafia entre um passo de dança e outro.",
+      "shauna": "Shauna é pura empolgação — e mais forte do que parece.",
+      "red": "Red não diz nada. Só solta o primeiro Pokémon.",
+      "blueGirl": "Blue dá um sorriso doce. Cuidado com a carteira, e com o time.",
+      "ethan": "Ethan encara todo treinador que cruza seu caminho.",
+      "brendan": "Brendan quer ver o quanto você evoluiu.",
+      "may": "May anota tudo sobre cada Pokémon que você tem.",
+      "lucas": "Lucas fecha a Pokédex e pega uma Poké Bola.",
+      "dawn": "Dawn está pronta — e não vai pegar leve.",
+      "hilbert": "Hilbert busca a verdade, uma batalha por vez.",
+      "hilda": "Hilda abre um sorriso. Isso vai ser divertido.",
+      "calem": "Calem esperava por um desafio de verdade.",
+      "serena": "Serena não vai perder na frente dos amigos.",
+      "elio": "Elio leva o desafio das ilhas tão a sério quanto você.",
+      "selene": "Selene já está soltando a parceira dela.",
+      "victor": "Victor entra em campo com a Dynamax Band pronta.",
+      "gloria": "Gloria não foge de uma rival de Galar.",
+      "florian": "Florian veio atrás do próprio tesouro.",
+      "juliana": "Juliana quer mais uma batalha antes da aula.",
+      "hugh": "Hugh ainda procura quem roubou o Purrloin da irmã dele.",
+      "bede": "Bede tem certeza de que o destino dele é maior que o seu."
+    }
+  },
+  "rival": {
+    "blue": {
+      "quote1": "Vamos ver como estão nossos Pokémon! Vem, eu encaro você!"
+    },
+    "silver": {
+      "quote1": "Eu também tenho um bom Pokémon. Vou te mostrar o que quero dizer!"
+    },
+    "wally": {
+      "quote1": "Por favor, veja o quanto meu treinamento rendeu!"
+    },
+    "barry": {
+      "quote1": "Você não é o único que está ficando mais forte! Vou provar isso! Vamos lá!"
+    },
+    "n": {
+      "quote1": "Deixe-me ouvir a voz dos seus Pokémon!"
+    },
+    "calem-serena": {
+      "quote1": "Sou Treinador de Pokémon, quero ver as coisas que tornam os Pokémon especiais.",
+      "quote2": "Meus Pokémon e eu vamos te mostrar o que nos torna especiais!"
+    },
+    "gladion": {
+      "quote1": "Batalhe comigo. Não vou aceitar um não como resposta."
+    },
+    "bede": {
+      "quote1": "Está na hora de provar a toda a região de Galar que estou um degrau acima da concorrência."
+    }
+  },
+  "gymLeaders": {
+    "brock": {
+      "quote1": "Tudo bem, então! Me mostre o seu melhor!"
+    },
+    "misty": {
+      "quote1": "Minha política é o ataque total com Pokémon do tipo Água!"
+    },
+    "surge": {
+      "quote1": "Vou te contar, garoto, os Pokémon elétricos me salvaram durante a guerra!",
+      "quote2": "Eles deixaram meus inimigos paralisados com choques!",
+      "quote3": "O mesmo que eu vou fazer com você!"
+    },
+    "erika": {
+      "quote1": "...Ah, me desculpe, eu não fazia ideia de que você queria me desafiar.",
+      "quote2": "Muito bem, mas eu não vou perder."
+    },
+    "koga": {
+      "quote1": "Muito bem, vou lhe mostrar o verdadeiro terror de um mestre ninja!",
+      "quote2": "Desespere-se diante do horror rastejante dos Pokémon do tipo Venenoso!"
+    },
+    "sabrina": {
+      "quote1": "Eu tive uma visão da sua chegada!",
+      "quote2": "Não gosto de batalhar, mas se você quiser, vou lhe mostrar meus poderes!"
+    },
+    "blaine": {
+      "quote1": "Hah! Eu sou Blaine, o Líder incandescente do Ginásio de Cinnabar!",
+      "quote2": "Meus Pokémon de fogo estão prontos, com um calor intenso! "
+    },
+    "giovanni": {
+      "quote1": "Que seja. Desta vez, não vou me segurar!",
+      "quote2": "Você vai enfrentar Giovanni, o maior dos Treinadores!"
+    },
+    "falkner": {
+      "quote1": "Vou lhe mostrar o verdadeiro poder dos magníficos Pokémon-pássaro!"
+    },
+    "bugsy": {
+      "quote1": "Minha pesquisa vai me tornar uma autoridade em Pokémon do tipo Inseto!",
+      "quote2": "Deixe-me demonstrar o que aprendi nos meus estudos."
+    },
+    "whitney": {
+      "quote1": "Pokémon são super fofos!",
+      "quote2": "Quer batalhar?",
+      "quote3": "Estou te avisando: eu sou boa!"
+    },
+    "morty": {
+      "quote1": "Dizem que um Pokémon com as cores do arco-íris descerá diante de um Treinador verdadeiramente poderoso.",
+      "quote2": "Eu acredito que essa pessoa sou eu!",
+      "quote3": "E você vai me ajudar a chegar nesse nível!"
+    },
+    "chuck": {
+      "quote1": "Tenho que avisar que sou um Treinador forte, treino todos os dias debaixo desta cachoeira!",
+      "quote2": "Vamos lá. Que comece a batalha!"
+    },
+    "jasmine": {
+      "quote1": "Eu sou Jasmine, uma Líder de Ginásio. Eu uso o... clang! Tipo Aço!",
+      "quote2": "Eles são bem duros, frios, afiados e muito fortes! Hã... não estou mentindo."
+    },
+    "pryce": {
+      "quote1": "Treino Pokémon desde antes de você nascer. Não perco com facilidade.",
+      "quote2": "Eu, Pryce — o Treinador do Inverno — vou demonstrar meu poder!"
+    },
+    "clair": {
+      "quote1": "Eu sou Clair. A melhor mestra de Pokémon do tipo Dragão do mundo.",
+      "quote2": "Como Líder de Ginásio, usarei todo o meu poder contra qualquer oponente!"
+    },
+    "roxanne": {
+      "quote1": "Agora, você teria a bondade de demonstrar como batalha com seus Pokémon?"
+    },
+    "brawly": {
+      "quote1": "Eu sou Brawly! Líder do Ginásio de Dewford!",
+      "quote2": "Então quer me desafiar? Deixa eu ver do que você é feito!"
+    },
+    "wattson": {
+      "quote1": "Wahahahah! Isso sim é divertido!",
+      "quote2": "Eu, Wattson, o Líder do Ginásio de Mauville, vou te eletrizar!"
+    },
+    "flannery": {
+      "quote1": "Bem-vindo!",
+      "quote2": "Não, quer dizer… eu sou Flannery, e quem manda aqui sou eu!",
+      "quote3": "Eu vou, é… demonstrar os golpes escaldantes que aperfeiçoamos nesta terra!"
+    },
+    "norman": {
+      "quote1": "Vou fazer tudo que estiver ao meu alcance como Líder de Ginásio para vencer!",
+      "quote2": "É bom você dar o seu melhor também!"
+    },
+    "winona": {
+      "quote1": "Eu sou Winona. Sou a Líder do Ginásio Pokémon de Fortree.",
+      "quote2": "Testemunhe a coreografia elegante dos meus Pokémon-pássaro e eu!"
+    },
+    "liza-tate": {
+      "quote1": "Você se surpreendeu? Com dois Líderes de Ginásio?",
+      "quote2": "Somos gêmeos!",
+      "quote3": "Essa nossa combinação... Você consegue vencer?"
+    },
+    "juan": {
+      "quote1": "Eu sou Juan, o Líder do Ginásio da Cidade de Sootopolis.",
+      "quote2": "Agora, mostre-me a sua força!"
+    },
+    "wallace": {
+      "quote1": "Permita-me me apresentar formalmente. Eu sou Wallace. O Líder do Ginásio de Sootopolis.",
+      "quote2": "Agora, mostre-me. Mostre-me o poder que você exerce com seus Pokémon."
+    },
+    "roark": {
+      "quote1": "Este é o Ginásio Pokémon de Oreburgh! Eu sou Roark, o Líder do Ginásio!",
+      "quote2": "Como Líder de Ginásio, preciso ver o seu potencial como Treinador."
+    },
+    "gardenia": {
+      "quote1": "Você tem uma aura de vencedor.",
+      "quote2": "Enfim, isso vai ser divertido. Vamos à nossa batalha!"
+    },
+    "maylene": {
+      "quote1": "Vou fazer o melhor que puder como Líder de Ginásio.",
+      "quote2": "Levo as batalhas muito a sério. Quando você estiver pronto!"
+    },
+    "crasher-wake": {
+      "quote1": "Meus Pokémon foram endurecidos por águas bravias e tempestuosas!",
+      "quote2": "A vitória será nossa! Vamos lá, bora resolver isso!"
+    },
+    "fantina": {
+      "quote1": "Ohohoho!! Finalmente, você chegou!",
+      "quote2": "Mas eu vou vencer. É o que uma Líder de Ginásio faz, non?"
+    },
+    "byron": {
+      "quote1": "Você derrotou meu filho, Roark.",
+      "quote2": "Mas isso não é surpresa. Ele ainda tem muito a aprender.",
+      "quote3": "Eu, Byron, aceito o seu desafio!"
+    },
+    "candice": {
+      "quote1": "Claro! Eu estava esperando alguém durão!",
+      "quote2": "É tudo questão de foco! Vou te mostrar exatamente o que quero dizer. Prepare-se para perder!"
+    },
+    "volkner": {
+      "quote1": "Suspiro... Eu sou Volkner, o Líder do Ginásio.",
+      "quote2": "Espero que você seja o Treinador que vai me fazer lembrar como batalhar é divertido!"
+    },
+    "cilan-chili-cress": {
+      "quote1": "Então, é... se você não se importar comigo, eu vou, é, dar tudo de mim para ser, sabe, o seu oponente.",
+      "quote2": "Uhuuuuul! Hora de brincar com FOGO!! Eu sou o mais forte de nós, irmãos!",
+      "quote3": "Que sorte incrível a sua: você vai batalhar com o melhor dos três."
+    },
+    "lenora": {
+      "quote1": "A diretora do Museu de Nacrene e Líder do Ginásio de Nacrene sou eu! Lenora!",
+      "quote2": "Pois bem, desafiante, vou pesquisar como você batalha com os Pokémon que criou com tanto carinho!"
+    },
+    "burgh": {
+      "quote1": "Meus Pokémon inseto estão fervilhando de empolgação para batalhar com você.",
+      "quote2": "Vamos direto ao ponto!"
+    },
+    "elesa": {
+      "quote1": "Bem-vindo ao palco principal!",
+      "quote2": "Meus amados Pokémon e os seus Pokémon vão competir!",
+      "quote3": "Vamos ver qual estrela brilha mais forte!"
+    },
+    "clay": {
+      "quote1": "Acho que tá na hora de eu ver com meus próprios olhos o que tem nas suas habilidades pra uma Líder de Ginásio como a Elesa gostar tanto de você."
+    },
+    "skyla": {
+      "quote1": "Hi-hi! Eu estava esperando por você.",
+      "quote2": "Curtiu voar com a ajuda dos canhões do Ginásio de Mistralton?"
+    },
+    "brycen": {
+      "quote1": "Eu sou Brycen... Prazer em conhecê-lo...",
+      "quote2": "Você parece pronto para enfrentar um Líder de Ginásio. Então... Manda ver!"
+    },
+    "drayden-iris": {
+      "quote1": "Bem-vindo. Obrigado por vir. Eu sou Drayden, Líder do Ginásio Pokémon de Opelucid. O que procuro agora é um jovem Treinador que possa me mostrar um futuro brilhante. Talvez você possa me mostrar esse futuro, como a Iris mostrou?",
+      "quote2": "Oi! Eu sou a Iris, a Líder de Ginásio incrivelmente forte! Me conta... Que Pokémon você usa? Como você vai lutar? Ah, estou super curiosa, então vamos logo começar!"
+    },
+    "viola": {
+      "quote1": "É fantástico! Simplesmente fantástico! Um ótimo tema para a minha câmera!",
+      "quote2": "Minha lente está sempre focada na vitória — não vou deixar nada estragar esta foto!"
+    },
+    "grant": {
+      "quote1": "Eu estava esperando com muita expectativa! Que aparecesse um desafiante à altura!",
+      "quote2": "Espero que você me mostre que sua habilidade como Treinador supera até a minha."
+    },
+    "korrina": {
+      "quote1": "Não tenho certeza, mas acho que o Lucario está dizendo que quer batalhar com você."
+    },
+    "ramos": {
+      "quote1": "E aí, o que cê achou, pirralho?",
+      "quote2": "Minhas plantas robustas são sinal da minha força como jardineiro e Líder de Ginásio! Cê tem certeza que dá conta de tudo isso?"
+    },
+    "clemont": {
+      "quote1": "Vamos os dois dar o nosso melhor na batalha."
+    },
+    "valerie": {
+      "quote1": "Ora, mas se não é um jovem Treinador...",
+      "quote2": "Os esquivos tipos Fada podem parecer frágeis como a brisa e delicados como uma flor, mas são fortes."
+    },
+    "olympia": {
+      "quote1": "Um ritual para decidir seu destino e seu futuro. ",
+      "quote2": "Que comece a batalha!"
+    },
+    "wulfric": {
+      "quote1": "O gelo é extremamente duro e terrivelmente frágil ao mesmo tempo.",
+      "quote2": "Vamos colocar esse espetáculo na estrada!"
+    },
+    "ilima": {
+      "quote1": "Saudações! Capitão Ilima falando.",
+      "quote2": "Minha provação acontece na Caverna Verdejante. A provação do Capitão Ilima."
+    },
+    "hala": {
+      "quote1": "Ho!",
+      "quote2": "Eu sou Hala, o kahuna da Ilha de Melemele.",
+      "quote3": "Que comece a grande provação!"
+    },
+    "lana-kiawe-mallow": {
+      "quote1": "Olá. Eu sou a Lana. Sou a capitã de Brooklet Hill.",
+      "quote2": "Eu sou Kiawe. Meu Marowak e eu somos estudiosos das danças ancestrais.",
+      "quote3": "Eu sou a Mallow, uma das capitãs daqui! Seus Pokémon parecem prontos para esquentar a panela!"
+    },
+    "olivia": {
+      "quote1": "Agora você enfrenta a grande provação da kahuna — eu!",
+      "quote2": "Prepare-se para a batalha Pokémon mais difícil que você já teve em Akala!"
+    },
+    "sophocles-acerola": {
+      "quote1": "Hmm-hmm. Tenho que mostrar pro Grande Mo o quanto eu posso ser forte...",
+      "quote2": "Minha provação acontece no terreno abandonado onde ficava o supermercado."
+    },
+    "nanu": {
+      "quote1": "Ei, você aí.",
+      "quote2": "Eu sou um kahuna da ilha, sabia? Batalhe contra mim."
+    },
+    "mina": {
+      "quote1": "Batalhe contra a Capitã Mina!",
+      "quote2": "Eu e meu time estamos com a força no máximo!"
+    },
+    "hapu": {
+      "quote1": "Esta é a primeira grande provação da Kahuna Hapu! Vou batalhar com você com tudo o que tenho!"
+    },
+    "milo": {
+      "quote1": "Parece mesmo que você entende bem de Pokémon.",
+      "quote2": "Essa vai ser uma batalha e tanto!"
+    },
+    "nessa": {
+      "quote1": "Bem-vindo, honrado Desafiante do Ginásio!",
+      "quote2": "Não importa que plano essa sua mente refinada esteja tramando, eu e minha parceira vamos afundá-lo."
+    },
+    "kabu": {
+      "quote1": "Bem-vindo! Eu sou Kabu, o Líder de Ginásio do tipo Fogo.",
+      "quote2": "A partida é decidida por qual dos lados consegue liberar seu verdadeiro potencial."
+    },
+    "bea-allister": {
+      "quote1": "Bem-vindo, Desafiante do Ginásio. Eu sou a Bea. Você tem um espírito inabalável, que não se move por mais que seja atacado? Acho que vou testar isso, que tal?",
+      "quote2": ".ou o Allister. A-aqui... eu... vou..."
+    },
+    "opal": {
+      "quote1": "Eu sou Opal, a Líder do Ginásio.",
+      "quote2": "Deixe-me dar uma olhada em como você e seu Pokémon parceiro se comportam!"
+    },
+    "gordie-melony": {
+      "quote1": "E aí. O nome é Gordie. Vamos acabar logo com isso, Desafiante!",
+      "quote2": "Eu sou Melony. Como você pode ver claramente, montei uma equipe só de Pokémon do tipo Gelo. Muito bem, acho que devemos começar."
+    },
+    "piers": {
+      "quote1": "*suspiro*... Então você finalmente chegou, hein?",
+      "quote2": "Prepare-se para uma roda punk comigo e minha turma! Spikemuth, é hora de roquear!"
+    },
+    "raihan": {
+      "quote1": "Você quer derrotar o Leon... Faz ideia do tamanho desse obstáculo?",
+      "quote2": "Como o maior rival dele, acho que eu — Raihan — vou ter que te mostrar!"
+    },
+    "bede": {
+      "name": "Bede",
+      "quote1": "Vou te mostrar a diferença entre nossas habilidades.",
+      "quote2": "Sinta-se honrado — eu não perco tempo com qualquer um."
+    }
+  },
+  "elite4": {
+    "lorelei": {
+      "quote1": "Ninguém me supera quando o assunto é Pokémon de gelo.",
+      "quote2": "Golpes congelantes são poderosos. Você está pronto?"
+    },
+    "bruno-gen1": {
+      "quote1": "Com treinamento rigoroso, pessoas e Pokémon podem ficar mais fortes sem limite.",
+      "quote2": "Vamos te desgastar com nosso poder superior! Hoo hah!"
+    },
+    "agatha": {
+      "quote1": "Você é a criança que o Oak tomou sob sua asa, não é?",
+      "quote2": "Vou te mostrar como um Treinador de verdade batalha!"
+    },
+    "lance": {
+      "quote1": "Pode me chamar de Lance, o Treinador de dragões.",
+      "quote2": "Seu desafio na Liga termina comigo!"
+    },
+    "will": {
+      "quote1": "Eu sou Will. Treinei pelo mundo inteiro, tornando meus Pokémon do tipo Psíquico poderosos.",
+      "quote2": "Só posso continuar melhorando! Perder não é uma opção!"
+    },
+    "koga": {
+      "quote1": "Uma mera criança como você ousa me desafiar?",
+      "quote2": "Vou lhe mostrar o verdadeiro terror de um mestre ninja!"
+    },
+    "bruno-gen2": {
+      "quote1": "Você parece determinado. Perfeito para a batalha!",
+      "quote2": "Você vai se curvar diante do nosso poder avassalador! Hoo hah!"
+    },
+    "karen": {
+      "quote1": "Que divertido. Eu amo Pokémon do tipo Sombrio.",
+      "quote2": "Sou conhecida pelas minhas táticas avassaladoras.",
+      "quote3": "Tente me entreter. Vamos lá."
+    },
+    "sidney": {
+      "quote1": "Gostei desse olhar que você está me lançando.",
+      "quote2": "Acho que você vai me dar uma boa partida. Isso é bom!"
+    },
+    "phoebe": {
+      "quote1": "Ahahaha! Eu sou Phoebe, da Elite dos Quatro.",
+      "quote2": "Vamos ver se você consegue ao menos causar dano nos meus Pokémon!"
+    },
+    "glacia": {
+      "quote1": "Tudo que vi até agora foram desafios de Treinadores fracos",
+      "quote2": "Fico imaginando o que você vai me mostrar."
+    },
+    "drake": {
+      "quote1": "você sabe o que é preciso para batalhar ao lado dos Pokémon como parceiros?",
+      "quote2": "Se não sabe, jamais vai me vencer"
+    },
+    "aaron": {
+      "quote1": "Você quer saber por que eu enfrento desafiantes?",
+      "quote2": "É porque quero me tornar perfeito, igual aos meus Pokémon inseto!",
+      "quote3": "Certo! Deixa eu te encarar!"
+    },
+    "bertha": {
+      "quote1": "Ora, ora. Você é um Treinador e tanto, que gracinha!",
+      "quote2": "Você mostraria a esta velhinha o quanto aprendeu?"
+    },
+    "flint": {
+      "quote1": "Comigo você enfrenta um usuário de Pokémon do tipo Fogo.",
+      "quote2": "Deixe o Flint ver o quanto o seu espírito arde!"
+    },
+    "lucian": {
+      "quote1": "Devo dizer, você já provou ser excepcional só por ter chegado até aqui.",
+      "quote2": "Receio que vou ter que dar tudo de mim contra você."
+    },
+    "shauntal": {
+      "quote1": "Com licença. Você é um desafiante, certo?",
+      "quotes2": "Eu sou a usuária de Pokémon do tipo Fantasma da Elite dos Quatro, Shauntal, e serei a sua oponente.",
+      "quote2": "Eu sou a usuária de Pokémon do tipo Fantasma da Elite dos Quatro, Shauntal, e serei a sua oponente."
+    },
+    "marshal": {
+      "quote1": "Estou treinando sob a orientação do meu mentor, Alder.",
+      "quote2": "Meu mentor vê o seu potencial como Treinador e está interessado em você."
+    },
+    "grimsley": {
+      "quote1": "A vida é uma batalha séria, e você tem que usar as ferramentas que recebeu.",
+      "quote2": "Vamos começar. E que vença o melhor Treinador!"
+    },
+    "caitlin": {
+      "quote1": "Você parece reunir uma combinação de força e gentileza.",
+      "quote2": "Faça o possível para não me entediar com uma batalha de dar sono. Combinado?"
+    },
+    "malva": {
+      "quote1": "Bem-vindo, desafiante, à minha Câmara Flamejante!",
+      "quote2": "Eu sou Malva, e serei a sua oponente hoje."
+    },
+    "siebold": {
+      "quote1": "Tenho uma pergunta que preciso lhe fazer.",
+      "quote2": "Você acha que uma batalha Pokémon pode um dia ser digna de ser chamada de arte?"
+    },
+    "wikstrom": {
+      "quote1": "Que nós dois demos nossa palavra de que este confronto será justo e honrado.",
+      "quote2": "Pronto? En garde!"
+    },
+    "drasna": {
+      "quote1": "Você deve ser um Treinador forte... Que notícia maravilhosa!",
+      "quote2": "Enfrentar oponentes como você e sua equipe vai fazer meus Pokémon crescerem como mato!"
+    },
+    "molayne": {
+      "quote1": "O Kukui me pediu, então decidi entrar para a Elite dos Quatro.",
+      "quote2": "Estou ansioso para batalhar contra você e o Sophocles na Liga Pokémon."
+    },
+    "olivia": {
+      "quote1": "Aqui não precisa de apresentação. Hora de batalhar comigo, a Olivia!"
+    },
+    "acerola": {
+      "quote1": "O Nanu disse que não estava a fim de ser da Elite dos 4",
+      "quote2": "Então acho que vou ter que batalhar forte o bastante para compensar a ausência dele!"
+    },
+    "kahili": {
+      "quote1": "Ouvi dizer que fizeram uma Liga Pokémon na minha própria região natal, então voei de volta para servir Alola."
+    },
+    "marnie": {
+      "quote1": "A verdade é que... eu só quero mesmo ser Campeã por mim! Então não leve para o pessoal quando eu acabar com você!",
+      "quote2": "Está na hora de eu terminar o que comecei naquele dia... Entendeu? Quem vai virar Campeã sou eu!",
+      "quote3": "Está na hora de provar a toda a região de Galar que estou um degrau acima da concorrência."
+    },
+    "nessa": {
+      "quote1": "Tenho certeza que você lembra, mas eu sou a Nessa. E não vim aqui para conversar. Vim para vencer!"
+    },
+    "bea": {
+      "quote1": "Focar demais em vencer pode fazer a pessoa cometer erros. Vou te enfrentar de cabeça limpa!",
+      "quote2": "...Vamos começar a partida."
+    },
+    "raihan": {
+      "quote1": "Você é algo especial mesmo, garoto. Chegou até aqui!",
+      "quote2": "Você deve estar achando que já me venceu uma vez... Mas eu não sou o mesmo Raihan que você enfrentou antes"
+    },
+    "loreilei": {
+      "quote1": "Ninguém me supera quando o assunto é Pokémon de gelo.",
+      "quote2": "Golpes congelantes são poderosos. Você está pronto?"
+    }
+  },
+  "credits": {
+    "title": "Créditos e Agradecimentos",
+    "createdBy": "Criado por",
+    "feedback": "Se quiser deixar um feedback, fale comigo em ",
+    "inspiration1": "Este jogo foi fortemente inspirado no Victory Road Run do ",
+    "inspiration2": "Confira o conteúdo deles :)",
+    "specialThanks": "Agradecimentos Especiais",
+    "thanks1": "Pela ajuda com os dados de algumas roletas",
+    "thanks2": "Testes e caça a bugs",
+    "thanks3": "Testes e caça a bugs",
+    "pokeapi": "Como fonte dos dados e sprites deste jogo",
+    "bulbapedia": "Pelos sprites de treinadores usados neste projeto",
+    "images": "Todo o conteúdo de imagens de Pokémon e itens relacionados é Copyright da The Pokémon Company.",
+    "endThanks": "Obrigado por jogar!",
+    "endWords": "Espero que você se divirta jogando com seus amigos e sua família :)"
+  },
+  "coffee": {
+    "title": "Curtindo os giros? 😁",
+    "how_to_help": "Se quiser ajudar, você pode doar.",
+    "donations": "Doações de qualquer valor ajudam na motivação para novos recursos.",
+    "support": "Formas de Apoiar",
+    "thanks": "Obrigado por jogar!",
+    "hope": "Doando ou simplesmente compartilhando o jogo com outras pessoas, espero que você se divirta!"
+  }
+}

@@ -1,0 +1,50 @@
+<h1 class="title">{{ 'game.main.tournament.battle.title' | translate }}</h1>
+<p class="respin-reason">
+  {{ 'game.main.tournament.battle.potionsLeft' | translate:{ count: potionsLeft } }}
+</p>
+
+<app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+
+<ng-template #opponentModal let-modal>
+  <div class="modal-body">
+    <h1>
+      {{ 'game.main.tournament.battle.against' | translate }}
+      {{ isTranslationKey(opponentName) ? (opponentName | translate) : opponentName }}!
+    </h1>
+
+    <p class="phase">{{ phaseLabel | translate }}</p>
+
+    @if (opponent) {
+      <div class="trainer-panel">
+        <img appImgFallback [src]="opponent.spriteUrl" [alt]="opponent.name" height="128">
+        <div class="quotes">
+          <p>{{ 'game.main.tournament.battle.blurb' | translate }}</p>
+        </div>
+      </div>
+    }
+
+    <app-enemy-team-panel
+      [enemyTeam]="enemyTeam"
+      [typeAdvantage]="typeAdvantage"
+      [playerTeamSize]="trainerTeam.length">
+    </app-enemy-team-panel>
+
+    <!-- Carries every result so far, so the table is up to date after each battle. -->
+    <app-tournament-bracket></app-tournament-bracket>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">
+      {{ 'game.main.tournament.battle.go' | translate }}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #potionModal let-modal>
+  <div class="modal-body">
+    <h1>{{ 'game.main.tournament.battle.potionUsed' | translate }}</h1>
+    <p>{{ 'game.main.tournament.battle.potionsLeft' | translate:{ count: potionsLeft } }}</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>

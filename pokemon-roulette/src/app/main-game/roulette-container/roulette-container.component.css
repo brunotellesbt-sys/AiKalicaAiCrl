@@ -1,0 +1,99 @@
+.modal-footer {
+	justify-content: center;
+}
+
+.modal-body {
+	color: black;
+	text-align: center;
+}
+
+.modal-body p {
+	font-size: medium;
+}
+
+.explain-panel {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.pokemon-switch-panel {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.message {
+	text-align: start;
+	cursor: default;
+	font-size: 8.6px;
+	font-family: "Pokemon GB", Monospace, sans-serif;
+	border-radius: 2px;
+	padding: 8px;
+	position: relative;
+	line-height: 16px;
+	background: white;
+	border: 1px solid white;
+	box-shadow: 0 1px 0 1px black,
+		inset 0 1px 0 1px black,
+		0 0 0 1px black,
+		inset 0 0 0 1px black;
+	user-select: none;
+	max-width: 50%;
+}
+
+.item-panel {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.item-panel img {
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+@media (max-width: 576px) {
+  .item-panel img {
+    width: 148px;
+    height: 148px;
+  }
+}
+
+/* Type Advantage mode: run lives. Deliberately a thin strip so it never eats
+   vertical space the wheel needs. */
+.run-lives {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 0.78rem;
+}
+
+.run-lives-label {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+}
+
+.run-lives-hearts {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.heart {
+  color: #e0455a;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.heart.spent {
+  color: currentColor;
+  opacity: 0.25;
+}

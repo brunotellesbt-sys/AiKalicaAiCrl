@@ -1,0 +1,25 @@
+<ng-template #offerModal let-modal>
+    <div class="modal-body">
+        <h1>{{ 'game.main.tournament.offer.' + kind + '.title' | translate }}</h1>
+
+        <div class="offer-panel">
+            <p class="blurb">{{ 'game.main.tournament.offer.' + kind + '.blurb' | translate }}</p>
+
+            <ul class="rules">
+                <li>{{ 'game.main.tournament.offer.' + kind + '.rule1' | translate }}</li>
+                <li>{{ 'game.main.tournament.offer.' + kind + '.rule2' | translate }}</li>
+                <li>{{ 'game.main.tournament.offer.' + kind + '.rule3' | translate }}</li>
+            </ul>
+
+            <p class="warning">{{ 'game.main.tournament.offer.warning' | translate }}</p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="decline()">
+            {{ 'game.main.tournament.offer.decline' | translate }}
+        </button>
+        <button type="button" class="btn btn-outline-primary" (click)="accept()">
+            {{ 'game.main.tournament.offer.accept' | translate }}
+        </button>
+    </div>
+</ng-template>

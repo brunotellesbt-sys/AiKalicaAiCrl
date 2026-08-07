@@ -1,0 +1,39 @@
+.title {
+  text-align: center;
+  font-size: clamp(1.35rem, 5vw, 2.1rem);
+  line-height: 1.1;
+  margin: 0.5rem 0 0.75rem;
+}
+
+.villain-panel {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.08);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.villain-images img {
+  border-radius: 10px;
+  max-width: 100%;
+}
+
+.villain-text {
+  max-width: 520px;
+}
+
+.villain-text p {
+  margin: 0.15rem 0;
+}
+
+.muted {
+  opacity: 0.85;
+}
+
+.modal-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}

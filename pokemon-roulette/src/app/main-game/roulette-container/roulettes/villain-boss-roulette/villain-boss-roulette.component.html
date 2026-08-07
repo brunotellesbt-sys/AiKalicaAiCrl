@@ -1,0 +1,71 @@
+<!-- Hoenn and Paldea have two possible bosses; spin for which one is waiting. -->
+@if (choosingBoss) {
+  <h1 class="title">{{ 'game.main.roulette.villain.which' | translate }}</h1>
+  <app-wheel
+    [items]="bossChoices"
+    [fontScale]="0.78"
+    (selectedItemEvent)="onBossChosen($event)">
+  </app-wheel>
+} @else {
+  <h1 class="title">{{ villainTeamName }} Boss Battle</h1>
+  <app-wheel
+    [items]="outcomes"
+    [fontScale]="0.78"
+    (selectedItemEvent)="onItemSelected($event)">
+  </app-wheel>
+}
+
+
+<ng-template #villainBossModal let-modal>
+  <div class="modal-body">
+    <h1 class="modal-title">{{ villainTeamName }}</h1>
+
+    <div class="villain-panel">
+      <div class="villain-images">
+        <img
+          appImgFallback
+          [src]="villainLeaderSpriteUrl"
+          [alt]="villainLeaderName"
+          height="170"
+          />
+      </div>
+
+      <div class="villain-text">
+        <p><strong>{{ villainLeaderName }}</strong> appears!</p>
+        <p class="muted">{{ villainTeamBlurb }}</p>
+        @if (villainLeaderBlurb) {
+          <p class="muted">{{ villainLeaderBlurb }}</p>
+        }
+      </div>
+    </div>
+
+    @if (isTypeAdvantageMode) {
+      <app-enemy-team-panel
+        [enemyTeam]="enemyTeam"
+        [typeAdvantage]="typeAdvantage"
+        [playerTeamSize]="playerTeam.length">
+      </app-enemy-team-panel>
+    }
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="closeModal()">Ok</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #itemUsedModal let-modal>
+  <div class="modal-body">
+    <h1 class="modal-title">
+      {{ 'game.main.roulette.gym.used' | translate }} {{ itemName(currentItem) }}!
+    </h1>
+    <div class="villain-panel">
+      <img appImgFallback [src]="$safeNavigationMigration(currentItem?.sprite)" height="128" />
+      <div class="villain-text">
+        <p>{{ 'game.main.roulette.gym.defeated' | translate }} — x{{ retries }}</p>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="closeModal()">Ok</button>
+    </div>
+  </div>
+</ng-template>

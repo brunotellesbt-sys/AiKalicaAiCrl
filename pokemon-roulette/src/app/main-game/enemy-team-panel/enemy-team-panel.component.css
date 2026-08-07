@@ -1,0 +1,127 @@
+/* Opponent squad panel, shared by every Type Advantage battle. */
+/* Sized to sit under the leader without pushing the modal past a phone screen: six
+   40px slots wrap onto two rows at worst. */
+
+.enemy-team {
+	margin-top: 14px;
+	padding-top: 10px;
+	border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.enemy-team-header {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin-bottom: 8px;
+}
+
+.enemy-team-label {
+	font-weight: 700;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.advantage-chip {
+	padding: 1px 9px;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 700;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	background: rgba(0, 0, 0, 0.06);
+}
+
+.advantage-chip.positive {
+	background: rgba(40, 167, 69, 0.18);
+	border-color: rgba(40, 167, 69, 0.55);
+}
+
+.advantage-chip.negative {
+	background: rgba(220, 53, 69, 0.18);
+	border-color: rgba(220, 53, 69, 0.55);
+}
+
+.enemy-team-list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 6px;
+}
+
+.enemy-slot {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 74px;
+	padding: 4px 2px;
+	border-radius: 8px;
+	background: rgba(0, 0, 0, 0.04);
+	border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.enemy-slot img {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+	image-rendering: pixelated;
+}
+
+/* The one slot the opponent Mega Evolves. */
+.enemy-slot.is-mega {
+	border-color: rgba(224, 69, 90, 0.65);
+	background: rgba(224, 69, 90, 0.10);
+}
+
+.mega-tag {
+	font-size: 0.5rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #b02a3a;
+	line-height: 1;
+	margin-top: 1px;
+}
+
+.enemy-name {
+	font-size: 0.62rem;
+	line-height: 1.1;
+	text-align: center;
+	overflow-wrap: anywhere;
+}
+
+.enemy-types {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 2px;
+	margin-top: 2px;
+}
+
+.type-tag {
+	font-size: 0.52rem;
+	line-height: 1.2;
+	padding: 0 4px;
+	border-radius: 999px;
+	border: 1px solid rgba(0, 0, 0, 0.25);
+	background: rgba(255, 255, 255, 0.7);
+	white-space: nowrap;
+}
+
+.advantage-detail {
+	margin: 8px 0 0;
+	text-align: center;
+	font-size: 0.72rem !important;
+	opacity: 0.75;
+}
+
+@media (max-width: 576px) {
+	.enemy-slot {
+		width: 62px;
+	}
+
+	.enemy-slot img {
+		width: 34px;
+		height: 34px;
+	}
+}

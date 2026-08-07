@@ -1,0 +1,55 @@
+<h1 class="title">{{ wheelTitle }}</h1>
+
+@if (mode === 'select-mega-form') {
+  <p class="subtitle">Choosing a Mega form…</p>
+}
+
+@if (isLoading) {
+  <div class="loading">Loading…</div>
+}
+
+<!-- Never paint a wheel with no slices on it. -->
+@if (!isLoading && wheelItems.length) {
+  <app-wheel
+    [items]="wheelItems"
+    (selectedItemEvent)="onItemSelected($event)">
+  </app-wheel>
+}
+
+<ng-template #megaEvolutionModal let-modal>
+  <div class="modal-body">
+    <h2 class="popup-title">Mega Evolution!</h2>
+
+    <div class="mega-popup">
+      <div class="mega-sprites">
+        @if (isMegaAnimating) {
+          <span class="mega-aura ring-1"></span>
+          <span class="mega-aura ring-2"></span>
+          <span class="mega-aura ring-3"></span>
+          <span class="mega-flash"></span>
+        }
+        <img
+          class="mega-sprite before"
+          [class.blink-before]="isMegaAnimating"
+          [style.opacity]="isCryPhase ? 0 : null"
+          [src]="popupBeforeSpriteUrl"
+          alt="Before"
+          />
+        <img
+          class="mega-sprite after"
+          [class.blink-after]="isMegaAnimating"
+          [style.opacity]="isCryPhase ? 1 : null"
+          [src]="popupAfterSpriteUrl"
+          alt="After"
+          />
+      </div>
+
+      <div class="mega-text mt-2">
+        <div class="title">
+          Your <strong>{{ popupBeforeNameKey | translate }}</strong> evolved to
+          <strong>{{ popupAfterName }}</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

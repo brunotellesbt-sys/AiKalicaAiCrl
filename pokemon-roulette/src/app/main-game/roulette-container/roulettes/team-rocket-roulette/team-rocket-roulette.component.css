@@ -1,0 +1,57 @@
+.title {
+  text-align: center;
+}
+
+.modal-body {
+  color: black;
+  text-align: center;
+}
+
+.modal-title {
+  margin-bottom: 10px;
+}
+
+.team-rocket-panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 10px 0 12px;
+}
+
+.team-rocket-images img {
+  image-rendering: pixelated;
+}
+
+.team-rocket-text {
+  text-align: left;
+  cursor: default;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  padding: 10px 12px;
+  line-height: 1.35rem;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  max-width: 520px;
+}
+
+.team-rocket-text p {
+  margin: 0 0 6px;
+}
+
+.team-rocket-text p:last-child {
+  margin-bottom: 0;
+}
+
+.muted {
+  opacity: 0.85;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}

@@ -1,0 +1,32 @@
+<h1 class="title">{{ villainTeamName }} Encounter</h1>
+
+<app-wheel [items]="outcomes" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+
+<ng-template #teamRockerModal let-modal>
+  <div class="modal-body">
+    <h1 class="modal-title">{{ villainTeamName }}</h1>
+
+    <div class="team-rocket-panel">
+      <div class="team-rocket-images">
+        <img
+          appImgFallback
+          [src]="villainLeaderSpriteUrl"
+          [alt]="villainLeaderName"
+          height="170"
+          />
+      </div>
+
+      <div class="team-rocket-text">
+        <p><strong>{{ villainLeaderName }}</strong> appears!</p>
+        <p>{{ villainTeamBlurb }}</p>
+        @if (villainLeaderBlurb) {
+          <p class="muted">{{ villainLeaderBlurb }}</p>
+        }
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="closeModal()">Ok</button>
+    </div>
+  </div>
+</ng-template>

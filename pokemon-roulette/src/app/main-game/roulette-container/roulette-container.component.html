@@ -1,0 +1,357 @@
+<!-- Type Advantage mode only: lives left in this run. -->
+@if (showLives) {
+  <div class="run-lives">
+    <span class="run-lives-label">{{ 'game.main.roulette.lives.label' | translate }}</span>
+    <span class="run-lives-hearts">
+      @for (slot of lifeSlots; track slot) {
+        <span class="heart" [class.spent]="slot">♥</span>
+      }
+    </span>
+  </div>
+}
+
+@switch (getGameState()) {
+  @case ('game-start') {
+    <app-generation-roulette
+      (generationSelectedEvent)="handleGenerationSelected()">
+    </app-generation-roulette>
+  }
+  @case ('mode-select') {
+    <app-mode-select
+      (modeSelectedEvent)="handleModeSelected()">
+    </app-mode-select>
+  }
+  @case ('character-select') {
+    <app-character-select
+      (trainerSelectedEvent)="handleTrainerSelected()">
+    </app-character-select>
+  }
+  @case ('starter-pokemon') {
+    <app-starter-roulette
+      (selectedStarterEvent)="storePokemon($event)">
+    </app-starter-roulette>
+  }
+  @case ('check-shininess') {
+    <app-shiny-roulette
+      (isShinyEvent)="setShininess($event)">
+    </app-shiny-roulette>
+  }
+  @case ('start-adventure') {
+    <app-start-adventure-roulette
+      (catchPokemonEvent)="catchPokemon()"
+      (battleTrainerEvent)="battleTrainer()"
+      (buyPotionsEvent)="buyPotions()"
+      (doNothingEvent)="doNothing()">
+    </app-start-adventure-roulette>
+  }
+  @case ('catch-pokemon') {
+    <app-pokemon-from-generation-roulette
+      (selectedPokemonEvent)="storePokemon($event)">
+    </app-pokemon-from-generation-roulette>
+  }
+  @case ('select-from-pokemon-list') {
+    <app-pokemon-from-aux-list-roulette
+      #auxListRoulette
+      [wheelTitle]="customWheelTitle"
+      [trainerTeam]="auxPokemonList"
+      (selectedMemberEvent)="continueWithPokemon($event)">
+    </app-pokemon-from-aux-list-roulette>
+  }
+  @case ('mega-evolution') {
+    <app-mega-evolution-roulette
+      (megaEvolutionFinished)="megaEvolutionFinished()">
+    </app-mega-evolution-roulette>
+  }
+  @case ('gym-battle') {
+    <app-gym-battle-roulette
+      [currentRound]="leadersDefeatedAmount"
+      [(fromLeader)]="fromLeader"
+      (battleResultEvent)="gymBattleResult($event)">
+    </app-gym-battle-roulette>
+  }
+  @case ('check-evolution') {
+    <app-check-evolution-roulette
+      [(evolutionCredits)]="evolutionCredits"
+      (evolvePokemonEvent)="chooseWhoWillEvolve($event)"
+      (doNothingEvent)="doNothing()">
+    </app-check-evolution-roulette>
+  }
+  @case ('adventure-continues') {
+    <app-main-adventure-roulette
+      [respinReason]="respinReason"
+      (catchPokemonEvent)="catchPokemon()"
+      (battleTrainerEvent)="battleTrainer()"
+      (buyPotionsEvent)="buyPotions()"
+      (doNothingEvent)="doNothing()"
+      (catchTwoPokemonEvent)="catchTwoPokemon()"
+      (visitDaycareEvent)="chooseWhoWillEvolve($event)"
+      (teamRocketEncounterEvent)="teamRocketEncounter()"
+      (mysteriousEggEvent)="mysteriousEgg()"
+      (legendaryEncounterEvent)="legendaryEncounter()"
+      (tradePokemonEvent)="tradePokemon()"
+      (findItemEvent)="findItem()"
+      (exploreCaveEvent)="exploreCave()"
+      (snorlaxEncounterEvent)="snorlaxEncounter()"
+      (multitaskEvent)="multitask()"
+      (goFishingEvent)="goFishing()"
+      (findFossilEvent)="findFossil()"
+      (battleRivalEvent)="battleRival()">
+    </app-main-adventure-roulette>
+  }
+  @case ('team-rocket-encounter') {
+    <app-team-rocket-roulette
+      [stolenPokemon]="stolenPokemon"
+      (stealPokemonEvent)="stealPokemon()"
+      (nothingHappensEvent)="doNothing()"
+      (defeatInBattleEvent)="teamRocketDefeated()">
+    </app-team-rocket-roulette>
+  }
+  @case ('villain-boss-encounter') {
+    <app-villain-boss-roulette
+      (defeatVillainEvent)="villainBossDefeated()"
+      (stealPokemonEvent)="villainBossLost()">
+    </app-villain-boss-roulette>
+  }
+  @case ('mysterious-egg') {
+    <app-mysterious-egg-roulette
+      (selectedPokemonEvent)="storePokemon($event)">
+    </app-mysterious-egg-roulette>
+  }
+  @case ('legendary-encounter') {
+    <app-legendary-roulette
+      (selectedPokemonEvent)="legendaryCaptureChance($event)">
+    </app-legendary-roulette>
+  }
+  @case ('boss-legendary-encounter') {
+    <app-boss-legendary-roulette
+      (selectedPokemonEvent)="bossLegendaryChosen($event)">
+    </app-boss-legendary-roulette>
+  }
+  @case ('boss-legendary-outcome') {
+    <app-boss-legendary-outcome-roulette
+      (defeatEvent)="bossLegendaryDefeated()"
+      (captureEvent)="bossLegendaryCaptured()">
+    </app-boss-legendary-outcome-roulette>
+  }
+  @case ('catch-legendary') {
+    <app-catch-legendary-roulette
+      [currentRound]="leadersDefeatedAmount"
+      (catchLegendaryEvent)="legendaryCaptureSuccess()"
+      (nothingHappensEvent)="doNothing()">
+    </app-catch-legendary-roulette>
+  }
+  @case ('trade-pokemon') {
+    <app-trade-pokemon-roulette
+      (selectedPokemonEvent)="performTrade($event)">
+    </app-trade-pokemon-roulette>
+  }
+  @case ('find-item') {
+    <app-find-item-roulette
+      (itemSelectedEvent)="receiveItem($event)">
+    </app-find-item-roulette>
+  }
+  @case ('explore-cave') {
+    <app-explore-cave-roulette
+      (catchCavePokemonEvent)="catchCavePokemon()"
+      (battleTrainerEvent)="battleTrainer()"
+      (findItemEvent)="findItem()"
+      (getLostEvent)="getLost()"
+      (catchZubatEvent)="catchZubat()"
+      (findFossilEvent)="findFossil()"
+      (teamRocketEncounterEvent)="teamRocketEncounter()">
+    </app-explore-cave-roulette>
+  }
+  @case ('catch-cave-pokemon') {
+    <app-cave-pokemon-roulette
+      (selectedPokemonEvent)="storePokemon($event)">
+    </app-cave-pokemon-roulette>
+  }
+  @case ('find-fossil') {
+    <app-fossil-roulette
+      (selectedPokemonEvent)="storePokemon($event)">
+    </app-fossil-roulette>
+  }
+  @case ('snorlax-encounter') {
+    <app-snorlax-roulette
+      [currentRound]="leadersDefeatedAmount"
+      (runAwayEvent)="doNothing()"
+      (defeatSnorlaxEvent)="chooseWhoWillEvolve($event)"
+      (catchSnorlaxEvent)="catchSnorlax()">
+    </app-snorlax-roulette>
+  }
+  @case ('go-fishing') {
+    <app-fishing-roulette
+      (selectedPokemonEvent)="storePokemon($event)">
+    </app-fishing-roulette>
+  }
+  @case ('battle-rival') {
+    <app-rival-battle-roulette
+      [currentRound]="leadersDefeatedAmount"
+      (battleResultEvent)="rivalBattleResult($event)">
+    </app-rival-battle-roulette>
+  }
+  @case ('trainer-battle') {
+    <app-trainer-battle-roulette
+      [currentRound]="leadersDefeatedAmount"
+      (battleResultEvent)="trainerBattleResult($event)">
+    </app-trainer-battle-roulette>
+  }
+  @case ('elite-four-preparation') {
+    <app-elite-four-prep-roulette
+      [respinReason]="respinReason"
+      (catchPokemonEvent)="catchPokemon()"
+      (battleTrainerEvent)="battleTrainer()"
+      (buyPotionsEvent)="buyPotions()"
+      (catchTwoPokemonEvent)="catchTwoPokemon()"
+      (legendaryEncounterEvent)="legendaryEncounter()"
+      (findItemEvent)="findItem()"
+      (doNothingEvent)="doNothing()"
+      (teamRocketEncounterEvent)="teamRocketEncounter()">
+    </app-elite-four-prep-roulette>
+  }
+  @case ('elite-four-battle') {
+    <app-elite-four-battle-roulette
+      [currentRound]="leadersDefeatedAmount"
+      (battleResultEvent)="eliteFourBattleResult($event)">
+    </app-elite-four-battle-roulette>
+  }
+  @case ('champion-battle') {
+    <app-champion-battle-roulette
+      [currentRound]="leadersDefeatedAmount"
+      (battleResultEvent)="championBattleResult($event)">
+    </app-champion-battle-roulette>
+  }
+  @case ('tournament-offer') {
+    <app-tournament-offer
+      [kind]="tournamentKind"
+      (acceptEvent)="tournamentAccepted($event)"
+      (declineEvent)="tournamentDeclined()">
+    </app-tournament-offer>
+  }
+  @case ('tournament-prep') {
+    <app-tournament-prep-roulette
+      [respinReason]="respinReason"
+      (catchPokemonEvent)="catchPokemon()"
+      (catchTwoPokemonEvent)="catchTwoPokemon()"
+      (goFishingEvent)="goFishing()"
+      (exploreCaveEvent)="exploreCave()"
+      (legendaryEncounterEvent)="legendaryEncounter()">
+    </app-tournament-prep-roulette>
+  }
+  @case ('tournament-draw') {
+    <app-tournament-draw-roulette
+      (drawCompleteEvent)="tournamentDrawComplete()">
+    </app-tournament-draw-roulette>
+  }
+  @case ('tournament-battle') {
+    <app-tournament-battle-roulette
+      (battleResultEvent)="tournamentBattleResult($event)">
+    </app-tournament-battle-roulette>
+  }
+  @case ('game-finish') {
+    <app-end-game
+      >
+    </app-end-game>
+  }
+  @case ('game-over') {
+    <app-game-over
+      [currentRound]="leadersDefeatedAmount"
+      (restartEvent)="resetGameAction()">
+    </app-game-over>
+  }
+}
+
+<ng-template #altPrizeModal let-modal>
+  <div class="modal-body">
+    <h1>{{ altPrizeText | translate }}</h1>
+    <div class="item-panel">
+      <img appImgFallback [src]="altPrizeSprite" height="128">
+      <div class="message">
+        <p>{{ altPrizeDescription | translate }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>
+
+<ng-template #pkmnEvoModal let-modal>
+  <div class="modal-body">
+    <h1>{{ pkmnEvoTitle | translate }}</h1>
+    <div class="pokemon-switch-panel">
+      <img appImgFallback [src]="$safeNavigationMigration(pkmnOut.sprite?.front_default)" height="128">
+      <div class="message">
+        <p>Your {{ pkmnOut.text | translate }} evolved to {{ pkmnIn.text | translate }}!</p>
+      </div>
+      <img appImgFallback [src]="$safeNavigationMigration(pkmnIn.sprite?.front_default)" height="128">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>
+
+<ng-template #pkmnTradeModal let-modal>
+  <div class="modal-body">
+    <h1>{{ pkmnTradeTitle | translate }}</h1>
+    <div class="pokemon-switch-panel">
+      <img appImgFallback [src]="$safeNavigationMigration(pkmnOut.sprite?.front_default)" height="128">
+      <div class="message">
+        <p>{{ 'game.main.trade.sent' | translate }} {{ pkmnOut.text | translate }} {{ 'game.main.trade.received' | translate }} {{ pkmnIn.text | translate }}!</p>
+      </div>
+      <img appImgFallback [src]="$safeNavigationMigration(pkmnIn.sprite?.front_default)" height="128">
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>
+
+<ng-template #itemActivateModal let-modal>
+  <div class="modal-body">
+    <h1>{{ currentContextItem.text | translate }} {{ 'game.main.activates' | translate }}</h1>
+    <div class="item-panel">
+      <img appImgFallback [src]="currentContextItem.sprite" height="128">
+      <div class="message">
+        <p>{{ currentContextItem.description | translate }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>
+
+<ng-template #infoModal let-modal>
+  <div class="modal-body">
+    <h1>{{ infoModalTitle }}</h1>
+    <div class="explain-panel">
+      <div class="message">
+        <p>{{ infoModalMessage | translate }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>
+
+<ng-template #teamRocketFailsModal let-modal>
+  <div class="modal-body">
+    <h1>{{ 'game.main.rocket.fails' | translate }}</h1>
+    <div class="explain-panel">
+      <img appImgFallback src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/244.png"
+        alt="Forte igual o Entei!"
+        height="128">
+        <div class="message">
+          <p>{{ 'game.main.rocket.entei.emerges' | translate }}</p>
+          <p>{{ 'game.main.rocket.entei.prevents' | translate}}</p>
+          <p>{{ 'game.main.rocket.entei.fine' | translate }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-primary" (click)="closeModal()">{{ 'game.main.rocket.entei.thanks' | translate}}</button>
+    </div>
+  </ng-template>

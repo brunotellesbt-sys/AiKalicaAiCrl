@@ -1,0 +1,50 @@
+<div class="game-container" [class.pokedex-open]="(pokedexOpen$ | async) === true">
+  <div class="row">
+    <div class="extra-options col-12 col-sm-3 d-flex flex-column">
+      <div class="extra-top py-2">
+        <div class="row g-2">
+          <div class="col-6 col-sm-12">
+            <app-settings-button></app-settings-button>
+          </div>
+          <div class="col-6 col-sm-12">
+            <app-restart-game-buttom (restartEvent)="resetGameAction()"></app-restart-game-buttom>
+          </div>
+          <div class="col-12">
+            <app-pokedex-panel></app-pokedex-panel>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop: show Pokédex as a scrollable side panel (roulette stays visible). -->
+      @if ((pokedexOpen$ | async) && !isMobile) {
+        <div class="pokedex-sidepanel pokedex-embedded">
+          <app-pokedex-screen></app-pokedex-screen>
+        </div>
+      }
+    </div>
+
+    <div class="main-game col-12 col-sm-5">
+      <!-- Roulette is always visible (no overlay / no replacement). -->
+      <div class="roulette-area">
+        <app-roulette-container (resetGameEvent)="resetGame()"></app-roulette-container>
+      </div>
+    </div>
+
+    <div class="trainer-info col-12 col-sm-4">
+      <div class="trainer-team">
+        <app-trainer-team></app-trainer-team>
+      </div>
+
+      <!-- Mobile-only: Pokédex expands below the trainer team -->
+      @if ((pokedexOpen$ | async) && isMobile) {
+        <div class="pokedex-mobile pokedex-embedded">
+          <app-pokedex-screen></app-pokedex-screen>
+        </div>
+      }
+
+      <div class="items">
+        <app-items (rareCandyInterrupt)="rareCandyInterrupt($event)"></app-items>
+      </div>
+    </div>
+  </div>
+</div>

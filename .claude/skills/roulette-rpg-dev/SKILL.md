@@ -7,7 +7,25 @@ description: Deep working knowledge for building, modifying and balancing roulet
 
 Games in this family look simple — click a wheel, watch it spin — but they are really **two systems in a trenchcoat**: a probability model that decides outcomes, and a state machine that decides which decision comes next. Almost every change a user asks for lands in one of those two places. Get the mental model right and the edits become small and safe; get it wrong and you produce the classic bugs listed in `references/pitfalls.md`.
 
-This skill is grounded in a real, shipped Angular game (a Pokémon-themed roulette adventure: 9 regions, 34 wheel components, two difficulty modes, a post-game tournament). The patterns generalize to any wheel-driven run-based game in any framework — the file names below are that game's, the reasoning is not.
+This skill is grounded in a real, shipped Angular game (a Pokémon-themed roulette adventure: 9 regions, 35 wheel components, two difficulty modes, a post-game tournament). The patterns generalize to any wheel-driven run-based game in any framework — the file names below are that game's, the reasoning is not.
+
+## Where the reference implementation lives
+
+In this repository the game is at **`pokemon-roulette/`**, and every path mentioned in the reference files is relative to `pokemon-roulette/src/app/`. The load-bearing files, if you want to read the real thing:
+
+| Concept | File |
+|---|---|
+| State machine | `services/game-state-service/game-state.service.ts` + `game-state.ts` |
+| Orchestrator (all game rules) | `main-game/roulette-container/roulette-container.component.ts` |
+| The wheel | `wheel/wheel.component.ts` |
+| Battle odds | `services/enemy-team-service/victory-odds.ts` |
+| Enemy squads + matchup scoring | `services/enemy-team-service/enemy-team.service.ts` |
+| Difficulty scaling tables | `services/enemy-team-service/enemy-team-size.ts` |
+| Type chart | `data/type-chart.ts` |
+| Run state (mode, lives, one-off flags) | `services/run-service/run.service.ts` |
+| Individual wheels | `main-game/roulette-container/roulettes/*/` |
+
+When working inside `pokemon-roulette/`, the directory-scoped `angular-game-dev` skill also applies — it covers the generic Angular mechanics (canvas loops, subscription hygiene, persisted state), while this skill covers the game's design and rules.
 
 ## The mental model: four pillars
 

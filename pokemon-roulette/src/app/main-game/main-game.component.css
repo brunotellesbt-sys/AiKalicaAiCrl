@@ -1,0 +1,44 @@
+.game-container {
+	width: 100%;
+}
+
+/* Desktop layout helpers */
+@media (min-width: 576px) {
+  .game-container > .row {
+    min-height: 100vh;
+  }
+
+  .extra-options {
+    max-height: 100vh;
+    overflow: hidden;
+  }
+
+  .extra-top {
+    flex: 0 0 auto;
+  }
+
+  /* Pokédex lives in the left column as a scrollable list */
+  .pokedex-sidepanel {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 6px 0 10px 0;
+  }
+}
+
+/* Mobile: reserve space for floating PC button so it doesn't cover bottom content */
+@media (max-width: 576px) {
+  .game-container {
+    padding-bottom: 96px;
+  }
+}
+
+/* Wrapper used to embed Pokédex below the team on mobile */
+.pokedex-embedded { width: 100%; }
+
+.map-container {
+	flex-shrink: 0;
+	/* Prevents it from shrinking */
+	background: #222;
+	/* Optional: Background for better visibility */
+	padding: 16px;
+}

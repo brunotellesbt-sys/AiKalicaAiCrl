@@ -1,0 +1,21 @@
+.respin-reason {
+    min-height: 1.5rem;
+    text-align: center;
+}
+
+.drawn-panel {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.drawn-name {
+    display: flex;
+    flex-direction: column;
+}
+
+.seed {
+    font-size: 0.85rem;
+    opacity: 0.75;
+}

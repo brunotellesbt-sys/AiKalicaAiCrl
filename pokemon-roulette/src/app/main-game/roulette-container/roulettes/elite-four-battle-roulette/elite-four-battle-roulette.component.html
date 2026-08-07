@@ -1,0 +1,50 @@
+<h1 class="title">{{ 'game.main.roulette.elite.title' | translate }}</h1>
+<p class="respin-reason">{{ (retries > 0) ? (itemName(currentItem) + " x" + retries) : ""}}</p>
+<app-wheel
+  #wheel
+  [items]="victoryOdds"
+  (selectedItemEvent)="onItemSelected($event)">
+</app-wheel>
+
+<ng-template #eliteFourPresentationModal let-modal>
+  <div class="modal-body">
+    <h1>{{ 'game.main.roulette.elite.elite4' | translate }} {{ currentElite.name | translate }}!</h1>
+    <div class="elite-panel">
+      <img appImgFallback [src]="currentElite.sprite"
+        alt="{{ currentElite.name | translate }}"
+        height="128">
+        <div class="quotes">
+          @for (quote of currentElite.quotes; track quote) {
+            <p>{{ quote | translate }}</p>
+          }
+        </div>
+      </div>
+
+      @if (isTypeAdvantageMode) {
+        <app-enemy-team-panel
+          [enemyTeam]="enemyTeam"
+          [typeAdvantage]="typeAdvantage"
+          [playerTeamSize]="trainerTeam.length">
+        </app-enemy-team-panel>
+      }
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-primary" (click)="closeModal()">{{ 'game.main.roulette.elite.go' | translate }}</button>
+    </div>
+  </ng-template>
+
+  <ng-template #itemUsedModal let-modal>
+    <div class="modal-body">
+      <h1>{{ 'game.main.roulette.elite.use' | translate }} {{ itemName(currentItem) }}!</h1>
+      <div class="item-panel">
+        <img appImgFallback [src]="currentItem.sprite" height="128">
+        <div class="quotes">
+          <p>{{ itemDescription(currentItem) }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+    </div>
+  </ng-template>

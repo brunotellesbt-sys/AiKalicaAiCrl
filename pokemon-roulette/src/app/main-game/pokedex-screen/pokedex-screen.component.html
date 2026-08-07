@@ -1,0 +1,213 @@
+<div class="pokedex-screen" #screenRoot>
+  <div class="pokedex-topbar">
+    <button type="button" class="btn btn-outline-light" (click)="closePokedex()">{{ 'pokedex.back' | translate }}</button>
+    <div class="pokedex-title">{{ 'pokedex.title' | translate }}</div>
+  </div>
+
+  <div class="pokedex-body">
+    <div class="pokedex-controls d-flex gap-2 align-items-center mb-3 flex-wrap">
+      <input
+        class="form-control flex-grow-1"
+        type="text"
+        [placeholder]="'pokedex.searchPlaceholder' | translate"
+        [(ngModel)]="search"
+        (ngModelChange)="onSearchChange()"
+        />
+
+        <select class="form-select pokedex-type-select" [(ngModel)]="selectedType" (change)="onTypeChange()">
+          <option value="">{{ 'pokedex.allTypes' | translate }}</option>
+          @for (t of allTypes; track t) {
+            <option [value]="t">{{ 'types.' + t | translate }}</option>
+          }
+        </select>
+
+        <div class="d-flex align-items-center gap-2 ms-auto">
+          <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="pageIndex === 0">◀</button>
+          <div class="small text-muted">{{ pageLabel() }}</div>
+          <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="(pageIndex + 1) * pageSize >= filteredRows().length">▶</button>
+        </div>
+      </div>
+
+      <div class="pokedex-grid">
+        @for (row of visibleRows; track row) {
+          <div class="pokedex-card">
+            <img class="pokedex-img" [src]="row.imgUrl" [alt]="row.name" loading="lazy" />
+            <div class="pokedex-meta">
+              <div class="pokedex-title-row">
+                <span class="dex-no">#{{ row.id }}</span>
+                <span class="name">{{ row.name }}</span>
+              </div>
+              <div class="pokedex-badges">
+                @if (row.formLabel) {
+                  <span class="chip chip-regional">{{ 'pokedex.regional' | translate }}: {{ row.formLabel }}</span>
+                }
+                @if ((row.megaForms?.length ?? 0) > 0) {
+                  <button type="button" class="chip chip-mega chip-click" (click)="openMegaChip(row)">
+                    {{ 'pokedex.mega' | translate }}: {{ row.megaForms?.length ?? 0 }}
+                  </button>
+                }
+              </div>
+              <div class="pokedex-badges mt-1">
+                <span class="chip chip-power">{{ 'pokedex.power' | translate }}: {{ row.power }}</span>
+                @if ((row.megaForms?.length ?? 0) > 0) {
+                  <span class="chip chip-mega-power">{{ 'pokedex.megaPower' | translate }}: {{ megaPowerFor(row.power) }}</span>
+                }
+              </div>
+              @if ((row.types?.length ?? 0) > 0) {
+                <div class="pokedex-types">
+                  @for (t of row.types; track t) {
+                    <span class="chip chip-type" [ngClass]="'type-' + t">{{ 'types.' + t | translate }}</span>
+                  }
+                </div>
+              }
+              <div class="pokedex-sub">
+                @if (row.heightM !== undefined && row.weightKg !== undefined) {
+                  <span>
+                    {{ 'pokedex.height' | translate }}: {{ row.heightM }} m · {{ 'pokedex.weight' | translate }}: {{ row.weightKg }} kg
+                  </span>
+                }
+                @if (row.loading) {
+                  <span class="ms-2">{{ 'pokedex.loading' | translate }}</span>
+                }
+              </div>
+              @if (row.descriptionEn) {
+                <div class="pokedex-desc">{{ row.descriptionEn }}</div>
+              }
+              @if ((row.megaForms?.length ?? 0) > 0 || (row.regionalForms?.length ?? 0) > 0) {
+                <div class="pokedex-extra">
+                  @if ((row.megaForms?.length ?? 0) > 0) {
+                    <div class="extra-line">
+                      <strong>{{ 'pokedex.megas' | translate }}</strong>
+                      @for (m of row.megaForms; track m) {
+                        <button
+                          type="button"
+                          class="btn btn-link btn-sm p-0 ms-1 me-2"
+                          (click)="openFormDetails(m, 'mega', row.power)">
+                          {{ displayFormName(m) }}
+                        </button>
+                      }
+                    </div>
+                  }
+                  @if ((row.regionalForms?.length ?? 0) > 0) {
+                    <div class="extra-line">
+                      <strong>{{ 'pokedex.regionalForms' | translate }}</strong>
+                      @for (r of row.regionalForms; track r) {
+                        <button
+                          type="button"
+                          class="btn btn-link btn-sm p-0 ms-1 me-2"
+                          (click)="openFormDetails(r, 'regional', row.power)">
+                          {{ r }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Popup over the open Pokédex. Backdrop click / Esc / the X button all close it.
+    It is pinned to the Pokédex column's own box so it never spills onto the roulette. -->
+    @if (isPopupOpen) {
+      <div
+        class="pokedex-popup-backdrop"
+        [style.left.px]="popupBox.left"
+        [style.width.px]="popupBox.width"
+        (click)="closePopup()">
+        <div class="pokedex-popup" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+          <div class="popup-header">
+            @if (megaSelectOpen) {
+              <div class="popup-title">
+                {{ 'pokedex.chooseMegaForm' | translate }}
+                @if (megaSelectForName) {
+                  <span class="dex-no">— {{ megaSelectForName }}</span>
+                }
+              </div>
+            }
+            @if (formInfo && !megaSelectOpen) {
+              <div class="popup-title">
+                {{ formInfo.title }}
+                @if (formInfo.kind === 'mega') {
+                  <span class="chip chip-mega ms-2">{{ 'pokedex.mega' | translate }}</span>
+                }
+                @if (formInfo.kind === 'regional') {
+                  <span class="chip chip-regional ms-2">{{ 'pokedex.regional' | translate }}</span>
+                }
+              </div>
+            }
+            <button class="popup-close" type="button" [attr.aria-label]="'pokedex.close' | translate" (click)="closePopup()">✕</button>
+          </div>
+          <!-- Mega picker (Pokémon with more than one Mega) -->
+          @if (megaSelectOpen) {
+            <div class="popup-body">
+              <p class="mb-2 small">{{ 'pokedex.multipleMegasHint' | translate }}</p>
+              <div class="d-grid gap-2">
+                @for (f of megaSelectForms; track f) {
+                  <button type="button" class="btn btn-outline-light" (click)="chooseMegaForm(f)">
+                    {{ displayFormName(f) }}
+                    <span class="chip chip-power ms-1">{{ 'pokedex.power' | translate }}: {{ megaPowerFor(megaSelectBasePower) }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+          <!-- Form details, laid out like a dex card -->
+          @if (formInfo && !megaSelectOpen) {
+            <div class="popup-body">
+              <div class="pokedex-card popup-card">
+                @if (formInfo.spriteUrl) {
+                  <img class="pokedex-img" [src]="formInfo.spriteUrl" [alt]="formInfo.title" />
+                }
+                <div class="pokedex-meta">
+                  <div class="pokedex-title-row">
+                    @if (formInfo.dexNo) {
+                      <span class="dex-no">#{{ formInfo.dexNo }}</span>
+                    }
+                    <span class="name">{{ formInfo.title }}</span>
+                  </div>
+                  @if (formInfo.power !== undefined) {
+                    <div class="pokedex-badges mt-1">
+                      <span class="chip chip-power">{{ 'pokedex.power' | translate }}: {{ formInfo.power }}</span>
+                    </div>
+                  }
+                  @if ((formInfo.types?.length ?? 0) > 0) {
+                    <div class="pokedex-types">
+                      @for (t of formInfo.types; track t) {
+                        <span class="chip chip-type" [ngClass]="'type-' + t">{{ 'types.' + t | translate }}</span>
+                      }
+                    </div>
+                  }
+                  @if (formInfo.heightM || formInfo.weightKg) {
+                    <div class="pokedex-sub">
+                      {{ 'pokedex.height' | translate }}: {{ formInfo.heightM }} m · {{ 'pokedex.weight' | translate }}: {{ formInfo.weightKg }} kg
+                    </div>
+                  }
+                  @if (formInfo.descriptionEn) {
+                    <div class="pokedex-desc">{{ formInfo.descriptionEn }}</div>
+                  }
+                  <div class="pokedex-extra">
+                    @if (formInfo.bulbapediaUrl) {
+                      <a [href]="formInfo.bulbapediaUrl" target="_blank" rel="noopener noreferrer">
+                        {{ 'pokedex.openBulbapedia' | translate }}
+                      </a>
+                    }
+                    @if (formInfo.bulbapediaUrl && formInfo.pokeapiUrl) {
+                      <span> · </span>
+                    }
+                    @if (formInfo.pokeapiUrl) {
+                      <a [href]="formInfo.pokeapiUrl" target="_blank" rel="noopener noreferrer">
+                        {{ 'pokedex.openPokeapi' | translate }}
+                      </a>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>

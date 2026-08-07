@@ -1,0 +1,25 @@
+<h1 class="title">{{ 'game.main.tournament.draw.title' | translate }}</h1>
+<p class="respin-reason">
+  {{ 'game.main.tournament.draw.progress' | translate:{ drawn: seeded.length, total: fieldSize } }}
+</p>
+
+<app-wheel #wheel [items]="slices" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+
+<ng-template #drawnModal let-modal>
+  <div class="modal-body">
+    <h1>{{ 'game.main.tournament.draw.seeded' | translate }}</h1>
+
+    @if (lastDrawn) {
+      <div class="drawn-panel">
+        <img appImgFallback [src]="lastDrawn.spriteUrl" [alt]="lastDrawn.name" height="96">
+        <div class="drawn-name">
+          <strong>{{ isTranslationKey(lastDrawn.name) ? (lastDrawn.name | translate) : lastDrawn.name }}</strong>
+          <span class="seed">{{ 'game.main.tournament.draw.seedNumber' | translate:{ seed: seeded.length } }}</span>
+        </div>
+      </div>
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-primary" (click)="closeModal()">Ok</button>
+  </div>
+</ng-template>
