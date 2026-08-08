@@ -44,6 +44,29 @@ if (typeof window !== 'undefined' && typeof window.matchMedia !== 'function') {
   })) as typeof window.matchMedia;
 }
 
+/*
+  jsdom implements <canvas> as far as the element and then throws "Not implemented:
+  HTMLCanvasElement's getContext()" for every call, unless the native `canvas` package is
+  installed. The wheel draws on every change, so a run printed dozens of those lines and a
+  genuine failure had to be hunted for among them.
+
+  A no-op 2D context is enough: no spec asserts on pixels, they assert on the selection maths
+  that decides what gets drawn. Installing the native package instead would mean a compiler
+  toolchain in CI to test drawing nobody checks.
+*/
+if (typeof HTMLCanvasElement !== 'undefined') {
+  const noopContext = new Proxy(
+    { canvas: null, measureText: () => ({ width: 0 }) },
+    {
+      get: (target: Record<string, unknown>, prop: string) =>
+        prop in target ? target[prop] : () => undefined,
+    }
+  );
+
+  HTMLCanvasElement.prototype.getContext = ((kind: string) =>
+    kind === '2d' ? noopContext : null) as typeof HTMLCanvasElement.prototype.getContext;
+}
+
 // jsdom ships no ResizeObserver, which EndGameComponent constructs up front.
 if (typeof globalThis.ResizeObserver === 'undefined') {
   globalThis.ResizeObserver = class {
