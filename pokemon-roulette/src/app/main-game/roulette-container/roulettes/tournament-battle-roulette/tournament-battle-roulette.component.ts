@@ -92,6 +92,28 @@ export class TournamentBattleRouletteComponent implements OnInit, OnDestroy {
     return this.tournamentService.potionsLeft;
   }
 
+  /** True once the bracket has started — the only phase where a loss ends the run. */
+  get isKnockout(): boolean {
+    return this.tournamentService.stage === 'knockout';
+  }
+
+  /** Group matches are played for points, so the UI should not promise a safety net. */
+  get showsPotions(): boolean {
+    return this.isKnockout;
+  }
+
+  /**
+   * "Win or go home" is only true once the bracket starts.
+   *
+   * Telling a player their group match is sudden death and then not eliminating them reads
+   * as a bug, so the stakes line follows the phase.
+   */
+  get blurbKey(): string {
+    return this.isKnockout
+      ? 'game.main.tournament.battle.blurb'
+      : 'game.main.tournament.battle.blurbGroups';
+  }
+
   get phaseLabel(): string {
     return `game.main.tournament.phase.${this.tournamentService.stage}`;
   }
@@ -144,9 +166,11 @@ export class TournamentBattleRouletteComponent implements OnInit, OnDestroy {
 
     if (this.retries > 0) return;
 
-    // A Potion buys one more spin. When the allowance runs out, the tournament is over —
-    // there are no lives here and no returning to an earlier wheel.
-    if (this.tournamentService.usePotion()) {
+    // A Potion buys one more spin, but only once the bracket has started. A group-stage
+    // loss costs points and nothing else — the player is still in the tournament — so
+    // spending the run's single Potion there would burn it on a match that cannot end
+    // anything. Losing a group match simply reports the result.
+    if (this.isKnockout && this.tournamentService.usePotion()) {
       this.retries = 1;
       this.modalService.open(this.potionModal, { centered: true, size: 'md' });
       return;

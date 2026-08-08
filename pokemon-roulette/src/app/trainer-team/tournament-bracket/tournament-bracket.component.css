@@ -1,87 +1,263 @@
+/*
+  Tournament board.
+
+  Two constraints shaped this file:
+
+  1. The game's pixel font has no small sizes that stay legible, so every size here is a
+     clamp() against viewport width rather than a fixed rem. Phones get the floor, desktop
+     the ceiling, and nothing depends on the browser's own text scaling.
+  2. A bracket is intrinsically wider than a phone. It scrolls inside its own box with
+     scroll-snap on the columns, so a swipe lands cleanly on the next round instead of
+     leaving the player stranded between two.
+*/
+
+:host {
+  --tt-line: rgba(128, 128, 128, 0.35);
+  --tt-accent: #f0b429;
+  --tt-win: #2e9e5b;
+  --tt-surface: rgba(128, 128, 128, 0.08);
+  --tt-radius: 8px;
+
+  display: block;
+  container-type: inline-size;
+}
+
 .tournament-table {
-    margin-top: 1rem;
+  margin-top: 1rem;
+  /* The pixel font boosts hard on Android when a block is much wider than the screen. */
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+.tt-head h2 {
+  font-size: clamp(0.95rem, 3.4vw, 1.4rem);
+  margin: 0;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .stage {
-    font-size: 0.85rem;
-    opacity: 0.75;
-    margin-bottom: 0.75rem;
+  font-size: clamp(0.6rem, 2.2vw, 0.8rem);
+  opacity: 0.7;
+  margin: 0.15rem 0 0.9rem;
 }
+
+/* ----------------------------------------------------------------- groups */
 
 .groups {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+  gap: 0.6rem;
 }
 
-.group h3,
-.round h3 {
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
+.group {
+  border: 1px solid var(--tt-line);
+  border-radius: var(--tt-radius);
+  padding: 0.5rem 0.55rem 0.4rem;
+  background: var(--tt-surface);
+}
+
+.group.yours {
+  border-color: var(--tt-accent);
+}
+
+.group h3 {
+  font-size: clamp(0.62rem, 2.3vw, 0.82rem);
+  margin: 0 0 0.35rem;
+  letter-spacing: 0.04em;
+  opacity: 0.85;
 }
 
 .group table {
-    width: 100%;
-    font-size: 0.8rem;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.55rem, 2.1vw, 0.74rem);
+}
+
+.group th {
+  font-weight: 400;
+  opacity: 0.55;
+  font-size: 0.85em;
+  padding-bottom: 0.2rem;
 }
 
 .group th,
 .group td {
-    padding: 0.15rem 0.3rem;
-    text-align: center;
+  padding: 0.18rem 0.2rem;
+  text-align: center;
 }
 
 .group th.name,
 .group td.name {
-    text-align: left;
+  text-align: left;
+  /* Long trainer names must not widen the card and break the grid. */
+  max-width: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.group tr.you {
-    font-weight: 700;
+.group td.pos {
+  opacity: 0.5;
+  width: 1.4em;
 }
 
-/* Wide brackets scroll inside their own box rather than stretching the PC modal. */
+.group td.pts {
+  font-weight: 700;
+}
+
+/* A qualifying place is marked on the row itself — the player should be able to read
+   "am I through?" without counting rows against a rule stated somewhere else. */
+.group tr.qualifying td.pos {
+  color: var(--tt-win);
+  opacity: 1;
+  font-weight: 700;
+}
+
+.group tr.qualifying td {
+  background: color-mix(in srgb, var(--tt-win) 12%, transparent);
+}
+
+.group tr.you td {
+  font-weight: 700;
+  box-shadow: inset 2px 0 0 var(--tt-accent);
+}
+
+/* ---------------------------------------------------------------- bracket */
+
 .bracket {
-    display: flex;
-    gap: 1rem;
-    overflow-x: auto;
-    margin-top: 1rem;
-    padding-bottom: 0.5rem;
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.9rem, 3.5vw, 2rem);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  margin-top: 1rem;
+  padding: 0.2rem 0 0.7rem;
 }
 
 .round {
-    min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+  min-width: clamp(140px, 42vw, 200px);
+  flex: 0 0 auto;
 }
 
-.match {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.78rem;
-    padding: 0.2rem 0.35rem;
-    border: 1px solid rgba(128, 128, 128, 0.35);
-    border-radius: 4px;
-    margin-bottom: 0.25rem;
+.round h3 {
+  font-size: clamp(0.58rem, 2.2vw, 0.78rem);
+  margin: 0 0 0.5rem;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+  text-align: center;
 }
 
-.match.you {
-    border-color: currentColor;
-    font-weight: 700;
+/*
+  Even spacing per column is what produces the bracket shape: each round has half the ties
+  of the one before it, so distributing them over the same height automatically centres a
+  tie between the two it feeds from — no per-round margin maths, and it survives any field
+  size, including the lopsided ones a play-in round leaves behind.
+*/
+.ties {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  flex: 1;
+  gap: 0.4rem;
 }
 
-.side {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.tie {
+  position: relative;
+  border: 1px solid var(--tt-line);
+  border-radius: var(--tt-radius);
+  overflow: hidden;
+  background: var(--tt-surface);
 }
 
-.side.won {
-    text-decoration: underline;
+.tie.you {
+  border-color: var(--tt-accent);
+  box-shadow: 0 0 0 1px var(--tt-accent);
 }
 
-.vs {
+/* Connector into the next round. Purely decorative, hidden from assistive tech by being
+   a pseudo-element, and dropped on narrow screens where columns scroll independently. */
+.tie::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: clamp(0.9rem, 3.5vw, 2rem);
+  border-top: 1px solid var(--tt-line);
+}
+
+.round.final .tie::after {
+  display: none;
+}
+
+.seat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.4rem;
+  font-size: clamp(0.56rem, 2.15vw, 0.75rem);
+  line-height: 1.35;
+}
+
+.seat + .seat {
+  border-top: 1px solid var(--tt-line);
+}
+
+.who {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.seat.self .who {
+  font-weight: 700;
+}
+
+.seat.won {
+  background: color-mix(in srgb, var(--tt-win) 16%, transparent);
+  font-weight: 700;
+}
+
+/* A left rule reads as "advanced" without relying on colour alone. */
+.seat.won::before {
+  content: '';
+  align-self: stretch;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--tt-win);
+}
+
+.seat.lost {
+  opacity: 0.45;
+}
+
+.seat.lost .who {
+  text-decoration: line-through;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tie.you {
+    animation: tie-in 240ms ease-out;
+  }
+}
+
+@keyframes tie-in {
+  from {
+    transform: translateY(3px);
     opacity: 0.6;
-    font-size: 0.7rem;
+  }
+}
+
+/* On a phone the columns are swiped one at a time, so the connectors would be drawn to a
+   round that is off-screen — more visual noise than signal. */
+@container (max-width: 420px) {
+  .tie::after {
+    display: none;
+  }
 }

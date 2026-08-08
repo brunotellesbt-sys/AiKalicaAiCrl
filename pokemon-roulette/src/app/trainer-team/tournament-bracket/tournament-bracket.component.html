@@ -1,15 +1,19 @@
 @if (isActive) {
   <div class="tournament-table">
-    <h2>{{ kindLabel | translate }}</h2>
-    <p class="stage">{{ stageLabel | translate }}</p>
+    <header class="tt-head">
+      <h2>{{ kindLabel | translate }}</h2>
+      <p class="stage">{{ stageLabel | translate }}</p>
+    </header>
+
     @if (showGroups) {
       <div class="groups">
         @for (group of groups; track group) {
-          <div class="group">
+          <section class="group" [class.yours]="hasPlayer(group)">
             <h3>{{ group.name }}</h3>
             <table>
               <thead>
                 <tr>
+                  <th class="pos" aria-hidden="true"></th>
                   <th class="name">{{ 'game.main.tournament.table.trainer' | translate }}</th>
                   <th>{{ 'game.main.tournament.table.played' | translate }}</th>
                   <th>{{ 'game.main.tournament.table.wins' | translate }}</th>
@@ -17,8 +21,9 @@
                 </tr>
               </thead>
               <tbody>
-                @for (row of group.standings; track row) {
-                  <tr [class.you]="isPlayer(row.competitor)">
+                @for (row of group.standings; track row; let i = $index) {
+                  <tr [class.you]="isPlayer(row.competitor)" [class.qualifying]="qualifies(i)">
+                    <td class="pos">{{ i + 1 }}</td>
                     <td class="name">
                       {{ isTranslationKey(row.competitor.name)
                       ? (row.competitor.name | translate)
@@ -26,38 +31,43 @@
                     </td>
                     <td>{{ row.played }}</td>
                     <td>{{ row.wins }}</td>
-                    <td>{{ row.points }}</td>
+                    <td class="pts">{{ row.points }}</td>
                   </tr>
                 }
               </tbody>
             </table>
-          </div>
+          </section>
         }
       </div>
     }
-    @if (rounds.length) {
-      <div class="bracket">
-        @for (round of rounds; track round) {
-          @if (hasMatches(round)) {
-          <div class="round">
+
+    @if (playedRounds.length) {
+      <div class="bracket" role="group">
+        @for (round of playedRounds; track round; let last = $last) {
+          <div class="round" [class.final]="last">
             <h3>{{ roundLabel(round) | translate }}</h3>
-            @for (match of contested(round); track match) {
-              <div class="match" [class.you]="match.playerMatch">
-                <span class="side" [class.won]="isWinner(match, match.a)">
-                  {{ match.a
-                  ? (isTranslationKey(match.a.name) ? (match.a.name | translate) : match.a.name)
-                  : '—' }}
-                </span>
-                <span class="vs">{{ 'game.main.tournament.table.vs' | translate }}</span>
-                <span class="side" [class.won]="isWinner(match, match.b)">
-                  {{ match.b
-                  ? (isTranslationKey(match.b.name) ? (match.b.name | translate) : match.b.name)
-                  : '—' }}
-                </span>
-              </div>
-            }
+            <div class="ties">
+              @for (match of contested(round); track match) {
+                <div
+                  class="tie"
+                  [class.you]="match.playerMatch"
+                  [class.decided]="!!match.winner">
+                  <div class="seat"
+                       [class.won]="isWinner(match, match.a)"
+                       [class.lost]="isLoser(match, match.a)"
+                       [class.self]="isPlayer(match.a)">
+                    <span class="who">{{ sideName(match.a) | translate }}</span>
+                  </div>
+                  <div class="seat"
+                       [class.won]="isWinner(match, match.b)"
+                       [class.lost]="isLoser(match, match.b)"
+                       [class.self]="isPlayer(match.b)">
+                    <span class="who">{{ sideName(match.b) | translate }}</span>
+                  </div>
+                </div>
+              }
+            </div>
           </div>
-          }
         }
       </div>
     }

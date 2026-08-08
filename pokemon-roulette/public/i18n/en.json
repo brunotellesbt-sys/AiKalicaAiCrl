@@ -339,7 +339,10 @@
           "blurb": "Six fully evolved Pokémon. No lives. Win or go home.",
           "go": "Let's Go!",
           "potionUsed": "You used a Potion!",
-          "potionsLeft": "Potions: {{count}}"
+          "potionsLeft": "Potions: {{count}}",
+          "board": "Tournament board",
+          "groupStakes": "Group stage — points only. A loss does not knock you out.",
+          "blurbGroups": "Six fully evolved Pokémon. Group stage: a loss costs points, not your place."
         },
         "table": {
           "trainer": "Trainer",

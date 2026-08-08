@@ -101,6 +101,18 @@ const WORLD_GROUP_SIZE = 4;
  */
 const WORLD_QUALIFY_PER_GROUP = 1;
 
+/**
+ * Potions handed out per tournament — one, for the whole thing.
+ *
+ * It used to be three per phase, which made the bracket a formality: three re-spins turn a
+ * 50/50 match into a 94% one, every round. One is a single genuine second chance that the
+ * player has to decide when to spend.
+ *
+ * The group stage gets none and spends none: nothing is at stake there beyond points, so a
+ * safety net would be spent on a match that cannot end the run anyway.
+ */
+const TOURNAMENT_POTIONS = 1;
+
 @Injectable({ providedIn: 'root' })
 export class TournamentService {
   private kindSubject$ = new BehaviorSubject<TournamentKind | null>(null);
@@ -228,8 +240,23 @@ export class TournamentService {
     return this.rounds;
   }
 
+  /**
+   * Group standings, each table ordered the way the group is actually decided.
+   *
+   * Sorted here rather than in the template so the display and `resolveGroupRound()` agree
+   * on what a qualifying place is — a table that ranks by one rule while qualification uses
+   * another is the kind of thing a player only notices when it costs them the tournament.
+   */
   get groupTable(): TournamentGroup[] {
-    return this.groups;
+    return this.groups.map((group) => ({
+      ...group,
+      standings: [...group.standings].sort((a, b) => b.points - a.points || b.wins - a.wins),
+    }));
+  }
+
+  /** How many of each group's standings go through to the bracket. */
+  get qualifiersPerGroup(): number {
+    return WORLD_QUALIFY_PER_GROUP;
   }
 
   get seededOrder(): Competitor[] {
@@ -254,19 +281,7 @@ export class TournamentService {
   }
 
   /**
-   * Potions the player is handed when a phase begins.
-   *
-   * The tournaments deliberately do not use the run's lives: elimination is final, and the
-   * only safety net is the fixed potion allowance.
-   */
-  potionsForCurrentPhase(): number {
-    if (this.kind === 'regional') return 3;
-    if (this.kind === 'world') return this.stage === 'knockout' ? 3 : 0;
-    return 0;
-  }
-
-  /**
-   * Plain Potions still in hand for this phase.
+   * Plain Potions still in hand for this tournament.
    *
    * Deliberately separate from the run's item bag: a tournament entrant is handed a fixed
    * allowance and cannot carry in the Super/Hyper Potions they hoarded during the run, so
@@ -276,10 +291,18 @@ export class TournamentService {
     return this.potions;
   }
 
-  /** Hands out the allowance for the phase that is about to start. */
-  grantPhasePotions(): void {
-    this.potions = this.potionsForCurrentPhase();
-    this.touch();
+  /**
+   * Hands out the tournament's single Potion as the knockout opens.
+   *
+   * Granted here rather than by the caller so it can only ever happen once per tournament:
+   * this is the one place both kinds pass through on their way into the bracket (regional
+   * straight from the draw, world after the group stage), and the callers used to grant on
+   * every phase boundary, which is how the allowance quietly multiplied.
+   */
+  private openKnockout(entrants: Competitor[]): void {
+    this.buildBracket(entrants);
+    this.potions = TOURNAMENT_POTIONS;
+    this.stageSubject$.next('knockout');
   }
 
   /** Spends one Potion for a re-spin. Returns false when the bag is empty. */
@@ -368,8 +391,7 @@ export class TournamentService {
         this.buildGroups();
         this.stageSubject$.next('groups');
       } else {
-        this.buildBracket(this.seeded);
-        this.stageSubject$.next('knockout');
+        this.openKnockout(this.seeded);
       }
     }
 
@@ -551,8 +573,7 @@ export class TournamentService {
       return;
     }
 
-    this.buildBracket(qualifiers);
-    this.stageSubject$.next('knockout');
+    this.openKnockout(qualifiers);
     this.touch();
   }
 

@@ -930,7 +930,6 @@ case 'visit-daycare':
     const genId = this.generationService.getCurrentGeneration().id;
 
     this.tournamentService.start(kind, genId, this.playerSprite, this.trainerService.gender);
-    this.tournamentService.grantPhasePotions();
 
     this.gameStateService.startTournament();
     this.finishCurrentState();
@@ -944,7 +943,6 @@ case 'visit-daycare':
 
   /** The draw is done — go straight into the first match. */
   tournamentDrawComplete(): void {
-    this.tournamentService.grantPhasePotions();
     this.gameStateService.queueTournamentBattle();
     this.finishCurrentState();
   }
@@ -978,7 +976,6 @@ case 'visit-daycare':
 
     // Clearing the group stage earns another catch wheel before the bracket.
     if (wasGroups && stage === 'knockout') {
-      this.tournamentService.grantPhasePotions();
       this.gameStateService.queueTournamentBattle();
       this.gameStateService.queueTournamentPrep();
       this.finishCurrentState();

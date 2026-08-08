@@ -391,7 +391,10 @@
           "blurb": "Seis Pokémon totalmente evoluídos. Sem vidas. Vencer ou ir para casa.",
           "go": "Vamos lá!",
           "potionUsed": "Você usou uma Poção!",
-          "potionsLeft": "Poções: {{count}}"
+          "potionsLeft": "Poções: {{count}}",
+          "board": "Chaveamento",
+          "groupStakes": "Fase de grupos — vale pontos. Perder não elimina.",
+          "blurbGroups": "Seis Pokémon totalmente evoluídos. Na fase de grupos, perder custa pontos, não a vaga."
         },
         "table": {
           "trainer": "Treinador",

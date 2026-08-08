@@ -1,27 +1,37 @@
 <h1 class="title">{{ 'game.main.tournament.battle.title' | translate }}</h1>
-<p class="respin-reason">
-  {{ 'game.main.tournament.battle.potionsLeft' | translate:{ count: potionsLeft } }}
-</p>
+
+<!-- Group matches are played for points and cost nothing, so the Potion line would be a
+     promise of a safety net that is not on offer there. -->
+@if (showsPotions) {
+  <p class="respin-reason">
+    {{ 'game.main.tournament.battle.potionsLeft' | translate:{ count: potionsLeft } }}
+  </p>
+} @else {
+  <p class="respin-reason">{{ 'game.main.tournament.battle.groupStakes' | translate }}</p>
+}
 
 <app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
 
 <ng-template #opponentModal let-modal>
-  <div class="modal-body">
-    <h1>
-      {{ 'game.main.tournament.battle.against' | translate }}
-      {{ isTranslationKey(opponentName) ? (opponentName | translate) : opponentName }}!
-    </h1>
-
-    <p class="phase">{{ phaseLabel | translate }}</p>
-
-    @if (opponent) {
-      <div class="trainer-panel">
-        <img appImgFallback [src]="opponent.spriteUrl" [alt]="opponent.name" height="128">
-        <div class="quotes">
-          <p>{{ 'game.main.tournament.battle.blurb' | translate }}</p>
-        </div>
+  <div class="modal-body tourney-modal">
+    <!--
+      The opponent is the point of this screen, so it leads and stays put while the rest
+      scrolls. Previously the bracket shared the same scroll box and, being far taller,
+      pushed the trainer out of view the moment the modal opened.
+    -->
+    <header class="versus">
+      @if (opponent) {
+        <img class="versus-sprite"
+             appImgFallback
+             [src]="opponent.spriteUrl"
+             [alt]="opponentName | translate">
+      }
+      <div class="versus-copy">
+        <p class="phase">{{ phaseLabel | translate }}</p>
+        <h1 class="versus-name">{{ opponentName | translate }}</h1>
+        <p class="blurb">{{ blurbKey | translate }}</p>
       </div>
-    }
+    </header>
 
     <app-enemy-team-panel
       [enemyTeam]="enemyTeam"
@@ -29,8 +39,12 @@
       [playerTeamSize]="trainerTeam.length">
     </app-enemy-team-panel>
 
-    <!-- Carries every result so far, so the table is up to date after each battle. -->
-    <app-tournament-bracket></app-tournament-bracket>
+    <!-- Carries every result so far, so the table is up to date after each battle. Bounded
+         so a 32-entrant bracket cannot bury the "Let's Go!" button. -->
+    <details class="board" open>
+      <summary>{{ 'game.main.tournament.battle.board' | translate }}</summary>
+      <app-tournament-bracket></app-tournament-bracket>
+    </details>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-primary" (click)="closeModal()">
