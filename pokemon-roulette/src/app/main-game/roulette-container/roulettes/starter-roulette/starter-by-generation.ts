@@ -1,11 +1,16 @@
 import { PokemonItem } from "../../../../interfaces/pokemon-item";
 
 export const starterByGeneration: Record<number, PokemonItem[]> = {
+    // Kanto is the only region with five: the standard three, plus the pair the spin-off
+    // versions hand out. Pikachu was already here for Yellow; Eevee is its exact
+    // counterpart in Let's Go, so the two share a power of 2 — a grade above a starter
+    // that has two evolutions left, since neither of them starts a three-stage line.
     1: [
         { text: 'pokemon.bulbasaur', pokemonId: 1, fillStyle: 'green', sprite: null, shiny: false, power: 1, weight: 1 },
         { text: 'pokemon.charmander', pokemonId: 4, fillStyle: 'crimson', sprite: null, shiny: false, power: 1, weight: 1 },
         { text: 'pokemon.squirtle', pokemonId: 7, fillStyle: 'darkblue', sprite: null, shiny: false, power: 1, weight: 1 },
-        { text: 'pokemon.pikachu', pokemonId: 25, fillStyle: 'goldenrod', sprite: null, shiny: false, power: 2, weight: 1 }],
+        { text: 'pokemon.pikachu', pokemonId: 25, fillStyle: 'goldenrod', sprite: null, shiny: false, power: 2, weight: 1 },
+        { text: 'pokemon.eevee', pokemonId: 133, fillStyle: 'brown', sprite: null, shiny: false, power: 2, weight: 1 }],
     2: [
         { text: 'pokemon.chikorita', pokemonId: 152, fillStyle: 'green', sprite: null, shiny: false, power: 1, weight: 1 },
         { text: 'pokemon.cyndaquil', pokemonId: 155, fillStyle: 'crimson', sprite: null, shiny: false, power: 1, weight: 1 },
