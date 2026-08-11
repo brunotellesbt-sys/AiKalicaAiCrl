@@ -42,8 +42,9 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
   totalRotations!: number;
   duration = Math.floor(Math.random() * (5000 - 3000)) + 3000;
   finalRotation = 0;
-  pointerStrokeColor = 'blue';
-  pointerFillColor = 'yellow';
+  /* Gold bolt with a near-black outline, so it stays readable over any slice colour. */
+  pointerStrokeColor = '#1a1a00';
+  pointerFillColor = '#ffd700';
   winningNumber!: number;
   currentSegment: string = '-';
   clickAudio!: HTMLAudioElement;
@@ -337,18 +338,39 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     return `${out}…`;
   }
 
+  /**
+   * The marker that reads off the winning slice: a lightning bolt aimed at the wheel.
+   *
+   * Every coordinate is a fraction of `cursorWidth`, which shrinks on phones, so the bolt
+   * scales with the wheel instead of needing a second set of numbers for mobile.
+   */
   drawPointer(): void {
+    this.pointerCtx.clearRect(0, 0, this.pointerCanvas.width, this.pointerCanvas.height);
     this.pointerCtx.save();
-    this.pointerCtx.lineWidth = 2;
-    this.pointerCtx.strokeStyle = this.pointerStrokeColor;
-    this.pointerCtx.fillStyle = this.pointerFillColor;
+
+    const cw = this.cursorWidth;
+    const left = this.pointerCanvas.width - cw;
+    const top = this.pointerCanvas.height / 2 - cw / 2;
+
     this.pointerCtx.beginPath();
-    this.pointerCtx.moveTo(this.pointerCanvas.width - 2, (this.pointerCanvas.height / 2) - 20);
-    this.pointerCtx.lineTo(this.pointerCanvas.width - 2, (this.pointerCanvas.height / 2) + 20);
-    this.pointerCtx.lineTo(this.pointerCanvas.width - this.cursorWidth, this.pointerCanvas.height / 2);
-    this.pointerCtx.lineTo(this.pointerCanvas.width - 2, (this.pointerCanvas.height / 2) - 20);
-    this.pointerCtx.stroke();
+    this.pointerCtx.moveTo(left, top + cw * 0.5);
+    this.pointerCtx.lineTo(left + cw * 0.5, top + cw);
+    this.pointerCtx.lineTo(left + cw * 0.45, top + cw * 0.75);
+    this.pointerCtx.lineTo(left + cw * 0.65, top + cw * 0.85);
+    this.pointerCtx.lineTo(left + cw * 0.65, top + cw * 0.65);
+    this.pointerCtx.lineTo(left + cw, top + cw * 0.75);
+    this.pointerCtx.lineTo(left + cw, top + cw * 0.5);
+    this.pointerCtx.lineTo(left + cw * 0.4, top + cw * 0.5);
+    this.pointerCtx.lineTo(left + cw * 0.5, top + cw * 0.65);
+    this.pointerCtx.lineTo(left, top + cw * 0.5);
+    this.pointerCtx.closePath();
+
+    this.pointerCtx.fillStyle = this.pointerFillColor;
     this.pointerCtx.fill();
+    this.pointerCtx.strokeStyle = this.pointerStrokeColor;
+    this.pointerCtx.lineWidth = 1.5;
+    this.pointerCtx.stroke();
+
     this.pointerCtx.restore();
   }
 

@@ -80,7 +80,52 @@ export function buildVictoryOdds(input: VictoryOddsInput): WheelItem[] {
     odds.push(slices > 0 ? { ...YES } : { ...NO });
   }
 
-  return odds;
+  return spreadOutcomes(odds);
+}
+
+/**
+ * Deals the Yes and No slices around the wheel instead of leaving them in two solid arcs.
+ *
+ * Purely cosmetic — the same slices go on the wheel, so the probability is exactly what the
+ * builder above computed. It is worth doing anyway because two blocks misreport the odds to
+ * the eye: a wheel showing one green half and one red half reads as a coin flip whether it
+ * is 60/40 or 50/50, since what registers is the arc you are staring at rather than its
+ * measured angle. Interleaved slices make a lopsided wheel look lopsided.
+ *
+ * The minority outcome is dealt to evenly spaced positions with a random starting phase, so
+ * two consecutive battles at the same odds do not produce an identical wheel while the
+ * spacing stays even. Shuffling instead would clump the colours back together some of the
+ * time, which is the thing being fixed.
+ *
+ * Order carries no meaning downstream: every caller reads the outcome off the chosen slice
+ * (`odds[index].text === 'Yes'`) rather than trusting a position, which is what makes
+ * reordering safe here.
+ */
+function spreadOutcomes(odds: WheelItem[]): WheelItem[] {
+  const yes = odds.filter((slice) => slice.text === YES.text);
+  const no = odds.filter((slice) => slice.text === NO.text);
+  if (!yes.length || !no.length) return odds;
+
+  const [minority, majority] = yes.length <= no.length ? [yes, no] : [no, yes];
+  const total = minority.length + majority.length;
+  const step = total / minority.length;
+  const phase = Math.random() * step;
+
+  const slots: (WheelItem | null)[] = new Array(total).fill(null);
+
+  minority.forEach((slice, i) => {
+    let at = Math.floor(phase + i * step) % total;
+    // Rounding can send two of them to the same slot once the split nears 1:1.
+    while (slots[at]) at = (at + 1) % total;
+    slots[at] = slice;
+  });
+
+  let next = 0;
+  for (let i = 0; i < total; i++) {
+    if (!slots[i]) slots[i] = majority[next++];
+  }
+
+  return slots as WheelItem[];
 }
 
 /** Each X Attack adds the team's average power to the "Yes" side. */
