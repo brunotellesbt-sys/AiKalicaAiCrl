@@ -379,6 +379,15 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
       return;
     }
 
+    // An empty wheel has no total weight, so the arc size would be 2π/0 and every angle
+    // downstream becomes NaN — the canvas silently draws nothing and the spin never
+    // resolves, which reads to the player as the game having frozen. Callers are meant to
+    // leave the state before it can happen; refusing here means a caller that forgets
+    // shows a dead button instead of taking the run down with it.
+    if (!this.items?.length || this.getTotalWeights() <= 0) {
+      return;
+    }
+
     this.spinning = true;
     this.gameStateService.setWheelSpinning(this.spinning);
 
