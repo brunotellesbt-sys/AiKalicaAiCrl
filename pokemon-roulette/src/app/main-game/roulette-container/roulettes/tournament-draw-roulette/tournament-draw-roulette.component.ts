@@ -77,10 +77,19 @@ export class TournamentDrawRouletteComponent implements OnInit, OnDestroy {
     return this.tournamentService.fieldSize;
   }
 
+  /** Guards against the draw being completed twice — the emit has several callers. */
+  private completed = false;
+
   ngOnInit(): void {
     this.gameSubscription = this.gameStateService.currentState.subscribe((state) => {
       if (state !== 'tournament-draw') return;
+
+      this.completed = false;
       this.refreshSlices();
+
+      // Nothing left to draw on the way in: the wheel would render zero slices and the
+      // player would be looking at a spin button that can never do anything.
+      this.finishIfDrawn();
     });
   }
 
@@ -94,19 +103,36 @@ export class TournamentDrawRouletteComponent implements OnInit, OnDestroy {
     this.refreshSlices();
 
     if (!this.lastDrawn) {
-      this.drawCompleteEvent.emit();
+      this.finishIfDrawn();
       return;
     }
 
-    this.modalService.open(this.drawnModal, { centered: true, size: 'md' });
+    const dialog = this.modalService.open(this.drawnModal, { centered: true, size: 'md' });
+
+    // Advance when the dialog goes away, whichever way it goes away.
+    //
+    // This used to hang off the Ok button alone, so closing the last one by tapping the
+    // backdrop or pressing Escape left the draw stranded: every competitor was seeded, the
+    // wheel had no slices left to draw, and the completion event that moves the run on had
+    // never fired. Both tournaments could end up parked on "Seeded 17 of 17" with nothing
+    // on screen but a spin button. `result` rejects on a dismiss and resolves on a close,
+    // so both paths get handled here.
+    dialog.result.then(
+      () => this.finishIfDrawn(),
+      () => this.finishIfDrawn()
+    );
   }
 
   closeModal(): void {
     this.modalService.dismissAll();
+  }
 
-    if (this.remaining === 0) {
-      this.drawCompleteEvent.emit();
-    }
+  /** Emits once the field is full, from whichever path got us there. */
+  private finishIfDrawn(): void {
+    if (this.completed || this.remaining > 0) return;
+
+    this.completed = true;
+    this.drawCompleteEvent.emit();
   }
 
   /** A competitor's display name is sometimes a translation key, sometimes a literal. */
