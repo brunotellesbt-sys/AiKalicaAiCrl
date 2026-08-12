@@ -109,6 +109,22 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.computeCanvasSizes();
   }
 
+  /**
+   * Width the wheel may actually occupy.
+   *
+   * Prefers the container's own content box, which already has the page's padding and any
+   * side panel taken out of it. Falls back to the document width — still better than
+   * window.innerWidth, which includes the scrollbar — and to the viewport only when the
+   * component has not been laid out yet.
+   */
+  private availableWidth(viewportWidth: number): number {
+    const container = this.wheelCanvas?.parentElement;
+    const measured = container?.clientWidth ?? 0;
+    if (measured > 0) return measured;
+
+    return document.documentElement?.clientWidth || viewportWidth;
+  }
+
   // Keep the wheel readable when rotating the phone or resizing the browser.
   // (Using a method instead of a HostListener avoids importing more decorators.)
   private computeCanvasSizes(): void {
@@ -120,9 +136,16 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.cursorWidth = isMobile ? 28 : 40;
 
     // Leave some space for padding + pointer + a small gap.
-    const horizontalPadding = isMobile ? 16 : 24;
+    //
+    // Measured against the box the wheel actually sits in rather than the viewport. The
+    // viewport is wider than the space available — the layout around it is padded, and on
+    // desktop innerWidth counts the scrollbar too — so sizing from it produced a wheel a
+    // little too big for its column. The container clips overflow, so the excess showed up
+    // as a slice shaved off the side rather than as a scrollbar.
+    const available = this.availableWidth(vw);
+    const horizontalPadding = isMobile ? 24 : 32;
     const gap = isMobile ? 8 : 10;
-    const maxByWidth = Math.max(0, vw - this.cursorWidth - horizontalPadding - gap);
+    const maxByWidth = Math.max(0, available - this.cursorWidth - horizontalPadding - gap);
     const maxByHeight = vh * (isMobile ? 0.55 : 0.50);
 
     const size = Math.floor(

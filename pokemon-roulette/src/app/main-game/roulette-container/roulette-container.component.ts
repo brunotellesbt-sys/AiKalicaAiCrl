@@ -400,7 +400,6 @@ case 'visit-daycare':
         case 'rare-candy':
         // If a Battle Trainer encounter triggers an evolution check and nothing can evolve,
         // we just continue. (Rewards already happened in the battle itself.)
-        case 'battle-trainer':
         default:
           this.doNothing();
           return;
