@@ -30,6 +30,27 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
    */
   @Input() fontScale: number = 1;
   @Output() selectedItemEvent = new EventEmitter<number>();
+  /**
+   * The slice the wheel actually stopped on.
+   *
+   * Hosts used to read the outcome back out of their own array with the emitted index. That
+   * only held while nothing could reorder or resize that array between the spin starting
+   * and finishing — and the odds builders rebuild it whenever the team changes, now with the
+   * Yes/No slices dealt to fresh positions each time. A rebuild mid-spin would leave the
+   * index pointing at a different slice than the one the pointer was measured against, so a
+   * spin the player watched land on "No" could be recorded as a win.
+   *
+   * Emitting the measured slice removes the possibility rather than relying on the timing.
+   */
+  @Output() selectedSliceEvent = new EventEmitter<WheelItem>();
+
+  /**
+   * The items as they were when the spin was measured.
+   *
+   * Every angle in the animation is derived from this, so it has to stay put even if the
+   * bound array is replaced underneath.
+   */
+  private spinItems: WheelItem[] = [];
   spinning = false;
   darkMode!: Observable<boolean>;
 
@@ -389,6 +410,7 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     this.spinning = true;
+    this.spinItems = [...this.items];
     this.gameStateService.setWheelSpinning(this.spinning);
 
 
@@ -431,6 +453,9 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
       requestAnimationFrame(this.animate.bind(this));
     } else {
       this.spinning = false;
+      // The snapshot, not the live array: they are the same object unless something replaced
+      // it mid-spin, which is exactly the case this guards.
+      this.selectedSliceEvent.emit(this.spinItems[this.winningNumber] ?? this.items[this.winningNumber]);
       this.selectedItemEvent.emit(this.winningNumber);
       this.gameStateService.setWheelSpinning(false);
     }

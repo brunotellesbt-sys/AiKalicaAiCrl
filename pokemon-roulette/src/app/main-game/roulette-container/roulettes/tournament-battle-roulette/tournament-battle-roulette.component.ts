@@ -156,10 +156,10 @@ export class TournamentBattleRouletteComponent implements OnInit, OnDestroy {
     return name.includes('.');
   }
 
-  onItemSelected(index: number): void {
+  onItemSelected(slice: WheelItem): void {
     this.retries--;
 
-    if (this.victoryOdds[index]?.text === 'Yes') {
+    if (slice?.text === 'Yes') {
       this.battleResultEvent.emit(true);
       return;
     }
