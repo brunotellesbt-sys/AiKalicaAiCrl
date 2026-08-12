@@ -56,6 +56,7 @@ import { TournamentPrepRouletteComponent } from "./roulettes/tournament-prep-rou
 import { TournamentDrawRouletteComponent } from "./roulettes/tournament-draw-roulette/tournament-draw-roulette.component";
 import { TournamentBattleRouletteComponent } from "./roulettes/tournament-battle-roulette/tournament-battle-roulette.component";
 import { TournamentKind, TournamentService } from "../../services/tournament-service/tournament.service";
+import { VillainTeamService } from "../../services/villain-team-service/villain-team.service";
 import { EndGameComponent } from "../end-game/end-game.component";
 import { ImgFallbackDirective } from '../../shared/img-fallback.directive';
 import { GameOverComponent } from "../game-over/game-over.component";
@@ -131,7 +132,8 @@ export class RouletteContainerComponent implements OnInit, OnDestroy {
       private translate: TranslateService,
       private runService: RunService,
       private tournamentService: TournamentService,
-      private megaEvolutionService: MegaEvolutionService) {
+      private megaEvolutionService: MegaEvolutionService,
+      private villainTeamService: VillainTeamService) {
       this.itemFoundAudio = this.audioService.createAudio('./ItemFound.mp3');
     }
 
@@ -456,6 +458,12 @@ case 'visit-daycare':
         break;
       case 'steal-pokemon':
         this.stolenPokemon = pokemon;
+        // Filed against whoever is actually in front of you. With rival teams the run has
+        // to know which of them is holding it, or beating one hands back the other's haul.
+        {
+          const thief = this.villainTeamService.currentTeam;
+          if (thief) this.villainTeamService.steal(thief.id, pokemon);
+        }
         this.removeFromTeam(pokemon);
         this.finishCurrentState();
         break;
@@ -576,6 +584,24 @@ case 'visit-daycare':
   villainBossDefeated(): void {
     this.runService.markVillainBossCleared();
     this.runService.markLegendaryOffered();
+
+    // Clearing the region's boss releases everything any of its teams still holds. This is
+    // what stops a Pokémon being lost for good: a Hoenn run can lose one to Aqua and then
+    // never draw Aqua again, so without an amnesty here it would simply be gone.
+    const genId = this.generationService.getCurrentGeneration().id;
+    const freed = this.villainTeamService.recoverForGeneration(genId);
+
+    for (const pokemon of freed) {
+      this.trainerService.addToTeam(pokemon);
+    }
+
+    if (freed.length) {
+      const names = freed.map((p) => this.translate.instant(p.text)).join(', ');
+      this.infoModalTitle = 'Rescued ' + names + '!';
+      this.infoModalMessage = 'With the boss beaten, everything they were holding is yours again.';
+      this.stolenPokemon = null;
+      this.modalService.open(this.infoModal, { centered: true, size: 'md' });
+    }
 
     // Queue the legendary boss encounter AFTER the evolution roulette.
     this.gameStateService.setNextState('boss-legendary-encounter');
@@ -770,16 +796,20 @@ case 'visit-daycare':
   }
 
   teamRocketDefeated(): void {
-    if (this.stolenPokemon) {
-      this.trainerService.addToTeam(this.stolenPokemon);
-      const pName = this.translate.instant(this.stolenPokemon.text);
-      this.infoModalTitle = 'Saved ' + pName + '!';
-      this.infoModalMessage = 'You recovered your ' + pName + ' from Team Rocket.';
+    const team = this.villainTeamService.currentTeam;
+    const recovered = team ? this.villainTeamService.recoverFrom(team.id) : [];
+
+    for (const pokemon of recovered) {
+      this.trainerService.addToTeam(pokemon);
+    }
+
+    if (recovered.length) {
+      const names = recovered.map((p) => this.translate.instant(p.text)).join(', ');
+      this.infoModalTitle = 'Saved ' + names + '!';
+      this.infoModalMessage =
+        'You recovered ' + names + ' from ' + (team?.name ?? 'them') + '.';
       this.stolenPokemon = null;
-      this.modalService.open(this.infoModal, {
-        centered: true,
-        size: 'md'
-      });
+      this.modalService.open(this.infoModal, { centered: true, size: 'md' });
     }
 
     this.chooseWhoWillEvolve('team-rocket-encounter');
@@ -994,6 +1024,7 @@ case 'visit-daycare':
     this.evolutionCredits = 0;
     // Otherwise the PC would still show the bracket of the tournament that just ended.
     this.tournamentService.reset();
+    this.villainTeamService.reset();
     this.tournamentKind = 'regional';
     this.resetGameEvent.emit();
     this.modalService.dismissAll();
