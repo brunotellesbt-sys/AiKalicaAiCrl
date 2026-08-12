@@ -140,6 +140,8 @@ export class RouletteContainerComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
       this.gameStateService.currentState.subscribe(state => {
         this.currentGameState = state;
+        // A new screen means a new fight: whatever was settled before no longer applies.
+        this.battleResolved = false;
         if (this.currentGameState === 'adventure-continues') {
           if (this.multitaskCounter > 0) {
             this.respinReason = 'Multitask x' + this.multitaskCounter;
@@ -204,6 +206,21 @@ export class RouletteContainerComponent implements OnInit, OnDestroy {
   currentContextItem!: ItemItem;
   currentContextPokemon!: PokemonItem;
   currentGameState!: GameState;
+
+  /**
+   * Whether the battle currently on screen has already been settled.
+   *
+   * Every battle handler awards its prize and then calls finishCurrentState(), which moves
+   * the round counter as a side effect. Running one twice for a single fight therefore
+   * awards two badges and advances two rungs — which is exactly the reported symptom of a
+   * gym being skipped, the next leader's badge arriving, and the leader lookup eventually
+   * running off the end of the eight-entry ladder on the way to the Elite Four.
+   *
+   * I have not been able to reproduce that or find the trigger, so this closes the effect
+   * instead of the cause: a second call for the same battle is ignored. Reset whenever the
+   * state changes, so the next fight starts unlatched.
+   */
+  private battleResolved = false;
   customWheelTitle = '';
   evolutionCredits: number = 0;
   expSharePokemon: PokemonItem | null = null;
@@ -540,6 +557,11 @@ case 'visit-daycare':
   }
 
   gymBattleResult(result: boolean): void {
+    // See battleResolved: a repeat call for the same fight would award a second prize and
+    // advance the ladder twice.
+    if (this.battleResolved) return;
+    this.battleResolved = true;
+
     // Mega Evolution is battle-only (it should revert right after each battle).
     this.megaEvolutionService.revertMegaEvolution();
 
@@ -727,6 +749,11 @@ case 'visit-daycare':
   }
 
   trainerBattleResult(result: boolean): void {
+    // See battleResolved: a repeat call for the same fight would award a second prize and
+    // advance the ladder twice.
+    if (this.battleResolved) return;
+    this.battleResolved = true;
+
     // Mega Evolution is battle-only (it should revert right after each battle).
     this.megaEvolutionService.revertMegaEvolution();
 
@@ -751,6 +778,11 @@ case 'visit-daycare':
   }
 
   rivalBattleResult(result: boolean): void {
+    // See battleResolved: a repeat call for the same fight would award a second prize and
+    // advance the ladder twice.
+    if (this.battleResolved) return;
+    this.battleResolved = true;
+
     // Mega Evolution is battle-only (it should revert right after each battle).
     this.megaEvolutionService.revertMegaEvolution();
 
@@ -896,6 +928,11 @@ case 'visit-daycare':
   }
 
   eliteFourBattleResult(result: boolean): void {
+    // See battleResolved: a repeat call for the same fight would award a second prize and
+    // advance the ladder twice.
+    if (this.battleResolved) return;
+    this.battleResolved = true;
+
     // Mega Evolution is battle-only (it should revert right after each battle).
     this.megaEvolutionService.revertMegaEvolution();
 
@@ -929,6 +966,11 @@ case 'visit-daycare':
   }
 
   championBattleResult(result: boolean): void {
+    // See battleResolved: a repeat call for the same fight would award a second prize and
+    // advance the ladder twice.
+    if (this.battleResolved) return;
+    this.battleResolved = true;
+
     // Mega Evolution is battle-only (it should revert right after each battle).
     this.megaEvolutionService.revertMegaEvolution();
 
@@ -983,6 +1025,11 @@ case 'visit-daycare':
   }
 
   tournamentBattleResult(result: boolean): void {
+    // See battleResolved: a repeat call for the same fight would award a second prize and
+    // advance the ladder twice.
+    if (this.battleResolved) return;
+    this.battleResolved = true;
+
     this.megaEvolutionService.revertMegaEvolution();
     this.respinReason = '';
 
