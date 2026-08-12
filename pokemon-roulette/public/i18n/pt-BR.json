@@ -329,6 +329,9 @@
         },
         "villain": {
           "which": "Qual chefe?"
+        },
+        "findItem": {
+          "mysteriousEgg": "Ovo Misterioso"
         }
       },
       "trade": {

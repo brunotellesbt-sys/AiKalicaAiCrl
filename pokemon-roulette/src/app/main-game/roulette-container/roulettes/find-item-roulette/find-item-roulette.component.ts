@@ -9,6 +9,7 @@ import { ItemSpriteService } from '../../../../services/item-sprite-service/item
 import { ItemItem } from '../../../../interfaces/item-item';
 import { ImgFallbackDirective } from '../../../../shared/img-fallback.directive';
 import { AudioService } from '../../../../services/audio-service/audio.service';
+import { WheelItem } from '../../../../interfaces/wheel-item';
 
 @Component({
   selector: 'app-find-item-roulette',
@@ -28,16 +29,32 @@ export class FindItemRouletteComponent {
     private itemSpriteService: ItemSpriteService,
     private audioService: AudioService) {
     this.items = itemService.getAllItems();
+    // The egg rides along as one extra slice rather than being an item: it is not something
+    // you carry, it hatches into a Pokémon, so it routes to the egg encounter instead of the
+    // bag. Appended so every real item keeps the index it already had.
+    this.slices = [
+      ...this.items,
+      { text: 'game.main.roulette.findItem.mysteriousEgg', fillStyle: 'deeppink', weight: 1 },
+    ];
     this.itemFoundAudio = this.audioService.createAudio('./ItemFound.mp3');
   }
 
   @ViewChild('itemExplainerModal', { static: true }) itemExplainerModal!: TemplateRef<any>;
   items: ItemItem[] = [];
+  /** The items plus the egg; what the wheel actually draws. */
+  slices: WheelItem[] = [];
   selectedItem: ItemItem | null = null;
   @Output() itemSelectedEvent = new EventEmitter<ItemItem>();
+  @Output() mysteriousEggEvent = new EventEmitter<void>();
   itemFoundAudio!: HTMLAudioElement;
 
   onItemSelected(index: number): void {
+    // Anything past the item list is the egg slice.
+    if (index >= this.items.length) {
+      this.mysteriousEggEvent.emit();
+      return;
+    }
+
     this.selectedItem = this.items[index];
 
     this.itemSpriteService.getItemSprite(this.selectedItem.name).pipe(take(1)).subscribe(response => {

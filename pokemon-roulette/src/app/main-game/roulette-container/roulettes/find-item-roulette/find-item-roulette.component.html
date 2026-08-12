@@ -1,5 +1,5 @@
 <h1 class="title">{{ 'game.main.roulette.item.title' | translate }}</h1>
-<app-wheel #wheel [items]="items" (selectedItemEvent)="onItemSelected($event)">
+<app-wheel #wheel [items]="slices" (selectedItemEvent)="onItemSelected($event)">
 </app-wheel>
 
 <ng-template #itemExplainerModal let-modal>
