@@ -527,7 +527,8 @@ case 'visit-daycare':
     if (!capable) return true;
 
     return (this.trainerService.getTeam() ?? []).some((p) =>
-      capable.has(p.basePokemonId ?? p.pokemonId)
+      // Form identity, not species: a regional variant has no Mega of its own.
+      capable.has(p.pokemonId)
     );
   }
 
