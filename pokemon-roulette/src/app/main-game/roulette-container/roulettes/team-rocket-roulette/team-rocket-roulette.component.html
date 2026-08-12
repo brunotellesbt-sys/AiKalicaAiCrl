@@ -1,26 +1,27 @@
-<h1 class="title">{{ villainTeamName }} Encounter</h1>
+<h1 class="title">{{ teamName }} Encounter</h1>
 
 <app-wheel [items]="outcomes" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
 
 <ng-template #teamRockerModal let-modal>
   <div class="modal-body">
-    <h1 class="modal-title">{{ villainTeamName }}</h1>
+    <!-- The team's own colour, so Magma and Aqua are told apart at a glance rather than by
+         reading the name — they alternate between encounters in the same run. -->
+    <h1 class="modal-title" [style.color]="teamColour">{{ teamName }}</h1>
 
     <div class="team-rocket-panel">
       <div class="team-rocket-images">
         <img
           appImgFallback
-          [src]="villainLeaderSpriteUrl"
-          [alt]="villainLeaderName"
+          [src]="gruntSpriteUrl"
+          [alt]="gruntName"
           height="170"
           />
       </div>
 
       <div class="team-rocket-text">
-        <p><strong>{{ villainLeaderName }}</strong> appears!</p>
-        <p>{{ villainTeamBlurb }}</p>
-        @if (villainLeaderBlurb) {
-          <p class="muted">{{ villainLeaderBlurb }}</p>
+        <p><strong>{{ teamName }} {{ gruntName }}</strong> blocks your way!</p>
+        @if (team) {
+          <p>{{ team.boss.blurb }}</p>
         }
       </div>
     </div>
