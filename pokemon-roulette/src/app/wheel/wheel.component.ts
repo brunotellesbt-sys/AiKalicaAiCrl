@@ -143,13 +143,12 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     // little too big for its column. The container clips overflow, so the excess showed up
     // as a slice shaved off the side rather than as a scrollbar.
     const available = this.availableWidth(vw);
-    const horizontalPadding = isMobile ? 24 : 32;
+    const horizontalPadding = isMobile ? 24 : 32; // 12px clear of each screen edge on a phone
     const gap = isMobile ? 8 : 10;
-    // Twice the pointer allowance: one for the pointer, one for the spacer that balances it
-    // so the wheel lands on the centre line rather than half a pointer-width off it.
-    const pointerAllowance = (this.cursorWidth + gap) * 2;
-    const maxByWidth = Math.max(0, available - pointerAllowance - horizontalPadding);
-    const maxByHeight = vh * (isMobile ? 0.55 : 0.50);
+    // The wheel takes everything the row has left once the bolt and its gap are placed, so
+    // it reaches both margins and the only slack sits where the bolt is.
+    const maxByWidth = Math.max(0, available - this.cursorWidth - gap - horizontalPadding);
+    const maxByHeight = vh * (isMobile ? 0.62 : 0.50);
 
     const size = Math.floor(
       Math.max(
