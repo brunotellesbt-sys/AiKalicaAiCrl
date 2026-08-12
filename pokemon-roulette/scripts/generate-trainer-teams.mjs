@@ -149,6 +149,36 @@ const RIVALS = {
 };
 
 /**
+ * Where a rival's roster should come from, when the manga has a version of them.
+ *
+ * Rivals and roadside trainers are meant to field their Pokémon Adventures teams rather
+ * than their game parties — a rival who shows up three times in a run reads better as the
+ * character than as a level-scaled gauntlet. Gym leaders, the Elite Four and Champions are
+ * deliberately NOT in here: those keep games-then-PWT order, which is what makes a rematch
+ * roster deepen an eighth-badge fight instead of replacing it.
+ *
+ * Ash is the documented exception, and is already handled: he is an anime character with no
+ * game party, and his Indigo League team is transcribed in MANUAL_ROSTERS.
+ *
+ * These pages describe their Pokémon in prose rather than a {{Pokémon}} party template, so
+ * the scrape will not always find a parsable party. That is deliberate rather than a
+ * failure mode to paper over: teamFor() records every miss in `failures` and prints them at
+ * the end, so a run of this script reports exactly which rivals still need transcribing
+ * into MANUAL_ROSTERS instead of silently falling back to a randomly filled regional team.
+ */
+const MANGA_RIVAL_PAGES = {
+  1: 'Blue (Adventures)',
+  2: 'Silver (Adventures)',
+  3: 'Ruby (Adventures)',
+  4: 'Pearl (Adventures)',
+  5: 'Black (Adventures)',
+  6: 'Y (Adventures)',
+  7: 'Moon (Adventures)',
+  8: 'Casey (Adventures)',
+  9: 'Nemona',           // Paldea's Adventures arc is too recent for a settled roster
+};
+
+/**
  * Reserve competitors for regions whose scripted cast cannot fill a 16-trainer bracket.
  *
  * Some trainers hold two roles at once, and the field counts people rather than jobs:
@@ -352,7 +382,17 @@ const gyms = await collectGrouped(GYM_LEADERS, 'gym');
 const elite = await collectGrouped(ELITE_FOUR, 'e4');
 const champs = await collectFlat(CHAMPIONS, 'champion');
 const villains = await collectGrouped(VILLAIN_BOSSES, 'villain');
-const rivals = await collectFlat(RIVALS, 'rival');
+// Rivals prefer their Pokémon Adventures roster; the game page is the fallback for the
+// regions where the manga has not settled on one, and for any page the scrape cannot parse.
+const rivals = await collectFlat(
+  Object.fromEntries(
+    Object.entries(RIVALS).map(([gen, pages]) => {
+      const manga = MANGA_RIVAL_PAGES[gen];
+      return [gen, manga ? [manga, ...pages] : pages];
+    })
+  ),
+  'rival'
+);
 const battleTrainers = await collectGrouped(BATTLE_TRAINERS, 'battleTrainer');
 const protagonists = await collectFlat(PROTAGONISTS, 'protagonist');
 const femaleProtagonists = await collectFlat(FEMALE_PROTAGONISTS, 'protagonistF');
