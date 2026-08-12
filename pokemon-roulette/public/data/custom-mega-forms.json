@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "generatedAt": "2026-07-29T04:21:14Z",
   "notes": "Mega/Primal/Ultra forms. Forms that exist on PokeAPI carry no sprite URL: the game pulls their official artwork (same as the Pokedex). Fan/Legends Z-A forms use Pokemon Showdown sprites - static /dex PNG when available, animated /ani GIF otherwise. Forms with no sprite anywhere carry no URL and fall back to the base species artwork instead of showing a broken image.",
   "forms": [
@@ -343,9 +343,24 @@
       "shinySpriteUrl": "https://play.pokemonshowdown.com/sprites/dex-shiny/froslass-mega.png"
     },
     {
+      "basePokemonId": 483,
+      "apiName": "dialga-origin",
+      "displayName": "Origin Dialga"
+    },
+    {
+      "basePokemonId": 484,
+      "apiName": "palkia-origin",
+      "displayName": "Origin Palkia"
+    },
+    {
       "basePokemonId": 485,
       "apiName": "heatran-mega",
       "displayName": "Mega Heatran"
+    },
+    {
+      "basePokemonId": 487,
+      "apiName": "giratina-origin",
+      "displayName": "Origin Giratina"
     },
     {
       "basePokemonId": 491,
