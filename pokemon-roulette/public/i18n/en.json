@@ -277,6 +277,9 @@
         },
         "villain": {
           "which": "Which boss?"
+        },
+        "findItem": {
+          "mysteriousEgg": "Mysterious Egg"
         }
       },
       "trade": {

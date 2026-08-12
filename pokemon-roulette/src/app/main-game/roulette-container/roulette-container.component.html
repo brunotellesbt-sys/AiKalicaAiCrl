@@ -147,7 +147,8 @@
   }
   @case ('find-item') {
     <app-find-item-roulette
-      (itemSelectedEvent)="receiveItem($event)">
+      (itemSelectedEvent)="receiveItem($event)"
+      (mysteriousEggEvent)="mysteriousEgg()">
     </app-find-item-roulette>
   }
   @case ('explore-cave') {
