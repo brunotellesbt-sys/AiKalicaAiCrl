@@ -186,7 +186,26 @@ export class GymBattleRouletteComponent implements OnInit, OnDestroy {
 
   private getCurrentLeader(): GymLeader {
 
-    let currentLeader = this.gymLeadersByGeneration[this.generation.id][this.currentRound];
+    const ladder = this.gymLeadersByGeneration[this.generation.id] ?? [];
+
+    // Clamped rather than indexed raw.
+    //
+    // The round counter free-runs: it is bumped as a side effect of leaving a battle state
+    // and rewound by hand on the paths that replay one, so any desync anywhere upstream
+    // lands here as an index past the eighth leader. That used to evaluate to undefined and
+    // take the run down with it — the reported freeze on the way to the Elite Four — which
+    // is a bad way to find out about an off-by-one. Clamping turns a wrong index into the
+    // wrong leader, which is survivable and visible, instead of a dead run.
+    const index = Math.min(Math.max(this.currentRound, 0), ladder.length - 1);
+
+    if (index !== this.currentRound) {
+      console.warn(
+        `[gym] round ${this.currentRound} is outside the ${ladder.length}-leader ladder for ` +
+          `generation ${this.generation.id}; clamped to ${index}.`
+      );
+    }
+
+    let currentLeader = ladder[index];
 
     // Version-dependent gyms (and similar cases) are represented by an array of sprites.
     // Pick the SAME index for sprite + quote and emit it, so the container can award the
