@@ -19,3 +19,11 @@
     font-size: 0.85rem;
     opacity: 0.75;
 }
+
+/* Sits under the wheel, deliberately quiet: skipping the draw is a convenience, not the
+   intended way to experience it. */
+.draw-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.5rem;
+}

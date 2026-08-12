@@ -9,6 +9,20 @@ import {
   TournamentService,
 } from '../../services/tournament-service/tournament.service';
 
+/** One column of the wall chart: a round's heading and the ties on that side of it. */
+interface BracketColumn {
+  label: string;
+  ties: TournamentMatch[];
+}
+
+/** The knockout drawn as a cup wall chart: two halves converging on the final. */
+interface BracketBoard {
+  left: BracketColumn[];
+  right: BracketColumn[];
+  final: TournamentMatch | null;
+  champion: Competitor | null;
+}
+
 /**
  * The tournament table, shown inside the PC while a tournament is running.
  *
@@ -81,6 +95,61 @@ export class TournamentBracketComponent {
   get playedRounds(): TournamentMatch[][] {
     return this.rounds.filter((round) => this.hasMatches(round));
   }
+
+  /**
+   * The bracket, split into the two halves of the draw that meet in the final.
+   *
+   * A knockout draw is already two independent halves — the top half and the bottom half
+   * of the field only ever meet at the end — so drawing it as one long left-to-right strip
+   * throws away the shape everyone recognises from a cup wall chart, and on a phone it also
+   * means scrolling through every round to find out who you play next.
+   *
+   * Laid out as halves it fits: both sides converge on the centre, the final is one card in
+   * the middle instead of a column at the far right, and the number of columns is halved.
+   *
+   * `left` runs outside-in, `right` is reversed so it also runs outside-in when rendered
+   * right-to-left, which is what makes the two sides mirror each other.
+   */
+  get board(): BracketBoard {
+    const rounds = this.playedRounds;
+    const final = this.finalRound;
+    const upToFinal = final ? rounds.slice(0, -1) : rounds;
+
+    const columns = upToFinal.map((round) => ({
+      label: this.roundLabel(round),
+      ties: this.contested(round),
+    }));
+
+    const left = columns.map(({ label, ties }) => ({
+      label,
+      ties: ties.slice(0, Math.ceil(ties.length / 2)),
+    }));
+
+    // Reversed so the right half also runs outside-in once the row is laid out
+    // right-to-left, which is what makes the two sides mirror rather than repeat.
+    const right = columns
+      .map(({ label, ties }) => ({ label, ties: ties.slice(Math.ceil(ties.length / 2)) }))
+      .reverse();
+
+    return { left, right, final, champion: final?.winner ?? null };
+  }
+
+  /**
+   * The deciding match, once the bracket is down to one.
+   *
+   * Null until then, so the centre column shows the trophy only when there is actually a
+   * final to sit under it — an empty plinth halfway through a tournament would read as a
+   * result that has already happened.
+   */
+  get finalRound(): TournamentMatch | null {
+    const rounds = this.playedRounds;
+    const last = rounds[rounds.length - 1];
+    if (!last) return null;
+
+    const ties = this.contested(last);
+    return ties.length === 1 ? ties[0] : null;
+  }
+
 
   /**
    * A side's label, always a translation key so the template can pipe it unconditionally.

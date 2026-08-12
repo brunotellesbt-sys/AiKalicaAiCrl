@@ -124,12 +124,21 @@
   box-shadow: inset 2px 0 0 var(--tt-accent);
 }
 
-/* ---------------------------------------------------------------- bracket */
+/* -------------------------------------------------------------- wall chart */
 
-.bracket {
+/*
+  The knockout is drawn as a cup wall chart: the two halves of the draw run inward from
+  the edges and meet at the final in the centre, trophy on top.
+
+  Laid out this way it halves the number of columns, which is what makes it fit a phone at
+  all, and it restores the shape people already know how to read — you can see who your
+  side has to get through without tracing a single left-to-right strip end to end.
+*/
+.cup {
   display: flex;
   align-items: stretch;
-  gap: clamp(0.9rem, 3.5vw, 2rem);
+  justify-content: center;
+  gap: clamp(0.9rem, 3.5vw, 1.8rem);
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -137,16 +146,27 @@
   padding: 0.2rem 0 0.7rem;
 }
 
+.side {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.9rem, 3.5vw, 1.8rem);
+}
+
+/* Mirrored, so the right half also reads outside-in towards the centre. */
+.side.right {
+  flex-direction: row-reverse;
+}
+
 .round {
   display: flex;
   flex-direction: column;
   scroll-snap-align: start;
-  min-width: clamp(140px, 42vw, 200px);
+  min-width: clamp(120px, 36vw, 175px);
   flex: 0 0 auto;
 }
 
 .round h3 {
-  font-size: clamp(0.58rem, 2.2vw, 0.78rem);
+  font-size: clamp(0.55rem, 2.1vw, 0.75rem);
   margin: 0 0 0.5rem;
   opacity: 0.7;
   letter-spacing: 0.05em;
@@ -154,10 +174,10 @@
 }
 
 /*
-  Even spacing per column is what produces the bracket shape: each round has half the ties
-  of the one before it, so distributing them over the same height automatically centres a
-  tie between the two it feeds from — no per-round margin maths, and it survives any field
-  size, including the lopsided ones a play-in round leaves behind.
+  Even spacing per column is what produces the bracket shape: each round holds half the
+  ties of the one before it, so distributing them over the same height automatically
+  centres a tie between the two feeding it. No per-round margin maths, and it survives any
+  field size — including the lopsided ones a play-in round leaves behind.
 */
 .ties {
   display: flex;
@@ -180,27 +200,82 @@
   box-shadow: 0 0 0 1px var(--tt-accent);
 }
 
-/* Connector into the next round. Purely decorative, hidden from assistive tech by being
-   a pseudo-element, and dropped on narrow screens where columns scroll independently. */
-.tie::after {
+/* The path to the final. Each tie reaches towards the centre of the chart, so the two
+   halves visibly converge instead of being two unrelated grids. */
+.side.left .tie::after,
+.side.right .tie::after {
   content: '';
   position: absolute;
   top: 50%;
-  left: 100%;
-  width: clamp(0.9rem, 3.5vw, 2rem);
+  width: clamp(0.9rem, 3.5vw, 1.8rem);
   border-top: 1px solid var(--tt-line);
 }
 
-.round.final .tie::after {
-  display: none;
+.side.left .tie::after {
+  left: 100%;
 }
+
+.side.right .tie::after {
+  right: 100%;
+}
+
+/* ------------------------------------------------------------------ final */
+
+.centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+  min-width: clamp(130px, 40vw, 190px);
+  scroll-snap-align: center;
+}
+
+.trophy {
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  line-height: 1;
+  /* Dimmed until someone actually lifts it — a bright trophy over an undecided final
+     reads as a result that has already happened. */
+  filter: grayscale(1);
+  opacity: 0.35;
+  transition: filter 200ms ease-out, opacity 200ms ease-out;
+}
+
+.trophy.claimed {
+  filter: none;
+  opacity: 1;
+}
+
+.final-label {
+  font-size: clamp(0.55rem, 2.1vw, 0.75rem);
+  margin: 0;
+  opacity: 0.7;
+  letter-spacing: 0.05em;
+}
+
+.tie.final {
+  width: 100%;
+  border-color: var(--tt-accent);
+}
+
+.champion {
+  margin: 0.1rem 0 0;
+  font-size: clamp(0.58rem, 2.2vw, 0.8rem);
+  font-weight: 700;
+  color: var(--tt-win);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* -------------------------------------------------------------------- seats */
 
 .seat {
   display: flex;
   align-items: center;
   gap: 0.3rem;
   padding: 0.3rem 0.4rem;
-  font-size: clamp(0.56rem, 2.15vw, 0.75rem);
+  font-size: clamp(0.54rem, 2.05vw, 0.72rem);
   line-height: 1.35;
 }
 
@@ -254,10 +329,11 @@
   }
 }
 
-/* On a phone the columns are swiped one at a time, so the connectors would be drawn to a
-   round that is off-screen — more visual noise than signal. */
+/* On a phone the columns are swiped one at a time, so a connector would be drawn to a
+   round that is off-screen — noise rather than signal. */
 @container (max-width: 420px) {
-  .tie::after {
+  .side.left .tie::after,
+  .side.right .tie::after {
     display: none;
   }
 }

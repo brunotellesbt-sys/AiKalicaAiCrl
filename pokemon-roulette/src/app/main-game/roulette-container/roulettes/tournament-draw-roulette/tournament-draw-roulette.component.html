@@ -5,6 +5,12 @@
 
 <app-wheel #wheel [items]="slices" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
 
+<div class="draw-actions">
+  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="drawAll()">
+    {{ 'game.main.tournament.draw.drawAll' | translate }}
+  </button>
+</div>
+
 <ng-template #drawnModal let-modal>
   <div class="modal-body">
     <h1>{{ 'game.main.tournament.draw.seeded' | translate }}</h1>

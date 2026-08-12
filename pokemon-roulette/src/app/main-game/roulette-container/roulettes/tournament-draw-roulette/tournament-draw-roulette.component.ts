@@ -127,6 +127,26 @@ export class TournamentDrawRouletteComponent implements OnInit, OnDestroy {
     this.modalService.dismissAll();
   }
 
+  /**
+   * Seeds everyone still in the bag at once.
+   *
+   * A World Tournament draw is over 150 spins, one competitor at a time, before a single
+   * battle is fought — watching it is a chore rather than a decision, since the player has
+   * no influence over where anyone lands. Skipping straight to the finished draw uses the
+   * same `drawNext()` the wheel does, so the result is a shuffle revealed all at once
+   * rather than a different kind of draw.
+   */
+  drawAll(): void {
+    // Bounded by the bag rather than a while(true): a drawNext() that ever returned null
+    // early would otherwise spin forever.
+    for (let left = this.remaining; left > 0; left--) {
+      if (!this.tournamentService.drawNext()) break;
+    }
+
+    this.refreshSlices();
+    this.finishIfDrawn();
+  }
+
   /** Emits once the field is full, from whichever path got us there. */
   private finishIfDrawn(): void {
     if (this.completed || this.remaining > 0) return;

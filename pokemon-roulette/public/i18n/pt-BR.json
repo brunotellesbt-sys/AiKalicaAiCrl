@@ -383,7 +383,8 @@
           "title": "O sorteio!",
           "progress": "{{drawn}} de {{total}} sorteados",
           "seeded": "Entrou no chaveamento!",
-          "seedNumber": "Posição #{{seed}}"
+          "seedNumber": "Posição #{{seed}}",
+          "drawAll": "Sortear o resto"
         },
         "battle": {
           "title": "Vitória?",
