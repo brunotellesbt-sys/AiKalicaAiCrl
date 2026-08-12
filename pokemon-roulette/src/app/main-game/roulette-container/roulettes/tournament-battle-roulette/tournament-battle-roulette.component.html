@@ -10,7 +10,7 @@
   <p class="respin-reason">{{ 'game.main.tournament.battle.groupStakes' | translate }}</p>
 }
 
-<app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+<app-wheel #wheel [items]="victoryOdds" (selectedSliceEvent)="onItemSelected($event)"></app-wheel>
 
 <ng-template #opponentModal let-modal>
   <div class="modal-body tourney-modal">

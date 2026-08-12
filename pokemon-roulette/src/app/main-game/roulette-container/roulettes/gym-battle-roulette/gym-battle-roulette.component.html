@@ -2,7 +2,7 @@
 <p class="respin-reason">
   {{ (retries > 0) ? itemName(currentItem) + " x" + retries : ""}}
 </p>
-<app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)">
+<app-wheel #wheel [items]="victoryOdds" (selectedSliceEvent)="onItemSelected($event)">
 </app-wheel>
 
 <ng-template #gymLeaderPresentationModal let-modal>

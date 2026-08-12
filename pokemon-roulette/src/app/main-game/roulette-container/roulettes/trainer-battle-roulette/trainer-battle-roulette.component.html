@@ -6,14 +6,14 @@
 } @else {
   <h1 class="title">{{ 'game.main.roulette.trainer.victory' | translate }}</h1>
   <p class="respin-reason">{{ retries > 0 ? itemName(currentItem) + ' x' + retries : '' }}</p>
-  <app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+  <app-wheel #wheel [items]="victoryOdds" (selectedSliceEvent)="onItemSelected($event)"></app-wheel>
 }
 
 <ng-template #battleWheel>
   <h1 class="title">{{ 'game.main.roulette.trainer.victory' | translate }}</h1>
   <p class="respin-reason">{{ retries > 0 ? itemName(currentItem) + ' x' + retries : '' }}</p>
 
-  <app-wheel #wheel [items]="victoryOdds" (selectedItemEvent)="onItemSelected($event)"></app-wheel>
+  <app-wheel #wheel [items]="victoryOdds" (selectedSliceEvent)="onItemSelected($event)"></app-wheel>
 </ng-template>
 
 <ng-template #trainerPresentationModal let-modal>
