@@ -7,4 +7,5 @@ export type EventSource =
   | 'legendary-boss'
   | 'snorlax-encounter'
   | 'battle-rival'
-  | 'rare-candy';
+  | 'rare-candy'
+  | 'tournament-battle';
