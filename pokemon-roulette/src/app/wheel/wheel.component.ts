@@ -145,11 +145,10 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     const available = this.availableWidth(vw);
     const horizontalPadding = isMobile ? 24 : 32;
     const gap = isMobile ? 8 : 10;
-    // Twice the pointer allowance: one for the pointer, one for the spacer that balances it
-    // so the wheel lands on the centre line rather than half a pointer-width off it.
-    const pointerAllowance = (this.cursorWidth + gap) * 2;
-    const maxByWidth = Math.max(0, available - pointerAllowance - horizontalPadding);
-    const maxByHeight = vh * (isMobile ? 0.55 : 0.50);
+    // The pointer is overlaid rather than laid out, so it costs the wheel nothing. Only a
+    // small margin off the screen edge is held back.
+    const maxByWidth = Math.max(0, available - horizontalPadding);
+    const maxByHeight = vh * (isMobile ? 0.62 : 0.50);
 
     const size = Math.floor(
       Math.max(
