@@ -28,6 +28,18 @@ body.dark-mode {
 body.light-mode {
   background-color: #dfe6e9;
   color: #2d3436;
+  /*
+    The same tile as dark mode, recoloured rather than replaced.
+
+    Deriving it from the dark artwork keeps the pattern and the seams identical, so the two
+    themes are the same room with the lights changed instead of two different backdrops.
+    The outlines land on a soft slate: dark enough for the pattern to read, light enough
+    that body text keeps its contrast against the fill.
+  */
+  background-image: url('./assets/light-background.png');
+  background-size: 430px 430px;
+  background-repeat: repeat;
+  background-attachment: fixed;
 }
 
 .row {
