@@ -19,19 +19,18 @@
 
 .canvas-container {
     /*
-      The pointer is taken out of the flow and laid over the wheel's right edge.
+      Wheel and pointer sit side by side, and the pair is centred as one.
       
-      While it sat in the row it pushed the wheel off centre, and reserving space on both
-      sides to fix that cost the wheel ~70px of diameter on a phone — it ended up centred
-      but small. Overlapping costs nothing: the wheel gets the full width, stays centred
-      because it is now the only thing being centred, and the bolt still reads as pointing
-      into the rim.
+      So the only slack in the row is the strip the bolt occupies, on its own side — which
+      is what makes the layout read as deliberate rather than as the wheel having drifted.
+      Balancing that strip with a matching gap on the left costs the wheel ~70px of diameter
+      on a phone, and overlaying the bolt puts it on top of a slice; neither is worth it.
     */
-    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     max-width: 100%;
     /* Clipping was hiding a sizing mistake by shaving the wheel's edge. The size is now
        measured from this box, so nothing should overflow; kept as a last resort only. */
@@ -45,11 +44,9 @@ canvas {
 }
 
 #pointer {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    /* Above the wheel it points into, and never intercepting a tap meant for the wheel. */
+    /* In the row beside the wheel, never on top of it: overlapping made the bolt sit on the
+       rim and cover a slice. It only needs to be next to the edge to read as pointing at it. */
+    flex: 0 0 auto;
     pointer-events: none;
 }
 
