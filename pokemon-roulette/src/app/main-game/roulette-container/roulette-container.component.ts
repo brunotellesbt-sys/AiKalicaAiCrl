@@ -962,10 +962,11 @@ case 'visit-daycare':
 
     this.finishCurrentState();
 
-    // The round counter keeps climbing through the Elite Four (8, 9, 10...). The run now
-    // resumes at the 8th gym, so point it back there or the replayed gym would look up a
-    // leader index that does not exist.
-    this.gameStateService.setRound(LAST_GYM_INDEX);
+    // The round counter keeps climbing through the Elite Four (8, 9, 10...) and the run now
+    // resumes at the preparation wheel, with all eight badges still won. Point it back at
+    // the end of the gym ladder rather than at the last gym: the eighth is beaten, so a
+    // counter still saying "seven won" would let the Elite Four be re-entered a rung short.
+    this.gameStateService.setRound(LAST_GYM_INDEX + 1);
   }
 
   championBattleResult(result: boolean): void {

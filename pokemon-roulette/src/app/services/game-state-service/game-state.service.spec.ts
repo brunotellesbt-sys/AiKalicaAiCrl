@@ -87,7 +87,7 @@ describe('GameStateService', () => {
     expect(currentRound()).toBe(0);
   });
 
-  it('comes back to the last gym after the Elite Four is abandoned', () => {
+  it('comes back to the preparation wheel after the Elite Four is abandoned', () => {
     for (let gym = 0; gym < 8; gym++) {
       advanceTo('gym-battle');
       service.finishCurrentState();
@@ -96,10 +96,14 @@ describe('GameStateService', () => {
     service.finishCurrentState(); // lost it
 
     service.restartEliteFourRun();
-    service.setRound(7);
+    service.setRound(8);
 
-    // The run resumes through the pre-gym wheel and faces the eighth leader again.
-    expect(advanceTo('gym-battle')).toBe(true);
-    expect(currentRound()).toBe(7);
+    // Straight back to the wheel that sits between the eighth badge and the challenge —
+    // the gym is not replayed, because that badge is already won.
+    expect(advanceTo('elite-four-preparation')).toBe(true);
+    expect(currentRound()).toBe(8);
+
+    // And no gym battle is queued anywhere ahead of the Elite Four.
+    expect(advanceTo('elite-four-battle')).toBe(true);
   });
 });
