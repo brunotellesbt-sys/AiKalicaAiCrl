@@ -312,6 +312,11 @@ export class RouletteContainerComponent implements OnInit, OnDestroy {
       // ORIGINAL BEHAVIOR: if nobody can evolve, award a generation-appropriate
       // alternative reward (potion / egg / item) depending on what triggered the check.
       switch (eventSource) {
+        // A trainer win is settled the same way a gym win is: nobody left to evolve means a
+        // Potion instead, graded by how far the run has got. Without this branch, beating a
+        // trainer with a fully evolved team paid nothing at all — the reward the encounter
+        // exists to give was silently skipped by the teams most likely to have earned it.
+        case 'battle-trainer':
         case 'gym-battle':
           this.altPrizeText = 'Got a Bonus Potion!';
           this.altPrizeSprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png';
@@ -1001,6 +1006,16 @@ case 'visit-daycare':
         this.gameStateService.setNextState('tournament-offer');
       }
       this.finishCurrentState();
+      return;
+    }
+
+    // A won match earns the same evolution check every other battle in the game grants.
+    // The tournament used to be the one place a win bought nothing: six fully evolved
+    // opponents every round, and no way to grow between them. Queued before the next
+    // match so the evolution is in hand for the fight it has to survive.
+    if (result) {
+      this.gameStateService.queueTournamentBattle();
+      this.chooseWhoWillEvolve('tournament-battle');
       return;
     }
 
