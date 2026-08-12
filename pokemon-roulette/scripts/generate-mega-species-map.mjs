@@ -15,7 +15,16 @@ const listRes = await fetch('https://pokeapi.co/api/v2/pokemon?limit=100000');
 const list = await listRes.json();
 
 const forms = (list.results ?? [])
-  .filter((r) => r.name.includes('-mega') || r.name.endsWith('-primal') || r.name.endsWith('-ultra'))
+  .filter(
+    (r) =>
+      r.name.includes('-mega') ||
+      r.name.endsWith('-primal') ||
+      r.name.endsWith('-ultra') ||
+      // Origin Dialga, Palkia and Giratina are battle forms in the same sense as a Mega or a
+      // Primal: a temporary upgrade the trainer triggers, reverting afterwards. Without this
+      // the next regeneration would silently drop them back out of the map.
+      r.name.endsWith('-origin')
+  )
   .map((r) => ({ name: r.name, id: idFromUrl(r.url) }));
 
 process.stderr.write(`mega-like forms: ${forms.length}\n`);
