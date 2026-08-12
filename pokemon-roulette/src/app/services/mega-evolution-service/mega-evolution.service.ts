@@ -171,13 +171,34 @@ export class MegaEvolutionService {
     );
   }
 
-  /** True when this Pokémon has a Mega-like form, judged from local data only. */
+  /**
+   * True when this Pokémon has a Mega-like form, judged from local data only.
+   *
+   * Matched on the Pokémon's own id rather than its base species. `basePokemonId` exists so
+   * species-level questions — evolution chains, cries — resolve for a regional form, but
+   * Mega Evolution is a property of the form, not the species. Reading it here let Alolan
+   * Raichu collapse onto Raichu and inherit a Mega that only the Kantonian form has; the
+   * same went for every other regional variant of a Mega-capable species.
+   *
+   * A regional form that genuinely has one is still covered: its own id would be the base
+   * id of that entry in the forms table.
+   */
   canMegaEvolveLocally(pokemon: PokemonItem, capable: Set<number>): boolean {
-    return capable.has(pokemon.basePokemonId ?? pokemon.pokemonId);
+    return capable.has(pokemon.pokemonId);
+  }
+
+  /** A regional or alternate form: carries a base species that is not itself. */
+  private isVariantForm(pokemon: PokemonItem): boolean {
+    return pokemon.basePokemonId != null && pokemon.basePokemonId !== pokemon.pokemonId;
   }
 
   getMegaFormsForPokemon(pokemon: PokemonItem): Observable<MegaForm[]> {
-    const speciesId = pokemon.basePokemonId ?? pokemon.pokemonId;
+    // A variant form does not inherit the base species' Megas — see canMegaEvolveLocally.
+    // Guarded here too because this fetches the species and would otherwise hand back the
+    // base form's list for a regional one.
+    if (this.isVariantForm(pokemon)) return of([]);
+
+    const speciesId = pokemon.pokemonId;
 
     const cached = this.megaFormsBySpeciesId.get(speciesId);
     if (cached) return cached;
