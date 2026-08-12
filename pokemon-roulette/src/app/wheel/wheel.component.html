@@ -1,11 +1,6 @@
 <div class="wheel-container">
     <p>{{ currentSegment | translate }}</p>
-    <div class="canvas-container" [style.--pointer-space.px]="cursorWidth">
-        <!-- Mirrors the pointer on the opposite side. The row centres its contents as a
-             group, and the pointer only exists on the right, so without this the wheel
-             itself sits half a pointer-width left of centre — read as the wheel drifting
-             into one edge on a phone. -->
-        <span class="pointer-balance" aria-hidden="true"></span>
+    <div class="canvas-container">
         <canvas id="wheel"
                 [width]="wheelWidth"
                 [height]="canvasHeight"

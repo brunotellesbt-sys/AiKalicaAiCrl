@@ -17,17 +17,20 @@
     line-height: 1.2;
 }
 
-.pointer-balance {
-    flex: 0 0 var(--pointer-space, 0px);
-}
-
 .canvas-container {
+    /*
+      Wheel and pointer sit side by side, and the pair is centred as one.
+      
+      So the only slack in the row is the strip the bolt occupies, on its own side — which
+      is what makes the layout read as deliberate rather than as the wheel having drifted.
+      Balancing that strip with a matching gap on the left costs the wheel ~70px of diameter
+      on a phone, and overlaying the bolt puts it on top of a slice; neither is worth it.
+    */
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-left: 0;
+    gap: 8px;
     max-width: 100%;
     /* Clipping was hiding a sizing mistake by shaving the wheel's edge. The size is now
        measured from this box, so nothing should overflow; kept as a last resort only. */
@@ -40,6 +43,13 @@ canvas {
     touch-action: manipulation;
 }
 
+#pointer {
+    /* In the row beside the wheel, never on top of it: overlapping made the bolt sit on the
+       rim and cover a slice. It only needs to be next to the edge to read as pointing at it. */
+    flex: 0 0 auto;
+    pointer-events: none;
+}
+
 /* Make the wheel easier to see and tap on mobile */
 @media (max-width: 576px) {
     .wheel-container p {
@@ -49,11 +59,7 @@ canvas {
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    .pointer-balance {
-    flex: 0 0 var(--pointer-space, 0px);
-}
-
-.canvas-container {
+    .canvas-container {
         gap: 8px;
     }
 }
