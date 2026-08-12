@@ -41,34 +41,89 @@
       </div>
     }
 
-    @if (playedRounds.length) {
-      <div class="bracket" role="group">
-        @for (round of playedRounds; track round; let last = $last) {
-          <div class="round" [class.final]="last">
-            <h3>{{ roundLabel(round) | translate }}</h3>
-            <div class="ties">
-              @for (match of contested(round); track match) {
-                <div
-                  class="tie"
-                  [class.you]="match.playerMatch"
-                  [class.decided]="!!match.winner">
-                  <div class="seat"
-                       [class.won]="isWinner(match, match.a)"
-                       [class.lost]="isLoser(match, match.a)"
-                       [class.self]="isPlayer(match.a)">
-                    <span class="who">{{ sideName(match.a) | translate }}</span>
+    <!-- Computed once per check: the getter walks every round, and the template reads it
+         from a dozen places. -->
+    @let chart = board;
+
+    @if (chart.left.length || chart.final) {
+      <div class="cup">
+        <div class="side left">
+          @for (column of chart.left; track $index) {
+            <div class="round">
+              <h3>{{ column.label | translate }}</h3>
+              <div class="ties">
+                @for (match of column.ties; track match) {
+                  <div class="tie" [class.you]="match.playerMatch" [class.decided]="!!match.winner">
+                    <div class="seat"
+                         [class.won]="isWinner(match, match.a)"
+                         [class.lost]="isLoser(match, match.a)"
+                         [class.self]="isPlayer(match.a)">
+                      <span class="who">{{ sideName(match.a) | translate }}</span>
+                    </div>
+                    <div class="seat"
+                         [class.won]="isWinner(match, match.b)"
+                         [class.lost]="isLoser(match, match.b)"
+                         [class.self]="isPlayer(match.b)">
+                      <span class="who">{{ sideName(match.b) | translate }}</span>
+                    </div>
                   </div>
-                  <div class="seat"
-                       [class.won]="isWinner(match, match.b)"
-                       [class.lost]="isLoser(match, match.b)"
-                       [class.self]="isPlayer(match.b)">
-                    <span class="who">{{ sideName(match.b) | translate }}</span>
-                  </div>
-                </div>
-              }
+                }
+              </div>
             </div>
+          }
+        </div>
+
+        @if (chart.final) {
+          <div class="centre">
+            <div class="trophy" [class.claimed]="chart.champion" aria-hidden="true">🏆</div>
+            <h3 class="final-label">{{ 'game.main.tournament.round.1' | translate }}</h3>
+
+            <div class="tie final" [class.you]="chart.final.playerMatch">
+              <div class="seat"
+                   [class.won]="isWinner(chart.final, chart.final.a)"
+                   [class.lost]="isLoser(chart.final, chart.final.a)"
+                   [class.self]="isPlayer(chart.final.a)">
+                <span class="who">{{ sideName(chart.final.a) | translate }}</span>
+              </div>
+              <div class="seat"
+                   [class.won]="isWinner(chart.final, chart.final.b)"
+                   [class.lost]="isLoser(chart.final, chart.final.b)"
+                   [class.self]="isPlayer(chart.final.b)">
+                <span class="who">{{ sideName(chart.final.b) | translate }}</span>
+              </div>
+            </div>
+
+            @if (chart.champion) {
+              <p class="champion">{{ sideName(chart.champion) | translate }}</p>
+            }
           </div>
         }
+
+        <div class="side right">
+          @for (column of chart.right; track $index) {
+            <div class="round">
+              <h3>{{ column.label | translate }}</h3>
+              <div class="ties">
+                @for (match of column.ties; track match) {
+                  <div class="tie" [class.you]="match.playerMatch" [class.decided]="!!match.winner">
+                    <div class="seat"
+                         [class.won]="isWinner(match, match.a)"
+                         [class.lost]="isLoser(match, match.a)"
+                         [class.self]="isPlayer(match.a)">
+                      <span class="who">{{ sideName(match.a) | translate }}</span>
+                    </div>
+                    <div class="seat"
+                         [class.won]="isWinner(match, match.b)"
+                         [class.lost]="isLoser(match, match.b)"
+                         [class.self]="isPlayer(match.b)">
+                      <span class="who">{{ sideName(match.b) | translate }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
       </div>
     }
   </div>

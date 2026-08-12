@@ -331,7 +331,8 @@
           "title": "The draw!",
           "progress": "Seeded {{drawn}} of {{total}}",
           "seeded": "Into the bracket!",
-          "seedNumber": "Seed #{{seed}}"
+          "seedNumber": "Seed #{{seed}}",
+          "drawAll": "Draw the rest"
         },
         "battle": {
           "title": "Victory?",
