@@ -556,7 +556,8 @@ case 'visit-daycare':
     this.gameStateService.setNextState('select-from-pokemon-list');
   }
 
-  gymBattleResult(result: boolean): void {
+  gymBattleResult(outcome: { won: boolean; round: number }): void {
+    const result = outcome.won;
     // See battleResolved: a repeat call for the same fight would award a second prize and
     // advance the ladder twice.
     if (this.battleResolved) return;
@@ -573,9 +574,11 @@ case 'visit-daycare':
       // Only Gym Battles should award gym badges.
       // (This guard prevents badges being granted if this handler is ever called
       // from a non-gym context.)
-      if (this.currentGameState === 'gym-battle') {
-        this.trainerService.addBadge(this.leadersDefeatedAmount, this.fromLeader);
-      }
+      // Awarded for the rung the battle was fought at, reported by the component that ran
+      // it. The old version read the live counter and guarded on the live game state, so a
+      // counter that had moved gave the next leader's badge and a state that had moved gave
+      // none at all.
+      this.trainerService.addBadge(outcome.round, this.fromLeader);
       this.gameStateService.setNextState('check-evolution');
 
     } else if (this.spendLife()) {

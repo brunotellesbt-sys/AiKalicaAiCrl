@@ -68,7 +68,20 @@ export class GymBattleRouletteComponent implements OnInit, OnDestroy {
   trainerItems!: ItemItem[];
   @Input() currentRound!: number;
   @Input() fromLeader!: number;
-  @Output() battleResultEvent = new EventEmitter<boolean>();
+  /**
+   * The result, carrying the rung this fight was actually fought at.
+   *
+   * The container used to award the badge from its own live round counter, read at the
+   * moment the handler ran rather than when the battle started. Anything that moved that
+   * counter in between handed out the next leader's badge — and its companion guard, which
+   * checked the live game state, skipped the award entirely when the state had already
+   * moved on. Between them that is the reported symptom exactly: the next gym's badge
+   * arriving while the current gym's never does.
+   *
+   * The rung is fixed when the leader is chosen, so it cannot drift out from under the
+   * award no matter what else is happening.
+   */
+  @Output() battleResultEvent = new EventEmitter<{ won: boolean; round: number }>();
   @Output() fromLeaderChange = new EventEmitter<number>();
 
   victoryOdds: WheelItem[] = [
@@ -79,6 +92,9 @@ export class GymBattleRouletteComponent implements OnInit, OnDestroy {
   currentLeader!: GymLeader;
   currentItem!: ItemItem;
   retries = 0;
+
+  /** The rung this battle belongs to, fixed when the leader was chosen. */
+  private foughtRound = 0;
   private teamSubscription!: Subscription;
 
   /** Type Advantage mode only — empty in Classic. */
@@ -129,14 +145,14 @@ export class GymBattleRouletteComponent implements OnInit, OnDestroy {
   onItemSelected(slice: WheelItem): void {
     this.retries--;
     if (slice?.text === 'Yes') {
-      this.battleResultEvent.emit(true);
+      this.battleResultEvent.emit({ won: true, round: this.foughtRound });
     } else {
       if (this.retries <= 0) {
         const potion = this.hasPotions();
         if (potion) {
           this.usePotion(potion);
         } else {
-          this.battleResultEvent.emit(false);
+          this.battleResultEvent.emit({ won: false, round: this.foughtRound });
         }
       }
     }
@@ -204,6 +220,10 @@ export class GymBattleRouletteComponent implements OnInit, OnDestroy {
           `generation ${this.generation.id}; clamped to ${index}.`
       );
     }
+
+    // Remembered so the badge is awarded for the leader actually fought, not for whatever
+    // the counter says by the time the result is handled.
+    this.foughtRound = index;
 
     let currentLeader = ladder[index];
 
