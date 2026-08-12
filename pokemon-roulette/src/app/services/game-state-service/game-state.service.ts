@@ -75,9 +75,16 @@ export class GameStateService {
   /**
    * Rebuilds the run from the point where the player heads to the 8th gym again.
    *
-   * Used when a life is spent inside the Elite Four: the challenge is abandoned and the
-   * player returns through the last gym. The villain boss and the one-off legendary are
-   * deliberately left out — they already happened this run.
+   * Used when a life is spent inside the Elite Four or against the Champion: the challenge
+   * is abandoned and the player returns to the preparation wheel that sits between the
+   * eighth badge and the Elite Four.
+   *
+   * It stops there rather than replaying the eighth gym. That badge is already won, so
+   * sending the player back through the gym meant re-earning something they still held and
+   * fighting a leader they had already beaten — a rerun of the wrong part. The preparation
+   * wheel is the last thing before the challenge, so it is the right place to be returned
+   * to. The villain boss and the one-off legendary stay out for the same reason: they
+   * already happened this run.
    */
   restartEliteFourRun(): void {
     this.stateStack = [
@@ -93,10 +100,7 @@ export class GameStateService {
       'mega-evolution',
       'elite-four-battle',
       'mega-evolution',
-      'elite-four-preparation',
-      'gym-battle',
-      'mega-evolution',
-      'adventure-continues'
+      'elite-four-preparation'
     ];
   }
 
