@@ -59,6 +59,6 @@ canvas {
         overflow: hidden;
     }
     .canvas-container {
-        gap: 6px;
+        gap: 5px;
     }
 }
