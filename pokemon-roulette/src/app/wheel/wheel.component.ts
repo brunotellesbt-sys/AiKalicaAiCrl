@@ -143,11 +143,14 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     // little too big for its column. The container clips overflow, so the excess showed up
     // as a slice shaved off the side rather than as a scrollbar.
     const available = this.availableWidth(vw);
-    // Tight on purpose: 4px off each screen edge and 4px between rim and bolt on a phone.
-    // Close enough that both sides read as reaching the edge, still a real gap rather than a
-    // touch — anything smaller and the bolt starts looking welded to the rim.
-    const horizontalPadding = isMobile ? 8 : 20;
-    const gap = isMobile ? 4 : 8;
+    // 8px off each screen edge and 6px between rim and bolt on a phone.
+    //
+    // Landed between two tries. 12px each side left visible slack on three sides; 4px went
+    // the other way and read as spilling off the screen rather than filling it — the rim
+    // needs a sliver of background beside it to look placed rather than cropped. 8px is
+    // enough to be that sliver without being a margin.
+    const horizontalPadding = isMobile ? 16 : 24;
+    const gap = isMobile ? 6 : 8;
     // The wheel takes everything the row has left once the bolt and its gap are placed, so
     // it reaches both margins and the only slack sits where the bolt is.
     const maxByWidth = Math.max(0, available - this.cursorWidth - gap - horizontalPadding);
