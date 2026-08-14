@@ -1,14 +1,21 @@
 <div class="wheel-container">
     <p>{{ currentSegment | translate }}</p>
+    <!--
+      The canvases are sized from the component, never from a binding.
+
+      Writing canvas.width wipes the bitmap, and a binding is written *after* the hooks that
+      draw into it — so a size change and a redraw in the same pass produced a wheel that
+      was painted and then instantly blanked. It looked like the game had frozen: the
+      heading and the last segment name were still there, with nothing under them, until a
+      spin or a resize happened to paint it again.
+    -->
     <div class="canvas-container">
-        <canvas id="wheel"
-                [width]="wheelWidth"
-                [height]="canvasHeight"
+        <canvas #wheelCanvas
+                id="wheel"
                 (click)="spinWheel()">
         </canvas>
-        <canvas id="pointer"
-                [width]="cursorWidth"
-                [height]="canvasHeight">
+        <canvas #pointerCanvas
+                id="pointer">
         </canvas>
     </div>
     <button class="btn my-3"

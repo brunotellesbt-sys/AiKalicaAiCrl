@@ -129,6 +129,15 @@ export class MegaEvolutionRouletteComponent implements OnInit, OnDestroy {
             return;
           }
 
+          // A wheel with one slice on it is not a choice, it is a formality — it always
+          // lands on the same Pokémon and the player has to spin it to be told so. With a
+          // single candidate the only real question left is which Mega form it takes, so
+          // ask that one and skip straight past the other.
+          if (this.megaCandidates.length === 1) {
+            this.chooseCandidate(this.megaCandidates[0]);
+            return;
+          }
+
           this.mode = 'select-pokemon';
           this.wheelTitle = 'Mega Evolution';
           this.wheelItems = this.megaCandidates.map((c) => c.pokemon);
@@ -174,21 +183,7 @@ export class MegaEvolutionRouletteComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.selectedPokemonForMega = candidate.pokemon;
-
-      if ((candidate.megaForms?.length ?? 0) <= 1) {
-        this.applyMegaEvolution(candidate.pokemon, candidate.megaForms[0]);
-        return;
-      }
-
-      this.mode = 'select-mega-form';
-      this.wheelTitle = 'Mega Evolution';
-      this.wheelItems = candidate.megaForms.map((f) => ({
-        text: f.displayName,
-        fillStyle: candidate.pokemon.fillStyle,
-        weight: 1,
-        _megaForm: f,
-      }));
+      this.chooseCandidate(candidate);
       return;
     }
 
@@ -201,6 +196,41 @@ export class MegaEvolutionRouletteComponent implements OnInit, OnDestroy {
     }
 
     this.applyMegaEvolution(this.selectedPokemonForMega, megaForm);
+  }
+
+  /**
+   * Commits to a Pokémon and moves on to whatever is still undecided about it.
+   *
+   * One Mega form means nothing is: transform it. Two or more, and the form wheel is the
+   * only spin worth showing. Shared by both entry points — the wheel landing on a Pokémon,
+   * and a team with a single candidate that never gets a wheel at all — so the two cannot
+   * drift apart.
+   */
+  private chooseCandidate(candidate: { pokemon: PokemonItem; megaForms: MegaForm[] }): void {
+    this.selectedPokemonForMega = candidate.pokemon;
+
+    if ((candidate.megaForms?.length ?? 0) <= 1) {
+      // Fetching the Mega sprite takes a moment, and an empty heading in the meantime reads
+      // as another freeze. Hold the spinner until the popup takes over — it also keeps the
+      // wheel off screen, so the choice cannot be made twice.
+      this.isLoading = true;
+
+      // Deferred for the same reason leaving early is: this can be reached straight from
+      // the subscription in ngOnInit, and opening the popup inside the container's own
+      // change detection pass is what leaves a half-rendered screen behind.
+      const only = candidate.megaForms[0];
+      void Promise.resolve().then(() => this.applyMegaEvolution(candidate.pokemon, only));
+      return;
+    }
+
+    this.mode = 'select-mega-form';
+    this.wheelTitle = 'Mega Evolution';
+    this.wheelItems = candidate.megaForms.map((f) => ({
+      text: f.displayName,
+      fillStyle: candidate.pokemon.fillStyle,
+      weight: 1,
+      _megaForm: f,
+    }));
   }
 
   private applyMegaEvolution(pokemon: PokemonItem, megaForm: MegaForm): void {

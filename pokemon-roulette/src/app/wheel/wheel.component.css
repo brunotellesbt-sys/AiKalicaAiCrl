@@ -42,6 +42,18 @@ canvas {
     touch-action: manipulation;
 }
 
+#wheel {
+    /*
+      Never let flexbox shrink the wheel.
+
+      A canvas has an intrinsic size and a default flex-shrink of 1, so a row that ran even
+      slightly narrow squeezed the element without touching the bitmap — the drawing came
+      out squashed into an oval rather than simply smaller. The size is decided in the
+      component; CSS only has to leave it alone.
+    */
+    flex: 0 0 auto;
+}
+
 #pointer {
     /* In the row beside the wheel, never on top of it: overlapping made the bolt sit on the
        rim and cover a slice. It only needs to be next to the edge to read as pointing at it. */
