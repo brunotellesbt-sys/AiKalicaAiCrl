@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { WheelItem } from '../interfaces/wheel-item';
 import { DarkModeService } from '../services/dark-mode-service/dark-mode.service';
 import { Observable } from 'rxjs';
@@ -18,6 +18,17 @@ import { AudioService } from '../services/audio-service/audio.service';
   styleUrl: './wheel.component.css'
 })
 export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
+
+  /**
+   * The canvases, resolved through the view rather than by element id.
+   *
+   * `document.getElementById('wheel')` returns the first match in the whole page, so a wheel
+   * created while another one was still mounted — a roulette behind an open dialog, or the
+   * moment two states overlap — would take hold of its neighbour's canvas and draw there.
+   * The view query can only ever return this component's own.
+   */
+  @ViewChild('wheelCanvas') private wheelCanvasRef?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('pointerCanvas') private pointerCanvasRef?: ElementRef<HTMLCanvasElement>;
 
   wheelCanvas!: HTMLCanvasElement;
   wheelCtx!: CanvasRenderingContext2D;
@@ -75,19 +86,16 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
   private readonly MIN_WHEEL_SIZE = 240;
   private readonly MAX_WHEEL_SIZE = 520;
 
+  /** Ceiling on how far the canvas row may reach past its column, per side. */
+  private readonly MAX_SIDE_BLEED = 16;
+
+  /** Current bleed, in pixels per side. See `sideBleed`. */
+  private bleed = 0;
+
   private readonly onResize = () => {
     this.computeCanvasSizes();
     // Redraw at current rotation (avoid visible reset while spinning)
-    if (this.wheelCanvas && this.pointerCanvas) {
-      // Ensure canvas element dimensions match the newly computed sizes.
-      this.wheelCanvas.width = this.wheelWidth;
-      this.wheelCanvas.height = this.canvasHeight;
-      this.pointerCanvas.width = this.cursorWidth;
-      this.pointerCanvas.height = this.canvasHeight;
-
-      this.drawWheel(this.spinning ? this.currentRotation : 0);
-      this.drawPointer();
-    }
+    this.redraw(this.spinning ? this.currentRotation : 0);
   };
 
   constructor(
@@ -118,11 +126,32 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
    * component has not been laid out yet.
    */
   private availableWidth(viewportWidth: number): number {
-    const container = this.wheelCanvas?.parentElement;
-    const measured = container?.clientWidth ?? 0;
-    if (measured > 0) return measured;
-
+    // The screen, never the wheel's own box.
+    //
+    // Measuring an ancestor of the canvas is what made the wheel shrink a step on every tap:
+    // the row holding the canvases sizes itself to fit them, so reading a width from
+    // anywhere inside it fed the wheel its own size back and each layout pass took another
+    // bite. The viewport cannot do that — it is the same number before and after a draw.
+    //
+    // What the layout takes out of it is handled separately, by `sideBleed()`.
     return document.documentElement?.clientWidth || viewportWidth;
+  }
+
+  /**
+   * How far the canvas row may reach past the page's side padding, per side.
+   *
+   * The wheel is sized against the screen, but it sits inside a padded column — so without
+   * this the padding is charged twice and the wheel comes out that much narrower than the
+   * margin it was given. Reading the column's width (a `width: 100%` box, unaffected by
+   * what is drawn in it) says exactly how much padding to reclaim, with a ceiling so a
+   * narrow column on a wide screen cannot let the row swing out over its neighbours.
+   */
+  private sideBleed(viewport: number): number {
+    const column = this.wheelCanvas?.parentElement?.parentElement;
+    const width = column?.clientWidth ?? 0;
+    if (width <= 0 || width >= viewport) return 0;
+
+    return Math.min(Math.floor((viewport - width) / 2), this.MAX_SIDE_BLEED);
   }
 
   // Keep the wheel readable when rotating the phone or resizing the browser.
@@ -136,13 +165,9 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.cursorWidth = isMobile ? 28 : 40;
 
     // Leave some space for padding + pointer + a small gap.
-    //
-    // Measured against the box the wheel actually sits in rather than the viewport. The
-    // viewport is wider than the space available — the layout around it is padded, and on
-    // desktop innerWidth counts the scrollbar too — so sizing from it produced a wheel a
-    // little too big for its column. The container clips overflow, so the excess showed up
-    // as a slice shaved off the side rather than as a scrollbar.
-    const available = this.availableWidth(vw);
+    const viewport = this.availableWidth(vw);
+    this.bleed = isMobile ? this.sideBleed(viewport) : 0;
+
     // 6px off each screen edge and 5px between rim and bolt on a phone.
     //
     // Converged over three tries: 12px left visible slack, 4px read as spilling off the
@@ -153,7 +178,7 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     const gap = isMobile ? 5 : 8;
     // The wheel takes everything the row has left once the bolt and its gap are placed, so
     // it reaches both margins and the only slack sits where the bolt is.
-    const maxByWidth = Math.max(0, available - this.cursorWidth - gap - horizontalPadding);
+    const maxByWidth = Math.max(0, viewport - this.cursorWidth - gap - horizontalPadding);
     const maxByHeight = vh * (isMobile ? 0.62 : 0.50);
 
     const size = Math.floor(
@@ -167,30 +192,71 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.wheelWidth = size;
     const baseFont = this.wheelWidth / (isMobile ? 20 : 24);
     this.fontSize = baseFont * (this.fontScale || 1);
+
+    // Crowded wheels get a ceiling on top of the proportional size. This used to live in
+    // ngAfterViewInit, so it only applied to the slices the wheel was born with: a wheel
+    // that later grew to 32 items redrew them at the uncapped size and the labels collided.
+    if (this.items.length >= 32) {
+      this.fontSize = Math.min(this.fontSize, 10);
+    } else if (this.items.length >= 16) {
+      this.fontSize = Math.min(this.fontSize, 14);
+    }
+  }
+
+  /**
+   * Pushes the computed sizes onto the canvas elements.
+   *
+   * Always immediately before drawing, never through a template binding: writing `width`
+   * clears the bitmap, and Angular writes its bindings *after* the lifecycle hooks that
+   * draw. Doing it here means the wipe happens first and the paint survives it.
+   */
+  private applyCanvasSizes(): void {
+    if (!this.wheelCanvas || !this.pointerCanvas) return;
+
+    // Let the row spill back over the page padding the wheel was already measured against,
+    // so the rim reaches its margin instead of being clipped short of it.
+    const row = this.wheelCanvas.parentElement;
+    if (row) {
+      // max-width has to move with the margins: the row is capped at 100% of the column, so
+      // negative margins alone would just be clamped straight back and the canvas squeezed.
+      row.style.marginLeft = this.bleed > 0 ? `${-this.bleed}px` : '';
+      row.style.marginRight = row.style.marginLeft;
+      row.style.maxWidth = this.bleed > 0 ? `calc(100% + ${this.bleed * 2}px)` : '';
+    }
+
+    if (this.wheelCanvas.width !== this.wheelWidth) this.wheelCanvas.width = this.wheelWidth;
+    if (this.wheelCanvas.height !== this.canvasHeight) this.wheelCanvas.height = this.canvasHeight;
+    if (this.pointerCanvas.width !== this.cursorWidth) this.pointerCanvas.width = this.cursorWidth;
+    if (this.pointerCanvas.height !== this.canvasHeight) this.pointerCanvas.height = this.canvasHeight;
+  }
+
+  /** Size, then paint — the only order in which the paint is guaranteed to stay on screen. */
+  private redraw(rotation = 0): void {
+    if (!this.wheelCtx || !this.pointerCtx) return;
+
+    this.applyCanvasSizes();
+    this.drawWheel(rotation);
+    this.drawPointer();
   }
 
   ngAfterViewInit(): void {
-    this.wheelCanvas = <HTMLCanvasElement>document.getElementById('wheel');
-    this.wheelCtx = this.wheelCanvas.getContext('2d')!;
-    this.pointerCanvas = <HTMLCanvasElement>document.getElementById('pointer');
-    this.pointerCtx = this.pointerCanvas.getContext('2d')!;
+    const wheel = this.wheelCanvasRef?.nativeElement;
+    const pointer = this.pointerCanvasRef?.nativeElement;
+    if (!wheel || !pointer) return;
 
-    // Ensure the canvas element dimensions match our computed bindings (especially on mobile).
-    this.wheelCanvas.width = this.wheelWidth;
-    this.wheelCanvas.height = this.canvasHeight;
-    this.pointerCanvas.width = this.cursorWidth;
-    this.pointerCanvas.height = this.canvasHeight;
-    if (this.items.length >= 32) {
-      this.fontSize = Math.min(this.fontSize, 10);
-    } else if(this.items.length >= 16) {
-      this.fontSize = Math.min(this.fontSize, 14);
-    }
-    
+    this.wheelCanvas = wheel;
+    this.wheelCtx = wheel.getContext('2d')!;
+    this.pointerCanvas = pointer;
+    this.pointerCtx = pointer.getContext('2d')!;
+
+    // The constructor sized the wheel before it had a container to measure, so redo it now
+    // that there is one.
+    this.computeCanvasSizes();
+
     // Wait for translations to be ready
     this.translateService.get('wheel.spin').subscribe(() => {
       this.preprocessTranslations();
-      this.drawWheel();
-      this.drawPointer();
+      this.redraw();
     });
 
     // Resize after view init so bindings apply with the latest viewport.
@@ -212,8 +278,7 @@ export class WheelComponent implements AfterViewInit, OnChanges, OnDestroy {
         this.preprocessTranslations();
         // If items change while the wheel is spinning, redraw at the current rotation
         // to avoid a visible "reset".
-        this.drawWheel(this.spinning ? this.currentRotation : 0);
-        this.drawPointer();
+        this.redraw(this.spinning ? this.currentRotation : 0);
       });
     }
   }
